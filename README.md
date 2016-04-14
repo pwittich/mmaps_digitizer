@@ -1,7 +1,7 @@
 # mmaps_digitizer
 Firmware for the digitizer for MMAPS
 
-
+```
 Directory structure:
    .
    |-prj
@@ -11,4 +11,4 @@ Directory structure:
    |---hdl
    |---other
    |---sim
-
+```
