@@ -1,4 +1,5 @@
-#
+# # run this from top of the GIT project
+
 # Vivado (TM) v2014.4 (64-bit)
 #
 # test1.tcl: Tcl script for re-creating project 'project_1'
@@ -48,7 +49,7 @@
 set origin_dir "."
 
 # Set the directory path for the original project from where this script was exported
-set orig_proj_dir "[file normalize "$origin_dir/maaps_daq/xilinx_v1/project_1"]"
+#set orig_proj_dir "[file normalize "$origin_dir/maaps_daq/xilinx_v1/project_1"]"
 
 # Create project
 create_project project_1 ./project_1
@@ -71,22 +72,22 @@ if {[string equal [get_filesets -quiet sources_1] ""]} {
 # Set 'sources_1' fileset object
 set obj [get_filesets sources_1]
 set files [list \
- "[file normalize "$origin_dir/maaps_daq/xilinx_v1/project_1/project_1.srcs/sources_1/new/digi.v"]"\
- "[file normalize "$origin_dir/maaps_daq/xilinx_v1/project_1/project_1.srcs/sources_1/new/single_channel.v"]"\
- "[file normalize "$origin_dir/maaps_daq/xilinx_v1/project_1/project_1.srcs/sources_1/new/digi_many.v"]"\
- "[file normalize "$origin_dir/maaps_daq/xilinx_v1/project_1/project_1.srcs/sources_1/new/enc.v"]"\
- "[file normalize "$origin_dir/maaps_daq/xilinx_v1/project_1/project_1.srcs/sources_1/new/memory.v"]"\
- "[file normalize "$origin_dir/maaps_daq/xilinx_v1/project_1/project_1.srcs/sources_1/new/demux.v"]"\
- "[file normalize "$origin_dir/maaps_daq/xilinx_v1/bc_counter.v"]"\
+ "[file normalize "$origin_dir/src/hdl/digi.v"]"\
+ "[file normalize "$origin_dir/src/hdl/single_channel.v"]"\
+ "[file normalize "$origin_dir/src/hdl/digi_many.v"]"\
+ "[file normalize "$origin_dir/src/hdl/enc.v"]"\
+ "[file normalize "$origin_dir/src/hdl/memory.v"]"\
+ "[file normalize "$origin_dir/src/hdl/demux.v"]"\
+ "[file normalize "$origin_dir/src/hdl/bc_counter.v"]"\
 ]
 add_files -norecurse -fileset $obj $files
 
 # Import local files from the original project
 set files [list \
- "[file normalize "$origin_dir/maaps_daq/xilinx_v1/project_1/project_1.srcs/sources_1/imports/xilinx_v1/SM2.v"]"\
- "[file normalize "$origin_dir/maaps_daq/xilinx_v1/project_1/project_1.srcs/sources_1/imports/xilinx_v1/ringbuffer.v"]"\
- "[file normalize "$origin_dir/maaps_daq/xilinx_v1/project_1/project_1.srcs/sources_1/imports/xilinx_v1/addr_cntrl.v"]"\
- "[file normalize "$origin_dir/maaps_daq/xilinx_v1/project_1/project_1.srcs/sources_1/imports/xilinx_v1/SM_chro.v"]"\
+ "[file normalize "$origin_dir/src/hdl/SM2.v"]"\
+ "[file normalize "$origin_dir/src/hdl/ringbuffer.v"]"\
+ "[file normalize "$origin_dir/src/hdl/addr_cntrl.v"]"\
+ "[file normalize "$origin_dir/src/hdl/SM_chro.v"]"\
 ]
 set imported_files [import_files -fileset sources_1 $files]
 
@@ -128,16 +129,16 @@ if {[string equal [get_filesets -quiet constrs_1] ""]} {
 set obj [get_filesets constrs_1]
 
 # Add/Import constrs file and set constrs file properties
-set file "[file normalize "$origin_dir/maaps_daq/xilinx_v1/project_1/project_1.srcs/constrs_1/new/digi.xdc"]"
+set file "[file normalize "$origin_dir/prj/xilinx/digi.xdc"]"
 set file_added [add_files -norecurse -fileset $obj $file]
-set file "$origin_dir/maaps_daq/xilinx_v1/project_1/project_1.srcs/constrs_1/new/digi.xdc"
+set file "$origin_dir/prj/xilinx/digi.xdc"
 set file [file normalize $file]
 set file_obj [get_files -of_objects [get_filesets constrs_1] [list "*$file"]]
 set_property "file_type" "XDC" $file_obj
 
 # Set 'constrs_1' fileset properties
 set obj [get_filesets constrs_1]
-set_property "target_constrs_file" "$orig_proj_dir/project_1.srcs/constrs_1/new/digi.xdc" $obj
+set_property "target_constrs_file" "$origin_dir/prj/xilinx/digi.xdc" $obj
 
 # Create 'sim_1' fileset (if not found)
 if {[string equal [get_filesets -quiet sim_1] ""]} {
@@ -147,8 +148,8 @@ if {[string equal [get_filesets -quiet sim_1] ""]} {
 # Set 'sim_1' fileset object
 set obj [get_filesets sim_1]
 set files [list \
- "[file normalize "$origin_dir/maaps_daq/xilinx_v1/project_1/project_1.srcs/sim_1/new/digi_bench.v"]"\
- "[file normalize "$origin_dir/maaps_daq/xilinx_v1/project_1/digi_bench_behav.wcfg"]"\
+ "[file normalize "$origin_dir/src/sim/digi_bench.v"]"\
+ "[file normalize "$origin_dir/src/sim/digi_bench_behav.wcfg"]"\
 ]
 add_files -norecurse -fileset $obj $files
 
@@ -161,7 +162,7 @@ add_files -norecurse -fileset $obj $files
 # Set 'sim_1' fileset properties
 set obj [get_filesets sim_1]
 set_property "top" "digi_bench" $obj
-set_property "xsim.view" "/home/wittich/maaps_daq/xilinx_v1/project_1/digi_bench_behav.wcfg" $obj
+set_property "xsim.view" "$origin_dir/src/sim/digi_bench_behav.wcfg" $obj
 
 # Create 'synth_1' run (if not found)
 if {[string equal [get_runs -quiet synth_1] ""]} {

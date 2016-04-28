@@ -107,7 +107,7 @@
     );
    wire BCSEL; 
    assign BCSEL = WR_EN & ~SEL_ONE; 
-   always @(BCSEL,BC,DOUT_i) 
+   always @(BCSEL,SEL,BC,DOUT_i) 
      case (BCSEL)
         1'b0: FIFO_DIN = DOUT_i; // width needs to be checked
         1'b1: FIFO_DIN = {1'b0,SEL, BC};
