@@ -1,3 +1,10 @@
+#
+project_1
+*.jou
+*.log
+*.str
+
+
 # Object files
 *.o
 *.ko
@@ -30,3 +37,5 @@
 
 # Debug files
 *.dSYM/
+
+
