@@ -3,6 +3,7 @@ project_1
 *.jou
 *.log
 *.str
+*~
 
 
 # Object files

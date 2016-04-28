@@ -25,10 +25,10 @@
 
 
    wire 		  CLK;
-   wire [SIZE-1:0] 	  RD_ADDR;
+   //wire [SIZE-1:0] 	  RD_ADDR;
    wire 		  RESET;
-   wire 		  RO_ENABLE;
-   wire 		  WR_ENABLE;
+   //wire 		  RO_ENABLE;
+   //wire 		  WR_ENABLE;
    
 
    wire [WIDTH*CHAN-1:0]  DOUT_F; // output from each channel

@@ -79,17 +79,13 @@ set files [list \
  "[file normalize "$origin_dir/src/hdl/memory.v"]"\
  "[file normalize "$origin_dir/src/hdl/demux.v"]"\
  "[file normalize "$origin_dir/src/hdl/bc_counter.v"]"\
-]
-add_files -norecurse -fileset $obj $files
-
-# Import local files from the original project
-set files [list \
  "[file normalize "$origin_dir/src/hdl/SM2.v"]"\
  "[file normalize "$origin_dir/src/hdl/ringbuffer.v"]"\
  "[file normalize "$origin_dir/src/hdl/addr_cntrl.v"]"\
  "[file normalize "$origin_dir/src/hdl/SM_chro.v"]"\
 ]
-set imported_files [import_files -fileset sources_1 $files]
+add_files -norecurse -fileset $obj $files
+
 
 # Set 'sources_1' fileset file properties for remote files
 # None
@@ -149,6 +145,7 @@ if {[string equal [get_filesets -quiet sim_1] ""]} {
 set obj [get_filesets sim_1]
 set files [list \
  "[file normalize "$origin_dir/src/sim/digi_bench.v"]"\
+ "[file normalize "$origin_dir/src/sim/digi_bench_many.v"]"\
  "[file normalize "$origin_dir/src/sim/digi_bench_behav.wcfg"]"\
 ]
 add_files -norecurse -fileset $obj $files
