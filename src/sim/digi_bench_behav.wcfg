@@ -10,7 +10,7 @@
          </top_modules>
       </db_ref>
    </db_ref_list>
-   <WVObjectSize size="12" />
+   <WVObjectSize size="20" />
    <wvobject db_ref_id="1" type="array" fp_name="/digi_bench_many/adcdata_p">
       <obj_property name="ElementShortName">adcdata_p[127:0]</obj_property>
       <obj_property name="ObjectShortName">adcdata_p[127:0]</obj_property>
@@ -39,10 +39,6 @@
       <obj_property name="ElementShortName">RESET</obj_property>
       <obj_property name="ObjectShortName">RESET</obj_property>
    </wvobject>
-   <wvobject db_ref_id="1" type="logic" fp_name="/digi_bench_many/i1/RO_ENABLE">
-      <obj_property name="ElementShortName">RO_ENABLE</obj_property>
-      <obj_property name="ObjectShortName">RO_ENABLE</obj_property>
-   </wvobject>
    <wvobject db_ref_id="1" type="array" fp_name="/digi_bench_many/i1/DAVAIL">
       <obj_property name="ElementShortName">DAVAIL[7:0]</obj_property>
       <obj_property name="ObjectShortName">DAVAIL[7:0]</obj_property>
@@ -58,5 +54,42 @@
    <wvobject db_ref_id="1" type="array" fp_name="/digi_bench_many/dout">
       <obj_property name="ElementShortName">dout[15:0]</obj_property>
       <obj_property name="ObjectShortName">dout[15:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/digi_bench_many/i1/GLBL_FULL">
+      <obj_property name="ElementShortName">GLBL_FULL</obj_property>
+      <obj_property name="ObjectShortName">GLBL_FULL</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/digi_bench_many/i1/GLBL_EMPTY">
+      <obj_property name="ElementShortName">GLBL_EMPTY</obj_property>
+      <obj_property name="ObjectShortName">GLBL_EMPTY</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/digi_bench_many/i1/\genblk1[0].sc /channel_sm/statename">
+      <obj_property name="ElementShortName">statename[87:0]</obj_property>
+      <obj_property name="ObjectShortName">statename[87:0]</obj_property>
+      <obj_property name="Radix">ASCIIRADIX</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/digi_bench_many/i1/FIFO_DIN">
+      <obj_property name="ElementShortName">FIFO_DIN[15:0]</obj_property>
+      <obj_property name="ObjectShortName">FIFO_DIN[15:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="array" fp_name="/digi_bench_many/i1/\genblk1[0].sc /ringbuffer_inst0/din">
+      <obj_property name="ElementShortName">din[15:0]</obj_property>
+      <obj_property name="ObjectShortName">din[15:0]</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/digi_bench_many/i1/\genblk1[0].sc /ringbuffer_inst0/wr_en">
+      <obj_property name="ElementShortName">wr_en</obj_property>
+      <obj_property name="ObjectShortName">wr_en</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/digi_bench_many/i1/\genblk1[0].sc /ringbuffer_inst0/rd_en">
+      <obj_property name="ElementShortName">rd_en</obj_property>
+      <obj_property name="ObjectShortName">rd_en</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/digi_bench_many/i1/BCSEL">
+      <obj_property name="ElementShortName">BCSEL</obj_property>
+      <obj_property name="ObjectShortName">BCSEL</obj_property>
+   </wvobject>
+   <wvobject db_ref_id="1" type="logic" fp_name="/digi_bench_many/i1/SEL_ONE">
+      <obj_property name="ElementShortName">SEL_ONE</obj_property>
+      <obj_property name="ObjectShortName">SEL_ONE</obj_property>
    </wvobject>
 </wave_config>

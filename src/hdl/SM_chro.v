@@ -1,7 +1,5 @@
-`timescale 1ns / 1ps
-`default_nettype none
 
-// Created by fizzim.pl version 5.10 on 2016:03:11 at 11:12:37 (www.fizzim.com)
+// Created by fizzim.pl version 5.10 on 2016:04:29 at 15:32:42 (www.fizzim.com)
 
 module multi_ro (
   output wire CHSEL,
@@ -13,9 +11,10 @@ module multi_ro (
 
   // state bits
   parameter 
-  IDLE      = 3'b000, // extra=0 WR_EN=0 CHSEL=0 
-  CH_SELECT = 3'b011, // extra=0 WR_EN=1 CHSEL=1 
-  READOUT   = 3'b111; // extra=1 WR_EN=1 CHSEL=1 
+  IDLE         = 3'b000, // extra=0 WR_EN=0 CHSEL=0 
+  CH_SELECT    = 3'b011, // extra=0 WR_EN=1 CHSEL=1 
+  READOUT      = 3'b111, // extra=1 WR_EN=1 CHSEL=1 
+  WRITE_HEADER = 3'b010; // extra=0 WR_EN=1 CHSEL=0 
 
   reg [2:0] state;
   reg [2:0] nextstate;
@@ -24,22 +23,27 @@ module multi_ro (
   always @* begin
     nextstate = state; // default to hold value because implied_loopback is set
     case (state)
-      IDLE     : begin
+      IDLE        : begin
         if (DAVAIL) begin
-          nextstate = CH_SELECT;
+          nextstate = WRITE_HEADER;
         end
       end
-      CH_SELECT: begin
+      CH_SELECT   : begin
         begin
           nextstate = READOUT;
         end
       end
-      READOUT  : begin
+      READOUT     : begin
         if (DAVAIL) begin
           nextstate = READOUT;
         end
         else begin
           nextstate = IDLE;
+        end
+      end
+      WRITE_HEADER: begin
+        begin
+          nextstate = CH_SELECT;
         end
       end
     endcase
@@ -59,17 +63,19 @@ module multi_ro (
 
   // This code allows you to see state names in simulation
   `ifndef SYNTHESIS
-  reg [71:0] statename;
+  reg [95:0] statename;
   always @* begin
     case (state)
-      IDLE     :
+      IDLE        :
         statename = "IDLE";
-      CH_SELECT:
+      CH_SELECT   :
         statename = "CH_SELECT";
-      READOUT  :
+      READOUT     :
         statename = "READOUT";
-      default  :
-        statename = "XXXXXXXXX";
+      WRITE_HEADER:
+        statename = "WRITE_HEADER";
+      default     :
+        statename = "XXXXXXXXXXXX";
     endcase
   end
   `endif

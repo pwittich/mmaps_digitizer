@@ -80,7 +80,7 @@
 			  .WR_EN(WR_EN),
 			  .CLK(CLK),
 			  .RST(RESET),
-			  .DAVAIL(|DAVAIL)
+			  .DAVAIL(|TRIGGER)
 			  );
    
 

@@ -40,7 +40,7 @@ begin
 // insert code here --> begin                          
    CK50 = 0;
    DAVAIL = 0;
-   TRIGGER = 0;
+   TRIGGER = 8'h00;
    howmany = 8'd10;
    offset = 8'd10;
    rd_request = 0;
@@ -51,8 +51,8 @@ begin
    RST = 0;
    #40;
    DAVAIL = 1;
-   #320 TRIGGER = 1;
-   #10 rd_request = 1;
+   #320 TRIGGER = 8'h01;
+   #23 rd_request = 1;
    #100 TRIGGER = 0;
    #2000 $stop;
    
