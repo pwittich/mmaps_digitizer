@@ -20,19 +20,21 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module bc_counter(
+module bc_counter
+	#(parameter BITS=12)
+	(
     input wire CLK,
     input wire RST,
-    output wire [11:0] BC
+    output wire [BITS-1:0] BC
     );
     
-    reg [11:0] BC_reg;
+    reg [BITS-1:0] BC_reg;
     
     always @(posedge CLK) begin
         if ( RST ) begin
-            BC_reg <= 12'h000;
+            BC_reg <= 0;
         end else begin
-            BC_reg <= BC_reg + 12'h001;
+            BC_reg <= BC_reg + 1;
         end 
     end
     assign BC = BC_reg;

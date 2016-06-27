@@ -3,7 +3,7 @@
 `timescale 1ns / 1ps
 `default_nettype none
  
-module ringbuffer #(parameter SIZE=8, WIDTH=14)(
+module ringbuffer #(parameter SIZE=12, WIDTH=14)(
 	input wire clk, 
 	input wire wr_en, 
 	input wire rd_en, 
@@ -17,19 +17,26 @@ module ringbuffer #(parameter SIZE=8, WIDTH=14)(
 	localparam NUMWORDS=2**SIZE;
 	reg [WIDTH-1:0] data[0:NUMWORDS-1];
 
+	reg [WIDTH-1:0] dout_reg;
 	initial address <= {SIZE{1'b0}};
 	
 	always @(posedge clk) begin
 		if ( rst == 1 ) begin
 			address <= {SIZE{1'b0}};
+			dout_reg <= {SIZE{1'b0}};
 		end
-		else if ( wr_en == 1 ) begin
-			address <= address + 1'b1;
-			data[address] <= din;
+		else begin 
+			if ( wr_en == 1 ) begin
+				address <= address + 1'b1;
+				data[address] <= din;
+			end
+			if ( rd_en == 1) begin
+				dout_reg <= data[ain];
+			end
 		end
 	end
 	
 	assign aout = address;
-	assign dout = rd_en?data[ain]:0;
+	assign dout = dout_reg;
 	
 	endmodule

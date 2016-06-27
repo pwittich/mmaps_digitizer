@@ -15,6 +15,8 @@
 // PROGRAM		"Quartus II 64-Bit"
 // VERSION		"Version 13.1.0 Build 162 10/23/2013 SJ Full Version"
 // CREATED		"Fri Jun 24 17:07:43 2016"
+`timescale 1ns / 1ps
+`default_nettype none
 
 module maaps_daq_toplevel(
 	CK50,
@@ -33,7 +35,10 @@ module maaps_daq_toplevel(
 	L1,
 	L0,
 	spi_data_out,
-	ADC_SDIO1
+	ADC_SDIO1,
+	Z0,
+	Z0_FRAME,
+	Z0_CLK
 );
 
 
@@ -58,8 +63,8 @@ inout wire	ADC_SDIO1;
 wire	sysclk;
 assign	sysclk = CK50;
 
-assign ADCCLK1_p = CK50;
-assign ADCCLK2_p = CK50;
+assign ADCCLK1_p = sysclk;
+assign ADCCLK2_p = sysclk;
 
 wire [15:0] dout;
 wire adc_ready; // output
@@ -86,16 +91,40 @@ initial adc_mode = 8'h09;
 	
 
 	digi_many digi_many_inst(
-		.RST(0), .CK50(CK50), 
+		.RST(0), 
+		.CK50(sysclk), 
 		.adc_clk(adcfastclk_p), 
 		.adc_frame(adcframe_p),
 		.adcdata_p(adcdata_p), 
-		.DOUT(dout) // output to remote
+		.DOUT(dout), // output to remote
+		.ZYNQ_RD_REQUEST(1),
+		//.GLBL_FULL(),
+		//.GLBL_EMPTY(),
+		.howmany(8'hFF), // configuration
+		.offset(8'h00), // configuration
+		.DAVAIL({8{adc_ready}}), // FIXME
+		.TRIGGER({8{PMT_trigger}}) // FIXME
 	);
 
+	wire [31:0] dcount;
+	bc_counter #(.BITS(32)) counter_inst0(
+		.CLK(sysclk),
+		.RST(0), 
+		.BC(dcount)
+	);
+	assign L0 = dcount[26];
+	assign L1 = dcount[25];
 	
-
+	output wire [1:0] Z0;
+	output wire Z0_FRAME;
+	output wire Z0_CLK;
 	
+	lvds_transmitter lvds_tx_inst(
+		.DIN(dout), 
+		.CLK(sysclk),
+		.O_D(Z0),
+		.O_CLK(Z0_CLK)
+		);
 	
 	endmodule
 
