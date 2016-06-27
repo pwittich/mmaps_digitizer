@@ -22,13 +22,15 @@
 
 
   module single_channel
-    #(parameter SIZE=8, WIDTH=16)
+    #(parameter SIZE=8, WIDTH=12)
    (
     input wire CLK,
     input wire RESET,
     input wire DAVAIL,
     input wire TRIGGER,
-    input wire [WIDTH-1:0] adcdata_p,
+    input wire adc_fastclk,
+    input wire adc_frame,
+    input wire adcdata_p, // single channel serial input
     output wire [WIDTH-1:0] DOUT,
     input wire [SIZE-1:0]  howmany,
     input wire [SIZE-1:0]  offset,
@@ -36,19 +38,33 @@
     );
    
    wire 		 RO_ENABLE;
-   wire 		 WR_ENABLE;
+   wire 		 WR_ENABLE_LVDS;
+	wire 		 WR_ENABLE_SM;
    wire [SIZE-1:0] 	 SYNTHESIZED_WIRE_0;
    wire 		 SYNTHESIZED_WIRE_1;
    wire [SIZE-1:0] 	 RD_ADDR;
 
+   wire [WIDTH-1:0] 	 cbdata;
+   
+
+   lvdsreceiver receiver_inst(
+			      .sysclk(CLK),
+			      .FRAME(adc_frame),
+			      .FASTCLK(adc_fastclk),
+			      .CBDATA(cbdata),
+			      .CBADDRESS(),
+			      .WENABLE(WR_ENABLE_LVDS),
+			      .RESET_N(~RESET)
+			      );
+   
    
    ringbuffer	ringbuffer_inst0(
 				 .clk(CLK),
-				 .wr_en(WR_ENABLE),
+				 .wr_en(WR_ENABLE_LVDS&WR_ENABLE_SM),
 				 .rd_en(RO_ENABLE),
 				 .rst(RESET),
 				 .ain(SYNTHESIZED_WIRE_0),
-				 .din(adcdata_p),
+				 .din(cbdata),
 				 .aout(RD_ADDR),
 				 .dout(DOUT));
    defparam    ringbuffer_inst0.SIZE = SIZE;
@@ -63,7 +79,7 @@
 		     .clk(CLK),
 		     .rst(RESET),
 		     .RO_ENABLE(RO_ENABLE),
-		     .WR_ENABLE(WR_ENABLE),
+		     .WR_ENABLE(WR_ENABLE_SM),
 		     .RODONE_n(RO_DONE_n));
    defparam    channel_sm.ADC_RUNNING = 3'b010;
    defparam    channel_sm.IDLE = 3'b000;

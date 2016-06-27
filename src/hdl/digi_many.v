@@ -4,13 +4,15 @@
   // CREATED            "Tue Mar  8 16:23:03 2016"
 
   module digi_many
-    #(parameter SIZE=8, WIDTH=16, CHAN=8)
+    #(parameter SIZE=8, WIDTH=12, CHAN=8)
    (
     input wire  RST,
     input wire  CK50,
     input wire [CHAN-1:0] DAVAIL,
     input wire [CHAN-1:0] TRIGGER,
-    input wire [WIDTH*CHAN-1:0] adcdata_p,
+    input wire [CHAN-1:0] adcdata_p, // serial data - one per channel
+    input wire adc_clk,
+    input wire adc_frame,
     input wire [SIZE-1:0]  howmany,
     input wire [SIZE-1:0]  offset,
     //input wire [2:0] SEL,
@@ -37,12 +39,12 @@
    genvar 		  i;
    generate
       for (i=0;i<CHAN;i=i+1) 
-        begin
+        begin : channel_gen
            single_channel sc(
 			     .CLK(CLK),
 			     .RESET(RESET),
 			     .DAVAIL(DAVAIL[i]),
-			     .adcdata_p(adcdata_p[(i*WIDTH+(WIDTH-1)):i*WIDTH]),
+			     .adcdata_p(i),
 			     .howmany(howmany),
 			     .offset(offset),
 			     .rd_request(RD_REQUEST[i]),
@@ -60,14 +62,14 @@
    // HARDWIRED TO EIGHT HERE - SHOULD BE CHAN instead
    always @(SEL, DOUT_F)
      case (SEL)
-       3'b000: DOUT_i = DOUT_F[15:0];
-       3'b001: DOUT_i = DOUT_F[31:16];
-       3'b010: DOUT_i = DOUT_F[47:32];
-       3'b011: DOUT_i = DOUT_F[63:48];
-       3'b100: DOUT_i = DOUT_F[79:64];
-       3'b101: DOUT_i = DOUT_F[95:80];
-       3'b110: DOUT_i = DOUT_F[111:96];
-       3'b111: DOUT_i = DOUT_F[127:112];
+       3'b000: DOUT_i = DOUT_F[11:0];
+       3'b001: DOUT_i = DOUT_F[23:12];
+       3'b010: DOUT_i = DOUT_F[35:24];
+       3'b011: DOUT_i = DOUT_F[47:36];
+       3'b100: DOUT_i = DOUT_F[59:48];
+       3'b101: DOUT_i = DOUT_F[71:60];
+       3'b110: DOUT_i = DOUT_F[83:72];
+       3'b111: DOUT_i = DOUT_F[95:84];
      endcase
 
    wire       WR_EN;
@@ -91,12 +93,12 @@
 
    reg [WIDTH-1:0] FIFO_DIN; 
    // this is not parameterized either
-   fifo fifo_inst(.clk(CLK),
-		  .rst(RESET),
-		  .din(FIFO_DIN),
-		  .wr_en(WR_EN),
-		  .rd_en(GLBL_RD_REQUEST),
-		  .dout(DOUT),
+   fifo fifo_inst(.clock(CLK),
+		  .sclr(RESET),
+		  .data(FIFO_DIN),
+		  .wrreq(WR_EN),
+		  .rdreq(GLBL_RD_REQUEST),
+		  .q(DOUT),
 		  .full(GLBL_FULL),
 		  .empty(GLBL_EMPTY)
 		  );
