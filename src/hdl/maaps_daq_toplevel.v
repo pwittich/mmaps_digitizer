@@ -90,7 +90,7 @@ initial adc_mode = 8'h09;
 	
 	
 
-	digi_many digi_many_inst(
+	digi_many #(.CHAN(8)) digi_many_inst(
 		.RST(0), 
 		.CK50(sysclk), 
 		.adc_clk(adcfastclk_p), 
@@ -102,8 +102,8 @@ initial adc_mode = 8'h09;
 		//.GLBL_EMPTY(),
 		.howmany(8'hFF), // configuration
 		.offset(8'h00), // configuration
-		.DAVAIL({8{adc_ready}}), // FIXME
-		.TRIGGER({8{PMT_trigger}}) // FIXME
+		.DAVAIL(TDC[7:0]), // FIXME
+		.TRIGGER(TDC[16:8]) // FIXME
 	);
 
 	wire [31:0] dcount;

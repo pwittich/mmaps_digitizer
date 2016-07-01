@@ -68,7 +68,7 @@
 				 .din(cbdata),
 				 .aout(RD_ADDR),
 				 .dout(DOUT));
-   defparam    ringbuffer_inst0.SIZE = 13; // 2^SIZE ringbuffer size
+   defparam    ringbuffer_inst0.SIZE = 11; // 2^SIZE ringbuffer size
    defparam    ringbuffer_inst0.WIDTH = WIDTH;
    
    wire 		 RO_DONE_n;
