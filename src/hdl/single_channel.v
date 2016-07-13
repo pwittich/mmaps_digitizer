@@ -10,7 +10,7 @@
   // Project Name: 
   // Target Devices: 
   // Tool Versions: 
-  // Description: 
+  // Description: test module to develop single channel. Obsolete.
   // 
   // Dependencies: 
   // 

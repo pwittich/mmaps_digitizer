@@ -97,6 +97,24 @@ set_location_assignment PIN_B12 -to adcdata_p[6]
 set_location_assignment PIN_A12 -to "adcdata_p[6](n)"
 set_location_assignment PIN_B11 -to adcdata_p[7]
 set_location_assignment PIN_A11 -to "adcdata_p[7](n)"
+# second bank of ADC data
+set_location_assignment PIN_P10 -to adcdata_p[8]
+set_location_assignment PIN_P11 -to "adcdata_p[8](n)"
+set_location_assignment PIN_U11 -to adcdata_p[9]
+set_location_assignment PIN_V11 -to "adcdata_p[9](n)"
+set_location_assignment PIN_U12 -to adcdata_p[10]
+set_location_assignment PIN_V12 -to "adcdata_p[10](n)"
+set_location_assignment PIN_U13 -to adcdata_p[11]
+set_location_assignment PIN_V13 -to "adcdata_p[11](n)"
+set_location_assignment PIN_U14 -to adcdata_p[12]
+set_location_assignment PIN_V14 -to "adcdata_p[12](n)"
+set_location_assignment PIN_U15 -to adcdata_p[13]
+set_location_assignment PIN_V15 -to "adcdata_p[13](n)"
+set_location_assignment PIN_U16 -to adcdata_p[14]
+set_location_assignment PIN_V16 -to "adcdata_p[14](n)"
+set_location_assignment PIN_U17 -to adcdata_p[15]
+set_location_assignment PIN_V17 -to "adcdata_p[15](n)"
+
 set_location_assignment PIN_L2 -to ADCCLK2_p
 set_location_assignment PIN_L1 -to "ADCCLK2_p(n)"
 set_global_assignment -name VHDL_INPUT_VERSION VHDL_2008
@@ -129,15 +147,18 @@ set_location_assignment PIN_R8 -to TDC[28]
 set_location_assignment PIN_T8 -to TDC[29]
 set_location_assignment PIN_U8 -to TDC[30]
 set_location_assignment PIN_V8 -to TDC[31]
-set_location_assignment PIN_B17 -to spi_cs
-set_location_assignment PIN_B18 -to spi_sclk
-set_location_assignment PIN_C17 -to spi_data_out
-set_location_assignment PIN_C18 -to spi_data_in
-set_location_assignment PIN_D17 -to PMT_trigger
+#set_location_assignment PIN_T17 -to PMT_trigger
+set_location_assignment PIN_E17 -to Z0[0]
+set_location_assignment PIN_E18 -to "Z0[0](n)"
+set_location_assignment PIN_D17 -to Z0[1]
+set_location_assignment PIN_D18 -to "Z0[1](n)"
+set_location_assignment PIN_G17 -to Z0_CLK
+set_location_assignment PIN_G18 -to "Z0_CLK(n)"
+set_location_assignment PIN_H17 -to Z0_FRAME
+set_location_assignment PIN_H18 -to "Z0_FRAME(n)"
 set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_DUPLICATION ON
 set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC ON
 set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_RETIMING ON
-set_global_assignment -name VERILOG_FILE ../../src/hdl/maaps_daq_toplevel.v
 set_global_assignment -name VHDL_FILE ../../src/hdl/spi_3_wire_master.vhd
 set_global_assignment -name VHDL_FILE ../../src/hdl/adc_spimaster.vhd
 set_global_assignment -name VHDL_FILE ../../src/hdl/lvdsreceiver.vhd
@@ -153,7 +174,13 @@ set_global_assignment -name VERILOG_FILE ../../src/hdl/digi.v
 set_global_assignment -name VERILOG_FILE ../../src/hdl/demux.v
 set_global_assignment -name VERILOG_FILE ../../src/hdl/bc_counter.v
 set_global_assignment -name VERILOG_FILE ../../src/hdl/addr_cntrl.v
+set_global_assignment -name VERILOG_FILE ../../src/hdl/maaps_daq_toplevel.v
 set_global_assignment -name QIP_FILE fifo.qip
+set_global_assignment -name VERILOG_FILE ../../src/hdl/lvds_transmitter.v
+set_global_assignment -name QIP_FILE lvds_tx.qip
+set_global_assignment -name FLOW_ENABLE_RTL_VIEWER ON
+set_global_assignment -name TIMEQUEST_MULTICORNER_ANALYSIS ON
+set_global_assignment -name SMART_RECOMPILE ON
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
@@ -204,23 +231,28 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[23]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[29]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[30]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[31]
-set_instance_assignment -name IO_STANDARD LVDS -to "ADCCLK1_p(n)"
+#set_instance_assignment -name IO_STANDARD LVDS -to "ADCCLK1_p(n)"
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to spi_cs
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to spi_data_in
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to spi_data_out
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to spi_sclk
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PMT_trigger
-set_global_assignment -name VERILOG_FILE ../../src/hdl/lvds_transmitter.v
-set_global_assignment -name QIP_FILE lvds_tx.qip
-set_location_assignment PIN_B2 -to Z0[1]
-set_location_assignment PIN_C2 -to Z0[0]
 set_instance_assignment -name IO_STANDARD LVDS -to Z0[1]
-set_location_assignment PIN_B1 -to "Z0[1](n)"
 set_instance_assignment -name IO_STANDARD LVDS -to Z0[0]
-set_location_assignment PIN_C1 -to "Z0[0](n)"
 set_instance_assignment -name IO_STANDARD LVDS -to Z0_CLK
 set_instance_assignment -name IO_STANDARD LVDS -to Z0_FRAME
-set_global_assignment -name FLOW_ENABLE_RTL_VIEWER ON
-set_global_assignment -name TIMEQUEST_MULTICORNER_ANALYSIS ON
-set_global_assignment -name SMART_RECOMPILE ON
+
+
+set_instance_assignment -name IO_STANDARD LVDS -to adcdata_p[8]
+set_instance_assignment -name IO_STANDARD LVDS -to adcdata_p[9]
+set_instance_assignment -name IO_STANDARD LVDS -to adcdata_p[10]
+set_instance_assignment -name IO_STANDARD LVDS -to adcdata_p[11]
+set_instance_assignment -name IO_STANDARD LVDS -to adcdata_p[12]
+set_instance_assignment -name IO_STANDARD LVDS -to adcdata_p[13]
+set_instance_assignment -name IO_STANDARD LVDS -to adcdata_p[14]
+set_instance_assignment -name IO_STANDARD LVDS -to adcdata_p[15]
+set_global_assignment -name ENABLE_CONFIGURATION_PINS OFF
+set_global_assignment -name ENABLE_NCE_PIN OFF
+set_global_assignment -name ENABLE_BOOT_SEL_PIN OFF
+set_global_assignment -name CYCLONEII_RESERVE_NCEO_AFTER_CONFIGURATION "USE AS REGULAR IO"
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

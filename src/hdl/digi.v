@@ -2,6 +2,7 @@
 `default_nettype none
 
   // CREATED		"Tue Mar  8 16:23:03 2016"
+  // single channel digitizer
 
   module digi
     #(parameter SIZE=8, WIDTH=16)

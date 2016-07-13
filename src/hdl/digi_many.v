@@ -2,7 +2,9 @@
 `default_nettype none
 
   // CREATED            "Tue Mar  8 16:23:03 2016"
-
+  // module to hold several channels of digitized ADC input.
+  // contains the ADC input, a circular buffer, and logic to
+  // send the data out to the ZYNQ
   module digi_many
     #(parameter SIZE=8, WIDTH=12, CHAN=8)
    (
@@ -32,7 +34,7 @@
    //wire 		  RO_ENABLE;
    //wire 		  WR_ENABLE;
    
-
+   // generate channels for output
    wire [WIDTH*CHAN-1:0]  DOUT_F; // output from each channel
    wire [CHAN-1:0] RD_REQUEST; // readout  request to each channel
    // channels
@@ -78,7 +80,8 @@
    wire       SEL_ONE;
    demux #(.N(8)) dm1(.in(SEL_ONE), .sel(SEL),.out(RD_REQUEST));
    
-      
+   // state machine to pull data from the individual
+   // channels to the output FIFO
    multi_ro multi_ro_inst(
 			  .CHSEL(SEL_ONE),
 			  .WR_EN(WR_EN),
@@ -93,6 +96,9 @@
    
    wire [SIZE-1:0]  LOCL_ADDR;
 
+   // output fifo - collects data from individual channels,
+   // collates to a single stream, that then gets sent to the
+   // ZYNQ
    reg [WIDTH-1:0] FIFO_DIN; 
    // this is not parameterized either
    fifo fifo_inst(.clock(CLK),
@@ -104,6 +110,8 @@
 		  .full(GLBL_FULL),
 		  .empty(GLBL_EMPTY)
 		  );
+   // Bunch counter - to tag the data for timing and later identification.
+   // not clear if this is the right number of bits.
    wire [11:0] BC;
    bc_counter bc_counter_inst(.CLK(CLK),
     .RST(RESET),

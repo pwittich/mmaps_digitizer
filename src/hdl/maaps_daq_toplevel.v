@@ -17,114 +17,122 @@
 // CREATED		"Fri Jun 24 17:07:43 2016"
 `timescale 1ns / 1ps
 `default_nettype none
+  // Top level HDL module
+  module maaps_daq_toplevel(
+			    CK50,
+			    adcfastclk_p,
+			    adcframe_p,
+			    spi_cs,
+			    spi_sclk,
+			    spi_data_in,
+			    PMT_trigger,
+			    adcdata_p,
+			    TDC,
+			    ADC_SCLK1,
+			    ADC_nCS1,
+			    ADCCLK1_p,
+			    ADCCLK2_p,
+			    L1,
+			    L0,
+			    spi_data_out,
+			    ADC_SDIO1,
+			    Z0,
+			    Z0_FRAME,
+			    Z0_CLK
+			    );
 
-module maaps_daq_toplevel(
-	CK50,
-	adcfastclk_p,
-	adcframe_p,
-	spi_cs,
-	spi_sclk,
-	spi_data_in,
-	PMT_trigger,
-	adcdata_p,
-	TDC,
-	ADC_SCLK1,
-	ADC_nCS1,
-	ADCCLK1_p,
-	ADCCLK2_p,
-	L1,
-	L0,
-	spi_data_out,
-	ADC_SDIO1,
-	Z0,
-	Z0_FRAME,
-	Z0_CLK
-);
 
+   input wire	CK50;
+   input wire	adcfastclk_p;
+   input wire	adcframe_p;
+   input wire	spi_cs;
+   input wire	spi_sclk;
+   input wire	spi_data_in;
+   input wire	PMT_trigger;
+   input wire [15:0] adcdata_p; // 16 serial lines
+   input wire [31:0] TDC; // unused
+   output wire 	     ADC_SCLK1;
+   output wire 	     ADC_nCS1;
+   output wire 	     ADCCLK1_p;
+   output wire 	     ADCCLK2_p;
+   output wire 	     L1;
+   output wire 	     L0;
+   output wire 	     spi_data_out;
+   inout wire 	     ADC_SDIO1;
 
-input wire	CK50;
-input wire	adcfastclk_p;
-input wire	adcframe_p;
-input wire	spi_cs;
-input wire	spi_sclk;
-input wire	spi_data_in;
-input wire	PMT_trigger;
-input wire	[15:0] adcdata_p; // 16 serial lines
-input wire	[31:0] TDC; // unused
-output wire	ADC_SCLK1;
-output wire	ADC_nCS1;
-output wire	ADCCLK1_p;
-output wire	ADCCLK2_p;
-output wire	L1;
-output wire	L0;
-output wire	spi_data_out;
-inout wire	ADC_SDIO1;
+   // input clock - 50 MHz 
+   wire 	     sysclk;
+   assign	sysclk = CK50;
 
-wire	sysclk;
-assign	sysclk = CK50;
+   // output clocks to the two octal ADCs
+   assign ADCCLK1_p = sysclk;
+   assign ADCCLK2_p = sysclk;
 
-assign ADCCLK1_p = sysclk;
-assign ADCCLK2_p = sysclk;
+   wire [15:0] 	     dout;
+   wire 	     adc_ready; // output
 
-wire [15:0] dout;
-wire adc_ready; // output
+   wire 	     adc_flag;
+   reg [7:0] 	     adc_mode;
 
-wire adc_flag;
-reg [7:0] adc_mode;
+   // hard-wired for now
+   initial adc_mode = 8'h09;
+   // SPI controller to configure the external ADCs
+   adc_spimaster adc_spimaster_inst(
+				    .sys_clk(sysclk),
+				    .reset_n(1),
+      
+				    .adc_sclk(ADC_SCLK1),
+				    .adc_sdio(ADC_SDIO1),
+				    .adc_cs(ADC_nCS1),
+      
+				    .adc_flag(adc_flag),
+				    .adc_mode(adc_mode),
+				    .adc_ready(adc_ready)
+				    );
+   
+   
+   
+   // module to contain the input from the digitizer channels.
+   // configurable how many it controls by the CHAN variable
+   // howmany, offset should be made configurable - hardwired for now
+   // DAVAIL and TRIGGER should also not be hardwired to their current widths.
+   digi_many #(.CHAN(8)) digi_many_inst(
+					.RST(0), 
+					.CK50(sysclk), 
+					.adc_clk(adcfastclk_p), 
+					.adc_frame(adcframe_p),
+					.adcdata_p(adcdata_p), 
+					.DOUT(dout), // output to remote
+					.ZYNQ_RD_REQUEST(1),
+					.howmany(8'hFF), // configuration
+					.offset(8'h00), // configuration
+					.DAVAIL(TDC[7:0]), // FIXME
+					.TRIGGER(TDC[16:8]) // FIXME
+					);
 
-initial adc_mode = 8'h09;
+   // counter just to twiddle the LED on the digitzer
+   wire [31:0] 	     dcount;
+   bc_counter #(.BITS(32)) counter_inst0(
+					 .CLK(sysclk),
+					 .RST(0), 
+					 .BC(dcount)
+					 );
+   assign L0 = dcount[26]; // should be about 1 Hz
+   assign L1 = dcount[25]; // should be 2x as fast as L1
+   
+   output wire [1:0] Z0;
+   output wire 	     Z0_FRAME;
+   output wire 	     Z0_CLK;
 
-	adc_spimaster adc_spimaster_inst(
-		.sys_clk(sysclk),
-		.reset_n(1),
-		
-		.adc_sclk(ADC_SCLK1),
-		.adc_sdio(ADC_SDIO1),
-		.adc_cs(ADC_nCS1),
-		
-		.adc_flag(adc_flag),
-		.adc_mode(adc_mode),
-		.adc_ready(adc_ready)
-		);
-		
-	
-	
-
-	digi_many #(.CHAN(8)) digi_many_inst(
-		.RST(0), 
-		.CK50(sysclk), 
-		.adc_clk(adcfastclk_p), 
-		.adc_frame(adcframe_p),
-		.adcdata_p(adcdata_p), 
-		.DOUT(dout), // output to remote
-		.ZYNQ_RD_REQUEST(1),
-		//.GLBL_FULL(),
-		//.GLBL_EMPTY(),
-		.howmany(8'hFF), // configuration
-		.offset(8'h00), // configuration
-		.DAVAIL(TDC[7:0]), // FIXME
-		.TRIGGER(TDC[16:8]) // FIXME
-	);
-
-	wire [31:0] dcount;
-	bc_counter #(.BITS(32)) counter_inst0(
-		.CLK(sysclk),
-		.RST(0), 
-		.BC(dcount)
-	);
-	assign L0 = dcount[26];
-	assign L1 = dcount[25];
-	
-	output wire [1:0] Z0;
-	output wire Z0_FRAME;
-	output wire Z0_CLK;
-	
-	lvds_transmitter lvds_tx_inst(
-		.DIN(dout), 
-		.CLK(sysclk),
-		.O_D(Z0),
-		.O_CLK(Z0_CLK)
-		);
-	
-	endmodule
+   // LVDS output to the ZYNQ
+   // the Z0 clock is the slow clock; its leading edge indicates the
+   // MSB of the serial output stream.
+   lvds_transmitter lvds_tx_inst(
+				 .DIN(dout), 
+				 .CLK(sysclk),
+				 .O_D(Z0),
+				 .O_CLK(Z0_CLK)
+				 );
+   
+endmodule
 
