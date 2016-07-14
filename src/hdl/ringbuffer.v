@@ -18,9 +18,12 @@ module ringbuffer #(parameter SIZE=12, WIDTH=14)(
 	reg [WIDTH-1:0] data[0:NUMWORDS-1];
 
 	reg [WIDTH-1:0] dout_reg;
+	reg [SIZE-1:0] ain_reg; // altera likes the input address to be latched
+	
 	initial address <= {SIZE{1'b0}};
 	
 	always @(posedge clk) begin
+		ain_reg <= ain;
 		if ( rst == 1 ) begin
 			address <= {SIZE{1'b0}};
 			dout_reg <= {SIZE{1'b0}};
@@ -31,8 +34,10 @@ module ringbuffer #(parameter SIZE=12, WIDTH=14)(
 				data[address] <= din;
 			end
 			if ( rd_en == 1) begin
-				dout_reg <= data[ain];
+				dout_reg <= data[ain_reg];
 			end
+			else
+				dout_reg <= {SIZE{1'b0}};
 		end
 	end
 	
