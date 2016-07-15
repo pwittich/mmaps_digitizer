@@ -16,7 +16,7 @@ module multi_ro (
   READOUT      = 3'b111, // extra=1 WR_EN=1 CHSEL=1 
   WRITE_HEADER = 3'b010; // extra=0 WR_EN=1 CHSEL=0 
 
-  reg [2:0] state;
+  (* syn_encoding = "user" *) reg [2:0] state;
   reg [2:0] nextstate;
 
   // comb always block

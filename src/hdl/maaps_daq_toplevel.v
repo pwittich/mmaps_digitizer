@@ -59,6 +59,7 @@
    output wire 	     L0;
    output wire 	     spi_data_out;
    inout wire 	     ADC_SDIO1;
+	reg rst;
 
    // input clock - 50 MHz 
    wire 	     sysclk;
@@ -79,7 +80,7 @@
    // SPI controller to configure the external ADCs
    adc_spimaster adc_spimaster_inst(
 				    .sys_clk(sysclk),
-				    .reset_n(1),
+				    .reset_n(~rst),
       
 				    .adc_sclk(ADC_SCLK1),
 				    .adc_sdio(ADC_SDIO1),
@@ -97,7 +98,7 @@
    // howmany, offset should be made configurable - hardwired for now
    // DAVAIL and TRIGGER should also not be hardwired to their current widths.
    digi_many #(.CHAN(8)) digi_many_inst(
-					.RST(0), 
+					.RST(rst&adc_ready), 
 					.CK50(sysclk), 
 					.adc_clk(adcfastclk_p), 
 					.adc_frame(adcframe_p),
@@ -114,7 +115,7 @@
    wire [31:0] 	     dcount;
    bc_counter #(.BITS(32)) counter_inst0(
 					 .CLK(sysclk),
-					 .RST(0), 
+					 .RST(rst), 
 					 .BC(dcount)
 					 );
    assign L0 = dcount[26]; // should be about 1 Hz
@@ -134,5 +135,18 @@
 				 .O_CLK(Z0_CLK)
 				 );
    
+	// self-reset on startup for now. This is a hack.
+	reg [4:0] rst_cnt; 
+	initial rst_cnt = 0;
+	always @(posedge sysclk ) begin
+		if ( rst_cnt < 31 )
+			rst_cnt <= rst_cnt + 5'b1;
+		if ( rst_cnt < 31) 
+			rst = 1;
+		else
+			rst = 0;
+			
+	end
+	
 endmodule
 

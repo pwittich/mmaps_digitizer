@@ -18,7 +18,8 @@ module ringbuffer #(parameter SIZE=12, WIDTH=14)(
 	reg [WIDTH-1:0] data[0:NUMWORDS-1];
 
 	reg [WIDTH-1:0] dout_reg;
-	reg [SIZE-1:0] ain_reg; // altera likes the input address to be latched
+	// Quartus likes the input address to be latched
+	reg [SIZE-1:0] ain_reg; 
 	
 	initial address <= {SIZE{1'b0}};
 	
