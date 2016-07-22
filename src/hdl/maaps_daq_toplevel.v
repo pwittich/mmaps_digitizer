@@ -76,26 +76,26 @@
    reg [7:0] 	     adc_mode;
 
    // ugh
-   // read_comments_as_HDL on
-/* -----\/----- EXCLUDED -----\/-----
-   // hard-wired for now
-   initial adc_mode = 8'h09;
-   // SPI controller to configure the external ADCs
-   adc_spimaster adc_spimaster_inst(
-				    .sys_clk(sysclk),
-				    .reset_n(~rst),
-      
-				    .adc_sclk(ADC_SCLK1),
-				    .adc_sdio(ADC_SDIO1),
-				    .adc_cs(ADC_nCS1),
-      
-				    .adc_flag(adc_flag),
-				    .adc_mode(adc_mode),
-				    .adc_ready(adc_ready)
-				    );
- -----/\----- EXCLUDED -----/\----- */
-   
-   // read_comments_as_HDL off
+
+// // hard-wired for now
+//   // SPI controller to configure the external ADCs
+   // synthesis read_comments_as_HDL on
+//   initial adc_mode = 8'h09;
+//   adc_spimaster adc_spimaster_inst(
+//				    .sys_clk(sysclk),
+//				    .reset_n(~rst),
+//      
+//				    .adc_sclk(ADC_SCLK1),
+//				    .adc_sdio(ADC_SDIO1),
+//				    .adc_cs(ADC_nCS1),
+//      
+//				    .adc_flag(adc_flag),
+//				    .adc_mode(adc_mode),
+//				    .adc_ready(adc_ready)
+//				    );
+//
+//   
+   // synthesis read_comments_as_HDL off
 
    
    // module to contain the input from the digitizer channels.
@@ -130,19 +130,18 @@
    output wire 	     Z0_FRAME;
    output wire 	     Z0_CLK;
 
-   // read_comments_as_HDL on
-/* -----\/----- EXCLUDED -----\/-----
-   // LVDS output to the ZYNQ
-   // the Z0 clock is the slow clock; its leading edge indicates the
-   // MSB of the serial output stream.
-   lvds_transmitter lvds_tx_inst(
-				 .DIN(dout), 
-				 .CLK(sysclk),
-				 .O_D(Z0),
-				 .O_CLK(Z0_CLK)
-				 );
- -----/\----- EXCLUDED -----/\----- */
-   // read_comments_as_HDL off
+//
+//   // LVDS output to the ZYNQ
+//   // the Z0 clock is the slow clock; its leading edge indicates the
+//   // MSB of the serial output stream.
+   // synthesis read_comments_as_HDL on
+//   lvds_transmitter lvds_tx_inst(
+//				 .DIN(dout), 
+//				 .CLK(sysclk),
+//				 .O_D(Z0),
+//				 .O_CLK(Z0_CLK)
+//				 );
+   // synthesis read_comments_as_HDL off
    
 	// self-reset on startup for now. This is a hack.
 	reg [4:0] rst_cnt; 
