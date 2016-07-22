@@ -1,4 +1,8 @@
-
+// this is a rewreite of lvdsreceiver.v
+// from vhdl to verilog to deal with the
+// problem of modelsim not allowing mixed
+// vhdl/verilog designs in modelsim-ae for quartus II 13.1
+// wittich 7/16
 module lvds_receiver(
 		     input wire FASTCLK,
 		     input wire FRAME,
@@ -18,7 +22,8 @@ module lvds_receiver(
    // shift register
    always @(posedge FASTCLK) 
       lvds_sr <= { lvds_sr[9:0], doh, dol};
-      
+
+   // DDR input component; takes ADC input
    altddio_in	ALTDDIO_IN_component (
 				      .aclr (1'b0),
 				      .datain (DATA),
@@ -37,83 +42,104 @@ module lvds_receiver(
      ALTDDIO_IN_component.power_up_high = "OFF",
      ALTDDIO_IN_component.width = 1;
 
-   // start fizzim
+   // state machine to decode the data from LVDS.
+   // based on fizzim FSM file in src/other
+   // lvsd_receiver_sm
+   // start fizzim output
+  // state bits
+  parameter 
+  init       = 3'b000, // extra=00 WENABLE=0 
+  latchdata  = 3'b001, // extra=00 WENABLE=1 
+  wait4data  = 3'b010, // extra=01 WENABLE=0 
+  wait4synch = 3'b100; // extra=10 WENABLE=0 
 
-   // Created by fizzim.pl version 5.10 on 2016:07:21 at 12:42:02 (www.fizzim.com)
+  reg [2:0] state;
+  reg [2:0] nextstate;
 
+  // comb always block
+  always @* begin
+    nextstate = 3'bxxx; // default to x because default_state_is_x is set
+    case (state)
+      init      : begin
+        if (!FRAME) begin
+          nextstate = wait4synch;
+        end
+        else begin
+          nextstate = init;
+        end
+      end
+      latchdata : begin
+        begin
+          nextstate = init;
+        end
+      end
+      wait4data : begin
+        begin
+          nextstate = latchdata;
+        end
+      end
+      wait4synch: begin
+        if (FRAME) begin
+          nextstate = wait4data;
+        end
+        else begin
+          nextstate = wait4synch;
+        end
+      end
+    endcase
+  end
 
-   // state bits
-   parameter 
-     init       = 3'b000, // extra=00 WENABLE=0 
-       latchdata  = 3'b001, // extra=00 WENABLE=1 
-       wait4data  = 3'b010, // extra=01 WENABLE=0 
-       wait4synch = 3'b100; // extra=10 WENABLE=0 
+  // Assign reg'd outputs to state bits
+  assign WENABLE = state[0];
 
-   reg [2:0] 			 state;
-   reg [2:0] 			 nextstate;
+  // sequential always block
+  always @(posedge fastclk) begin
+    if (!RESET_n)
+      state <= init;
+    else
+      state <= nextstate;
+  end
 
-   // comb always block
-   always @* begin
-      nextstate = 3'bxxx; // default to x because default_state_is_x is set
-      case (state)
-	init      : begin
-           if (!FRAME) begin
-              nextstate = wait4synch;
-           end
-           else begin
-              nextstate = init;
-           end
-	end
-	latchdata : begin
-           begin
-              nextstate = init;
-           end
-	end
-	wait4data : begin
-           begin
-              nextstate = latchdata;
-           end
-	end
-	wait4synch: begin
-           if (FRAME) begin
-              nextstate = wait4data;
-           end
-           else begin
-              nextstate = wait4synch;
-           end
-	end
+  // datapath sequential always block
+  always @(posedge fastclk) begin
+    if (!RESET_n) begin
+      // Warning R18: No reset value set for datapath output address.   Assigning a reset value of 8'h00 based on value in reset state init 
+      address <= 8'h00;
+      // Warning R18: No reset value set for datapath output cbdata.   Assigning a reset value of 12'h000 based on value in reset state init 
+      cbdata <= 12'h000;
+    end
+    else begin
+      address <= 8'h00; // default
+      cbdata <= 12'h000; // default
+      case (nextstate)
+        wait4data : begin
+          address <= address + 8'h01;
+          cbdata <= lvds_sr;
+        end
       endcase
-   end
+    end
+  end
 
-   // Assign reg'd outputs to state bits
-   assign WENABLE = state[0];
+  // This code allows you to see state names in simulation
+  `ifndef SYNTHESIS
+  reg [79:0] statename;
+  always @* begin
+    case (state)
+      init      :
+        statename = "init";
+      latchdata :
+        statename = "latchdata";
+      wait4data :
+        statename = "wait4data";
+      wait4synch:
+        statename = "wait4synch";
+      default   :
+        statename = "XXXXXXXXXX";
+    endcase
+  end
+  `endif
 
-   // sequential always block
-   always @(posedge FASTCLK) begin
-      if (!RESET_n)
-	state <= init;
-      else
-	state <= nextstate;
-   end
 
-   // This code allows you to see state names in simulation
-`ifndef SYNTHESIS
-   reg [79:0] statename;
-   always @* begin
-      case (state)
-	init      :
-          statename = "init";
-	latchdata :
-          statename = "latchdata";
-	wait4data :
-          statename = "wait4data";
-	wait4synch:
-          statename = "wait4synch";
-	default   :
-          statename = "XXXXXXXXXX";
-      endcase
-   end
-`endif
    // end fizzim
    
 
