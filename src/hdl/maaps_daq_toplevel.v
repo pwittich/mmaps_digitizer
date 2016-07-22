@@ -25,7 +25,7 @@
 			    spi_cs,
 			    spi_sclk,
 			    spi_data_in,
-			    PMT_trigger,
+			    PMT_trigger, // external trigger - how to input? not in the SDC file now
 			    adcdata_p,
 			    TDC,
 			    ADC_SCLK1,
@@ -113,7 +113,7 @@
 					.howmany(8'hFF), // configuration
 					.offset(8'h00), // configuration
 					.DAVAIL(TDC[7:0]), // FIXME
-					.TRIGGER(TDC[16:8]) // FIXME
+					.TRIGGER(TDC[16:8]) // FIXME -- replace with PMT_trigger?
 					);
 
    // counter just to twiddle the LED on the digitzer
