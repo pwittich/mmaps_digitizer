@@ -4,7 +4,7 @@ project_1
 *.log
 *.str
 *~
-
+*.bak
 
 # Object files
 *.o

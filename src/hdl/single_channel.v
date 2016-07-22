@@ -49,7 +49,7 @@
 
    lvdsreceiver receiver_inst(
 			      .sysclk(CLK),
-					.DATA(adcdata_p),
+			      .DATA(adcdata_p),
 			      .FRAME(adc_frame),
 			      .FASTCLK(adc_fastclk),
 			      .CBDATA(cbdata),

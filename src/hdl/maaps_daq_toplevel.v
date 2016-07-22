@@ -75,6 +75,9 @@
    wire 	     adc_flag;
    reg [7:0] 	     adc_mode;
 
+   // ugh
+   // read_comments_as_HDL on
+/* -----\/----- EXCLUDED -----\/-----
    // hard-wired for now
    initial adc_mode = 8'h09;
    // SPI controller to configure the external ADCs
@@ -90,8 +93,10 @@
 				    .adc_mode(adc_mode),
 				    .adc_ready(adc_ready)
 				    );
+ -----/\----- EXCLUDED -----/\----- */
    
-   
+   // read_comments_as_HDL off
+
    
    // module to contain the input from the digitizer channels.
    // configurable how many it controls by the CHAN variable
@@ -125,6 +130,8 @@
    output wire 	     Z0_FRAME;
    output wire 	     Z0_CLK;
 
+   // read_comments_as_HDL on
+/* -----\/----- EXCLUDED -----\/-----
    // LVDS output to the ZYNQ
    // the Z0 clock is the slow clock; its leading edge indicates the
    // MSB of the serial output stream.
@@ -134,6 +141,8 @@
 				 .O_D(Z0),
 				 .O_CLK(Z0_CLK)
 				 );
+ -----/\----- EXCLUDED -----/\----- */
+   // read_comments_as_HDL off
    
 	// self-reset on startup for now. This is a hack.
 	reg [4:0] rst_cnt; 
