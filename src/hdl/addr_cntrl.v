@@ -25,7 +25,7 @@ module addr_cntrl #(parameter SIZE=8) (
 		end
 		else if ( ! rd_request) begin
 			reg_addr <= ain - offset; 
-			howmany <= howmany_i -1; // without the -1 leads to an off-by-one error
+			howmany <= howmany_i -1'b1; // without the -1 leads to an off-by-one error
 			offset <= offset_i;
 		end
 		else if ( rd_request) begin 	// readout block
@@ -34,7 +34,7 @@ module addr_cntrl #(parameter SIZE=8) (
 		end
 
 	end
-	assign address = rd_request?reg_addr:0;
+	assign address = rd_request?reg_addr:{SIZE{1'b0}};
 	assign ro_done_n = |howmany; // enable readout as long as howmany is non-zero
 	
 	endmodule

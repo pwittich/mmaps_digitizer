@@ -14,10 +14,13 @@ module lvds_receiver(
 		     output wire WENABLE
 		     );
    wire 			 doh, dol;
-   wire [11:0] 			 lvds_sr;
+   reg [11:0] 			 lvds_sr;
    wire 			 LATCHFRAME, LATCHFRAME1;
    wire [11:0] 			 lvds_rx;
-   wire [7:0] 			 address;
+   reg [7:0] 			 address;
+	reg [11:0] cbdata_r;
+	
+	assign CBDATA = cbdata_r;
 
    // shift register
    always @(posedge FASTCLK) 
@@ -46,6 +49,10 @@ module lvds_receiver(
    // based on fizzim FSM file in src/other
    // lvsd_receiver_sm
    // start fizzim output
+
+// Created by fizzim.pl version 5.10 on 2016:07:22 at 05:25:45 (www.fizzim.com)
+
+
   // state bits
   parameter 
   init       = 3'b000, // extra=00 WENABLE=0 
@@ -93,7 +100,7 @@ module lvds_receiver(
   assign WENABLE = state[0];
 
   // sequential always block
-  always @(posedge fastclk) begin
+  always @(posedge FASTCLK) begin
     if (!RESET_n)
       state <= init;
     else
@@ -101,20 +108,20 @@ module lvds_receiver(
   end
 
   // datapath sequential always block
-  always @(posedge fastclk) begin
+  always @(posedge FASTCLK) begin
     if (!RESET_n) begin
       // Warning R18: No reset value set for datapath output address.   Assigning a reset value of 8'h00 based on value in reset state init 
       address <= 8'h00;
-      // Warning R18: No reset value set for datapath output cbdata.   Assigning a reset value of 12'h000 based on value in reset state init 
-      cbdata <= 12'h000;
+      // Warning R18: No reset value set for datapath output cbdata_r.   Assigning a reset value of 12'h000 based on value in reset state init 
+      cbdata_r <= 12'h000;
     end
     else begin
       address <= 8'h00; // default
-      cbdata <= 12'h000; // default
+      cbdata_r <= 12'h000; // default
       case (nextstate)
         wait4data : begin
           address <= address + 8'h01;
-          cbdata <= lvds_sr;
+          cbdata_r <= lvds_sr;
         end
       endcase
     end

@@ -34,7 +34,7 @@ module bc_counter
         if ( RST ) begin
             BC_reg <= 0;
         end else begin
-            BC_reg <= BC_reg + 1;
+            BC_reg <= BC_reg + 1'b1;
         end 
     end
     assign BC = BC_reg;

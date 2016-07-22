@@ -47,7 +47,7 @@
    wire [WIDTH-1:0] 	 cbdata;
    
 
-   lvdsreceiver receiver_inst(
+   lvds_receiver receiver_inst(
 			      .sysclk(CLK),
 			      .DATA(adcdata_p),
 			      .FRAME(adc_frame),
@@ -55,7 +55,7 @@
 			      .CBDATA(cbdata),
 			      //.CBADDRESS(), // not used right now
 			      .WENABLE(WR_ENABLE_LVDS),
-			      .RESET_N(~RESET)
+			      .RESET_n(~RESET)
 			      );
    
    
@@ -68,7 +68,7 @@
 				 .din(cbdata),
 				 .aout(RD_ADDR),
 				 .dout(DOUT));
-   defparam    ringbuffer_inst0.SIZE = 11; // 2^SIZE ringbuffer size
+   defparam    ringbuffer_inst0.SIZE = SIZE; // 2^SIZE ringbuffer size
    defparam    ringbuffer_inst0.WIDTH = WIDTH;
    
    wire 		 RO_DONE_n;

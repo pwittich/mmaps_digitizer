@@ -1,4 +1,4 @@
-## File last modified by Fizzim: 4:17:48 AM on 7/22/16
+## File last modified by Fizzim: 5:28:49 AM on 7/22/16
 <version>
    14.02.26
 </version>
@@ -65,7 +65,7 @@
             ABS
             </status>
          <value>
-         fastclk
+         FASTCLK
             <status>
             GLOBAL_VAR
             </status>
@@ -624,7 +624,7 @@
          -1
          </page>
       </address>
-      <cbdata>
+      <cbdata_r>
             <status>
             GLOBAL_FIXED
             </status>
@@ -679,7 +679,7 @@
          <page>
          -1
          </page>
-      </cbdata>
+      </cbdata_r>
    </outputs>
    <state>
       <name>
@@ -850,7 +850,7 @@
          -1
          </page>
       </address>
-      <cbdata>
+      <cbdata_r>
             <status>
             GLOBAL_FIXED
             </status>
@@ -905,7 +905,7 @@
          <page>
          -1
          </page>
-      </cbdata>
+      </cbdata_r>
    </state>
    <trans>
       <name>
@@ -1250,7 +1250,7 @@ fzm_globalTable
          1
          </page>
       </address>
-      <cbdata>
+      <cbdata_r>
             <status>
             GLOBAL_FIXED
             </status>
@@ -1305,7 +1305,7 @@ fzm_globalTable
          <page>
          1
          </page>
-      </cbdata>
+      </cbdata_r>
    </attributes>
    <x0>
    368
@@ -1501,7 +1501,7 @@ fzm_globalTable
          1
          </page>
       </address>
-      <cbdata>
+      <cbdata_r>
             <status>
             GLOBAL_FIXED
             </status>
@@ -1556,7 +1556,7 @@ fzm_globalTable
          <page>
          1
          </page>
-      </cbdata>
+      </cbdata_r>
    </attributes>
    <x0>
    600
@@ -1752,7 +1752,7 @@ fzm_globalTable
          1
          </page>
       </address>
-      <cbdata>
+      <cbdata_r>
             <status>
             GLOBAL_FIXED
             </status>
@@ -1807,7 +1807,7 @@ fzm_globalTable
          <page>
          1
          </page>
-      </cbdata>
+      </cbdata_r>
    </attributes>
    <x0>
    383
@@ -2003,7 +2003,7 @@ fzm_globalTable
          1
          </page>
       </address>
-      <cbdata>
+      <cbdata_r>
             <status>
             GLOBAL_FIXED
             </status>
@@ -2058,7 +2058,7 @@ fzm_globalTable
          <page>
          1
          </page>
-      </cbdata>
+      </cbdata_r>
    </attributes>
    <x0>
    680
