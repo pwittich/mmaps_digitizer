@@ -12,3 +12,5 @@ Directory structure:
    |---other
    |---sim
 ```
+
+Quartus II project is in prj/altera/maaps_digi.qsf.
