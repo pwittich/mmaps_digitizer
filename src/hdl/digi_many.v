@@ -43,17 +43,17 @@
       for (i=0;i<CHAN;i=i+1) 
         begin : channel_gen
            single_channel sc(
-			     .CLK(CLK),
-			     .RESET(RESET),
-			     .DAVAIL(DAVAIL[i]),
-			     .adcdata_p(adcdata_p[i]),
-				  .adc_fastclk(adc_clk),
+			     .clk(CLK),
+			     .reset(RESET),
+			     .adc_data_ready(DAVAIL[i]),
+			     .adc_data_p(adcdata_p[i]),
+				  .adc_fast_clk(adc_clk),
 				  .adc_frame(adc_frame),
-			     .howmany(howmany),
+			     .how_many(howmany),
 			     .offset(offset),
-			     .rd_request(RD_REQUEST[i]),
-			     .TRIGGER(TRIGGER[i]),
-			     .DOUT(DOUT_F[(i*WIDTH+(WIDTH-1)):i*WIDTH])
+			     .read_request(RD_REQUEST[i]),
+			     .trigger(TRIGGER[i]),
+			     .data_out(DOUT_F[(i*WIDTH+(WIDTH-1)):i*WIDTH])
 			     );
         end // for (i=0;i<CHAN;i=i+1)
    endgenerate

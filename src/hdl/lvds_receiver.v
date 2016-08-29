@@ -13,12 +13,12 @@ module lvds_receiver(
 		     output wire [7:0] CBADDRESS,
 		     output wire WENABLE
 		     );
-   wire 			 doh, dol;
-   reg [11:0] 			 lvds_sr;
-   wire 			 LATCHFRAME, LATCHFRAME1;
-   wire [11:0] 			 lvds_rx;
-   reg [7:0] 			 address;
-	reg [11:0] cbdata_r;
+   wire 			 	doh, dol;
+   reg 	[11:0] 	lvds_sr;
+   wire 			 	LATCHFRAME, LATCHFRAME1;
+   wire 	[11:0] 	lvds_rx;
+   reg 	[7:0] 	address;
+	reg 	[11:0] 	cbdata_r;
 	
 	assign CBDATA = cbdata_r;
 
