@@ -147,9 +147,9 @@
 	reg [4:0] rst_cnt; 
 	initial rst_cnt = 0;
 	always @(posedge sysclk ) begin
-		if ( rst_cnt < 31 )
+		if ( rst_cnt < 5'd31 )
 			rst_cnt <= rst_cnt + 5'b1;
-		if ( rst_cnt < 31) 
+		if ( rst_cnt < 5'd31) 
 			rst = 1;
 		else
 			rst = 0;
