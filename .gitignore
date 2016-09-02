@@ -5,6 +5,7 @@ project_1
 *.str
 *~
 *.bak
+*.bak*
 
 # Object files
 *.o
@@ -39,4 +40,5 @@ project_1
 # Debug files
 *.dSYM/
 
-
+# incremental build directories
+incremental_db
