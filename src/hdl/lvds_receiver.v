@@ -23,8 +23,8 @@ module lvds_receiver(
 	assign CBDATA = cbdata_r;
 
    // shift register
-   always @(posedge FASTCLK) 
-      lvds_sr <= { lvds_sr[9:0], doh, dol};
+   always @(negedge FASTCLK) 
+      lvds_sr <= { lvds_sr[9:0], dol,doh};
 
    // DDR input component; takes ADC input
    altddio_in	ALTDDIO_IN_component (
@@ -100,7 +100,7 @@ module lvds_receiver(
   assign WENABLE = state[0];
 
   // sequential always block
-  always @(posedge FASTCLK) begin
+  always @(negedge FASTCLK) begin
     if (!RESET_n)
       state <= init;
     else
