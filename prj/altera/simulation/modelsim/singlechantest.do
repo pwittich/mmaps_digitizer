@@ -88,9 +88,17 @@ add wave -position end  sim:/single_channel/ringbuffer_inst0/clk
 
 
 #SET UP WAVES
+# keep track of the three clocks we have
+# system clock - in ps
+set clkperiod 18000
+# this is the ADC clock; currenly running 6x faster than the system clock
+set fastclkperiod [ expr $clkperiod / 6 ]
+# since we send data on each edge, we need the ddrfastclkperiod here
+set ddrfastclkperiod [ expr $fastclkperiod / 2 ]
+
 
 #set system clock: 50MHz => Set Period to be 18ns to work with adc_fast_clk
-force -freeze sim:/single_channel/clk 1 0, 0 {9000 ps} -r 18ns
+force -freeze sim:/single_channel/clk 1 0, 0 [ expr $clkperiod / 2 ] -r $clkperiod
 
 #drive reset high for 5 clock cycles
 force -drive sim:/single_channel/reset 0 0, 1 10ns, 0 110ns
@@ -101,9 +109,9 @@ force -drive sim:/single_channel/how_many 00001111 0
 force -drive sim:/single_channel/offset 00000000 0
 
 #set up adc_frame according to Figure 6 in MAXIM19527 Datasheet
-#force -freeze sim:/single_channel/adc_frame 1 9.5ns, 0 {14000 ps} -r 18ns
-force -drive sim:/single_channel/adc_frame 0,0
-force -freeze sim:/single_channel/adc_frame 1 9ns, 0 {14000 ps} -r 18ns
+# set up the frame on the falling edge of sysclock with a 25% duty cycle
+# same frequency as the sysclock
+force -drive sim:/single_channel/adc_frame 0 0, 1 [ expr $clkperiod / 2], 0 [ expr $clkperiod *.75 ] -r $clkperiod
 
 #let adc_data be all ones for now - 
 #delay must match (adc_frame delay + 8*18ns) = 8.5 clk cycle data latency
@@ -144,7 +152,7 @@ while { $i < 20 } {
 #set adc_fast_clock : 50 * 6 = 300 MHz => Approximate by period = 3ns
 #delay is set according to Figure 6 in MAXIM19527 Datasheet
 #force -freeze sim:/single_channel/adc_fast_clk 1 1.25ns, 0 {2750 ps} -r 3ns
-force -freeze sim:/single_channel/adc_fast_clk 1 0, 0 1.5ns -r 3ns
+force -freeze sim:/single_channel/adc_fast_clk 0 1, 1 1.5ns -r 3ns
 
 #============================DOUBIOUS ASSUMPTIONS====================================
 #assume data_ready goes high the same time ADC starts giving data

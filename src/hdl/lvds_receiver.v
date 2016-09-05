@@ -23,8 +23,8 @@ module lvds_receiver(
 	assign CBDATA = cbdata_r;
 
    // shift register
-   always @(negedge FASTCLK) 
-      lvds_sr <= { lvds_sr[9:0], dol,doh};
+   always @(negedge FASTCLK) 	
+		lvds_sr <= { doh, dol, lvds_sr[11:2]};
 
    // DDR input component; takes ADC input
    altddio_in	ALTDDIO_IN_component (
