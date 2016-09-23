@@ -7,7 +7,11 @@
 // that it has new data on dout. On the falling edges of the clock, it
 // shifts out the data that was provided by din at the beginning of
 // the transmission."
-module spi_slave(
+
+// adapted to have variable width wordsize set by a parameter
+module spi_slave
+#(parameter WORDSIZE=8)
+(
     input clk,
     input rst,
     input ss, // ACTIVE LOW
@@ -15,18 +19,19 @@ module spi_slave(
     output miso,
     input sck,
     output done,
-    input [7:0] din,
-    output [7:0] dout
+    input [WORDSIZE-1:0] din,
+    output [WORDSIZE-1:0] dout
   );
    
+  localparam log2_WORDSIZE = $clog2(WORDSIZE);
   reg mosi_d, mosi_q;
   reg ss_d, ss_q;
   reg sck_d, sck_q;
   reg sck_old_d, sck_old_q;
-  reg [7:0] data_d, data_q;
+  reg [WORDSIZE-1:0] data_d, data_q;
   reg done_d, done_q;
   reg [2:0] bit_ct_d, bit_ct_q;
-  reg [7:0] dout_d, dout_q;
+  reg [WORDSIZE-1:0] dout_d, dout_q;
   reg miso_d, miso_q;
    
   assign miso = miso_q;
@@ -45,20 +50,20 @@ module spi_slave(
     dout_d = dout_q;
      
     if (ss_q) begin                           // if slave select is high (deselcted)
-      bit_ct_d = 3'b0;                        // reset bit counter
+      bit_ct_d = {log2_WORDSIZE{1'b0}};       // reset bit counter
       data_d = din;                           // read in data
-      miso_d = data_q[7];                     // output MSB
+      miso_d = data_q[WORDSIZE-1];                     // output MSB
     end else begin                            // else slave select is low (selected)
       if (!sck_old_q && sck_q) begin          // rising edge
-        data_d = {data_q[6:0], mosi_q};       // read data in and shift
+        data_d = {data_q[WORDSIZE-2:0], mosi_q};       // read data in and shift
         bit_ct_d = bit_ct_q + 1'b1;           // increment the bit counter
-        if (bit_ct_q == 3'b111) begin         // if we are on the last bit
-          dout_d = {data_q[6:0], mosi_q};     // output the byte
+        if (bit_ct_q == {log2_WORDSIZE{1'b1}}) begin         // if we are on the last bit
+          dout_d = {data_q[WORDSIZE-2:0], mosi_q};     // output the data
           done_d = 1'b1;                      // set transfer done flag
-          data_d = din;                       // read in new byte
+          data_d = din;                       // read in new data
         end
       end else if (sck_old_q && !sck_q) begin // falling edge
-        miso_d = data_q[7];                   // output MSB
+        miso_d = data_q[WORDSIZE-1];                   // output MSB
       end
     end
   end
@@ -66,8 +71,8 @@ module spi_slave(
   always @(posedge clk) begin
     if (rst) begin
       done_q <= 1'b0;
-      bit_ct_q <= 3'b0;
-      dout_q <= 8'b0;
+      bit_ct_q <= {log2_WORDSIZE{1'b0}};
+      dout_q <= {WORDSIZE{1'b0}};
       miso_q <= 1'b1;
     end else begin
       done_q <= done_d;

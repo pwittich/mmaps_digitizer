@@ -251,6 +251,8 @@ set_instance_assignment -name IO_STANDARD LVDS -to adcdata_p[14]
 set_instance_assignment -name IO_STANDARD LVDS -to adcdata_p[15]
 set_global_assignment -name ALLOW_POWER_UP_DONT_CARE ON
 set_global_assignment -name SYNTH_TIMING_DRIVEN_SYNTHESIS ON
+set_global_assignment -name VERILOG_FILE ../../src/hdl/spi_slave.v
+set_global_assignment -name VHDL_FILE ../../src/hdl/lvdsreceiver.vhd
 set_global_assignment -name QIP_FILE fifo.qip
 set_global_assignment -name VERILOG_FILE fifo.v
 set_global_assignment -name VERILOG_FILE lvds_tx.v

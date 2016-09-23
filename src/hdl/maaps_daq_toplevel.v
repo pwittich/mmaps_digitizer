@@ -25,6 +25,7 @@
 			    spi_cs,
 			    spi_sclk,
 			    spi_data_in,
+			    spi_data_out,
 			    PMT_trigger, // external trigger - how to input? not in the SDC file now
 			    adcdata_p,
 			    TDC,
@@ -34,7 +35,6 @@
 			    ADCCLK2_p,
 			    L1,
 			    L0,
-			    spi_data_out,
 			    ADC_SDIO1,
 			    Z0,
 			    Z0_FRAME,
@@ -142,6 +142,39 @@
 //				 .O_CLK(Z0_CLK)
 //				 );
    // synthesis read_comments_as_HDL off
+
+
+
+	// spi slave for ZYNQ communications
+	localparam ZSPI_WORDSIZE = 8;
+	wire SPI_done;
+	wire [ZSPI_WORDSIZE-1:0] SPI_DIN;
+	wire [ZSPI_WORDSIZE-1:0] SPI_DOUT;
+	
+	// hack for now
+	wire done;
+	
+	reg [ZSPI_WORDSIZE-1:0] spi_q;
+
+	spi_slave #(.WORDSIZE(ZSPI_WORDSIZE)) spi_slave_inst(
+		  .clk(sysclk),
+        .rst(rst),
+        .ss(spi_cs), // ACTIVE LOW, input from master
+        .mosi(spi_data_in), // MOSi
+        .miso(spi_data_out), // MISO
+        .sck(spi_sclk),  // 
+        .done(done),
+        .din(SPI_DIN),
+        .dout(SPI_DOUT)
+		);
+	always @(posedge sysclk) begin
+		if (done) begin
+			spi_q <= SPI_DOUT;
+		end
+	end
+	assign SPI_DIN = spi_q;	
+	
+
    
 	// self-reset on startup for now. This is a hack.
 	reg [4:0] rst_cnt; 
@@ -149,7 +182,7 @@
 	always @(posedge sysclk ) begin
 		if ( rst_cnt < 5'd31 )
 			rst_cnt <= rst_cnt + 5'b1;
-		if ( rst_cnt < 5'd31) 
+		if ( rst_cnt < 5'd25) 
 			rst = 1;
 		else
 			rst = 0;

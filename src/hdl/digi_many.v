@@ -6,7 +6,7 @@
   // contains the ADC input, a circular buffer, and logic to
   // send the data out to the ZYNQ
   module digi_many
-    #(parameter SIZE=8, WIDTH=12, CHAN=8)
+    #(parameter SIZE=8, WIDTH=12, CHAN=1)
    (
     input wire  RST,
     input wire  CK50,
