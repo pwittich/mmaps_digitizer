@@ -24,7 +24,7 @@
 
 
   module single_channel
-    #(parameter SIZE=8, WIDTH=12)
+    #(parameter SIZE=12, WIDTH=12)
    (
     input wire 	clk,
     input wire 	reset,

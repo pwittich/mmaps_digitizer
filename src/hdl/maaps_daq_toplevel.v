@@ -59,7 +59,13 @@
    output wire 	     L0;
    output wire 	     spi_data_out;
    inout wire 	     ADC_SDIO1;
-	reg rst;
+
+   output wire [1:0] Z0;
+   output wire 	     Z0_FRAME;
+   output wire 	     Z0_CLK;
+
+   
+   reg 		     rst;
 
    // input clock - 50 MHz 
    wire 	     sysclk;
@@ -77,27 +83,29 @@
 
    // ugh
 
-// // hard-wired for now
-//   // SPI controller to configure the external ADCs
+   // // hard-wired for now
+   //   // SPI controller to configure the external ADCs
    // synthesis read_comments_as_HDL on
-//   initial adc_mode = 8'h09;
-//   adc_spimaster adc_spimaster_inst(
-//				    .sys_clk(sysclk),
-//				    .reset_n(~rst),
-//      
-//				    .adc_sclk(ADC_SCLK1),
-//				    .adc_sdio(ADC_SDIO1),
-//				    .adc_cs(ADC_nCS1),
-//      
-//				    .adc_flag(adc_flag),
-//				    .adc_mode(adc_mode),
-//				    .adc_ready(adc_ready)
-//				    );
-//
-//   
+   //   initial adc_mode = 8'h09;
+   //   adc_spimaster adc_spimaster_inst(
+   //				    .sys_clk(sysclk),
+   //				    .reset_n(~rst),
+   //      
+   //				    .adc_sclk(ADC_SCLK1),
+   //				    .adc_sdio(ADC_SDIO1),
+   //				    .adc_cs(ADC_nCS1),
+   //      
+   //				    .adc_flag(adc_flag),
+   //				    .adc_mode(adc_mode),
+   //				    .adc_ready(adc_ready)
+   //				    );
+   //
+   //   
    // synthesis read_comments_as_HDL off
 
-   
+   wire 	     fifo_empty;
+   wire [7:0]	     offset;
+   wire [7:0] 	     howmany;
    // module to contain the input from the digitizer channels.
    // configurable how many it controls by the CHAN variable
    // howmany, offset should be made configurable - hardwired for now
@@ -110,8 +118,9 @@
 					.adcdata_p(adcdata_p), 
 					.DOUT(dout), // output to remote
 					.ZYNQ_RD_REQUEST(1),
-					.howmany(8'hFF), // configuration
-					.offset(8'h00), // configuration
+					.GLBL_EMPTY(fifo_empty),
+					.howmany(howmany), // configuration
+					.offset(offset), // configuration
 					.DAVAIL(TDC[7:0]), // FIXME
 					.TRIGGER(TDC[16:8]) // FIXME -- replace with PMT_trigger?
 					);
@@ -126,68 +135,100 @@
    assign L0 = dcount[26]; // should be about 1 Hz
    assign L1 = dcount[25]; // should be 2x as fast as L1
    
-   output wire [1:0] Z0;
-   output wire 	     Z0_FRAME;
-   output wire 	     Z0_CLK;
 
-//
-//   // LVDS output to the ZYNQ
-//   // the Z0 clock is the slow clock; its leading edge indicates the
-//   // MSB of the serial output stream.
+   //
+   //   // LVDS output to the ZYNQ
+   //   // the Z0 clock is the slow clock; its leading edge indicates the
+   //   // MSB of the serial output stream.
    // synthesis read_comments_as_HDL on
-//   lvds_transmitter lvds_tx_inst(
-//				 .DIN(dout), 
-//				 .CLK(sysclk),
-//				 .O_D(Z0),
-//				 .O_CLK(Z0_CLK)
-//				 );
+   //   lvds_transmitter lvds_tx_inst(
+   //				 .DIN(dout), 
+   //				 .CLK(sysclk),
+   //				 .O_D(Z0),
+   //				 .O_CLK(Z0_CLK)
+   //				 );
    // synthesis read_comments_as_HDL off
 
 
 
-	// spi slave for ZYNQ communications
-	localparam ZSPI_WORDSIZE = 8;
-	wire SPI_done;
-	wire [ZSPI_WORDSIZE-1:0] SPI_DIN;
-	wire [ZSPI_WORDSIZE-1:0] SPI_DOUT;
-	
-	// hack for now
-	wire done;
-	
-	reg [ZSPI_WORDSIZE-1:0] spi_q;
+   // spi slave for ZYNQ communications
+   localparam ZSPI_WORDSIZE = 8;
+   wire 	     SPI_done;
+   wire [ZSPI_WORDSIZE-1:0] SPI_DIN;
+   wire [ZSPI_WORDSIZE-1:0] SPI_DOUT;
+   wire 		    done;
 
-	spi_slave #(.WORDSIZE(ZSPI_WORDSIZE)) spi_slave_inst(
-		  .clk(sysclk),
-        .rst(rst),
-        .ss(spi_cs), // ACTIVE LOW, input from master
-        .mosi(spi_data_in), // MOSi
-        .miso(spi_data_out), // MISO
-        .sck(spi_sclk),  // 
-        .done(done),
-        .din(SPI_DIN),
-        .dout(SPI_DOUT)
-		);
-	always @(posedge sysclk) begin
-		if (done) begin
-			spi_q <= SPI_DOUT;
-		end
+   // RX: most recent received message
+   // TX: next word to be sent
+   reg [ZSPI_WORDSIZE-1:0]  spi_rx_q, spi_tx_q;
+
+
+   spi_slave #(.WORDSIZE(ZSPI_WORDSIZE)) spi_slave_inst(
+							.clk(sysclk),
+							.rst(rst),
+							.ss(spi_cs), // ACTIVE LOW, input from master
+							.mosi(spi_data_in), // MOSI
+							.miso(spi_data_out), // MISO
+							.sck(spi_sclk),  // 
+							.done(done),
+							.din(SPI_DIN),
+							.dout(SPI_DOUT)
+							);
+   // 16 control registers
+   reg [ZSPI_WORDSIZE-1:0]  ctrl_regs [15:0];
+   // store SPI output into spi_rx_q
+   always @(posedge sysclk) begin
+      if ( rst == 1 ) begin
+	 spi_rx_q <= {ZSPI_WORDSIZE{1'b0}};
+      end
+      else if (done == 1 ) begin
+	 spi_rx_q <= SPI_DOUT;
+      end
+   end
+
+   assign howmany = ctrl_regs[1] ;
+   assign offset = ctrl_regs[2] ;
+
+   // if write bit is not set, copy value of ctrl_regs to spi_tx_q
+   // should this also look at 'done'?
+   // hack: only look at bottom nibble
+   always @(posedge sysclk) begin
+      if ( spi_rx_q[ZSPI_WORDSIZE-1] == 0 ) begin // read enable
+	 if ( spi_rx_q[4] == 0 ) begin // control registers
+	    spi_tx_q <= ctrl_regs[spi_rx_q[3:0]];
+	 end 
+	 else begin // FIFO - just read it for now (should check data available)
+	    if ( fifo_empty != 0 ) begin // fifo is not empty
+	       spi_tx_q <= dout[ZSPI_WORDSIZE-1:0];
+	    end else begin
+	       spi_tx_q <= 12'haaa; //default empty value
+	    end
+	 end
+      end
+      else // write-enable
+	if ( spi_rx_q[4] == 0 ) begin
+	   ctrl_regs[spi_rx_q[3:0]] <= SPI_DOUT;
 	end
-	assign SPI_DIN = spi_q;	
-	
+   end // always @ (posedge sysclk)
 
    
-	// self-reset on startup for now. This is a hack.
-	reg [4:0] rst_cnt; 
-	initial rst_cnt = 0;
-	always @(posedge sysclk ) begin
-		if ( rst_cnt < 5'd31 )
-			rst_cnt <= rst_cnt + 5'b1;
-		if ( rst_cnt < 5'd25) 
-			rst = 1;
-		else
-			rst = 0;
-			
-	end
-	
+      
+   assign SPI_DIN = spi_tx_q;
+   
+
+   //--------------------------------------------------
+   // self-reset on startup for now. This is a hack.
+   reg [4:0] rst_cnt; 
+   initial rst_cnt = 0;
+   always @(posedge sysclk ) begin
+      if ( rst_cnt < 5'd31 )
+	rst_cnt <= rst_cnt + 5'b1;
+      if ( rst_cnt < 5'd25) 
+	rst = 1;
+      else
+	rst = 0;
+      
+   end
+   
 endmodule
 

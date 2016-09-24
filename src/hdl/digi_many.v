@@ -6,7 +6,7 @@
   // contains the ADC input, a circular buffer, and logic to
   // send the data out to the ZYNQ
   module digi_many
-    #(parameter SIZE=8, WIDTH=12, CHAN=1)
+    #(parameter SIZE=8, WIDTH=12, CHAN=8)
    (
     input wire  RST,
     input wire  CK50,
@@ -28,17 +28,17 @@
 
 
 
-   wire 		  CLK;
+   wire 	CLK;
    //wire [SIZE-1:0] 	  RD_ADDR;
-   wire 		  RESET;
+   wire 	RESET;
    //wire 		  RO_ENABLE;
    //wire 		  WR_ENABLE;
    
    // generate channels for output
-   wire [WIDTH*CHAN-1:0]  DOUT_F; // output from each channel
-   wire [CHAN-1:0] RD_REQUEST; // readout  request to each channel
+   wire [WIDTH*CHAN-1:0] DOUT_F; // output from each channel
+   wire [CHAN-1:0] 	 RD_REQUEST; // readout  request to each channel
    // channels
-   genvar 		  i;
+   genvar 		 i;
    generate
       for (i=0;i<CHAN;i=i+1) 
         begin : channel_gen
@@ -47,8 +47,8 @@
 			     .reset(RESET),
 			     .adc_data_ready(DAVAIL[i]),
 			     .adc_data_p(adcdata_p[i]),
-				  .adc_fast_clk(adc_clk),
-				  .adc_frame(adc_frame),
+			     .adc_fast_clk(adc_clk),
+			     .adc_frame(adc_frame),
 			     .how_many(howmany),
 			     .offset(offset),
 			     .read_request(RD_REQUEST[i]),
@@ -75,7 +75,7 @@
        3'b110: DOUT_i = DOUT_F[83:72];
        3'b111: DOUT_i = DOUT_F[95:84];
      endcase
-
+   
    wire       WR_EN;
    wire       SEL_ONE;
    demux #(.N(8)) dm1(.in(SEL_ONE), .sel(SEL),.out(RD_REQUEST));
@@ -99,7 +99,7 @@
    // output fifo - collects data from individual channels,
    // collates to a single stream, that then gets sent to the
    // ZYNQ
-   reg [WIDTH-1:0] FIFO_DIN; 
+   reg [WIDTH-1:0]  FIFO_DIN; 
    // this is not parameterized either
    fifo fifo_inst(.clock(CLK),
 		  .sclr(RESET),
@@ -111,18 +111,17 @@
 		  .empty(GLBL_EMPTY)
 		  );
    // Bunch counter - to tag the data for timing and later identification.
-   // not clear if this is the right number of bits.
-   wire [11:0] BC;
-   bc_counter bc_counter_inst(.CLK(CLK),
-    .RST(RESET),
-    .BC(BC)
-    );
-   wire BCSEL; 
+   // not clear if this is the right number of bits. Needs to fit into fifo?
+   localparam BC_BITS=12;
+   wire [BC_BITS-1:0] 	    BC;
+   bc_counter #(.BITS(BC_BITS)) bc_counter_inst(.CLK(CLK), .RST(RESET), .BC(BC) );
+   
+   wire 	    BCSEL; 
    assign BCSEL = WR_EN & ~SEL_ONE; 
    always @(BCSEL,SEL,BC,DOUT_i) 
      case (BCSEL)
-        1'b0: FIFO_DIN = DOUT_i; // width needs to be checked
-        1'b1: FIFO_DIN = {1'b0,SEL, BC};
+       1'b0: FIFO_DIN = DOUT_i; // width needs to be checked
+       1'b1: FIFO_DIN = {1'b0,SEL, BC};
      endcase
 
 
