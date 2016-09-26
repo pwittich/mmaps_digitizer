@@ -1,4 +1,4 @@
-## File last modified by Fizzim: 9:50:22 AM on 9/26/16
+## File last modified by Fizzim: 1:04:38 PM on 9/26/16
 <version>
    14.02.26
 </version>
@@ -27,7 +27,7 @@
             </status>
          </type>
          <comment>
-         
+         State machine for SPI slave on CycloneIII
             <status>
             GLOBAL_VAR
             </status>
@@ -230,7 +230,7 @@
       </reset_state>
    </machine>
    <inputs>
-      <CMD>
+      <CMD[3:0]>
             <status>
             GLOBAL_FIXED
             </status>
@@ -285,7 +285,7 @@
          <page>
          -1
          </page>
-      </CMD>
+      </CMD[3:0]>
       <DONE>
             <status>
             GLOBAL_FIXED
@@ -454,7 +454,7 @@
          -1
          </page>
       </clk>
-      <RD>
+      <FIFO_PK_SZ[7:0]>
             <status>
             GLOBAL_FIXED
             </status>
@@ -477,7 +477,7 @@
             </status>
          </type>
          <comment>
-         
+          number of words to send
             <status>
             GLOBAL_VAR
             </status>
@@ -509,65 +509,177 @@
          <page>
          -1
          </page>
-      </RD>
-      <NF>
-            <status>
-            GLOBAL_FIXED
-            </status>
-         <value>
-         
-            <status>
-            GLOBAL_VAR
-            </status>
-         </value>
-         <vis>
-         0
-            <status>
-            GLOBAL_VAR
-            </status>
-         </vis>
-         <type>
-         
-            <status>
-            GLOBAL_VAR
-            </status>
-         </type>
-         <comment>
-         
-            <status>
-            GLOBAL_VAR
-            </status>
-         </comment>
-         <color>
-         -16777216
-            <status>
-            GLOBAL_VAR
-            </status>
-         </color>
-         <useratts>
-         
-            <status>
-            GLOBAL_VAR
-            </status>
-         </useratts>
-         <resetval>
-         
-            <status>
-            GLOBAL_VAR
-            </status>
-         </resetval>
-         <x2Obj>
-         0
-         </x2Obj>
-         <y2Obj>
-         0
-         </y2Obj>
-         <page>
-         -1
-         </page>
-      </NF>
+      </FIFO_PK_SZ[7:0]>
    </inputs>
    <outputs>
+      <rd_select>
+            <status>
+            GLOBAL_FIXED
+            </status>
+         <value>
+         0
+            <status>
+            GLOBAL_VAR
+            </status>
+         </value>
+         <vis>
+         2
+            <status>
+            GLOBAL_VAR
+            </status>
+         </vis>
+         <type>
+         reg
+            <status>
+            GLOBAL_VAR
+            </status>
+         </type>
+         <comment>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </comment>
+         <color>
+         -16777216
+            <status>
+            GLOBAL_VAR
+            </status>
+         </color>
+         <useratts>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </useratts>
+         <resetval>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </resetval>
+         <x2Obj>
+         0
+         </x2Obj>
+         <y2Obj>
+         0
+         </y2Obj>
+         <page>
+         -1
+         </page>
+      </rd_select>
+      <wr_select>
+            <status>
+            GLOBAL_FIXED
+            </status>
+         <value>
+         0
+            <status>
+            GLOBAL_VAR
+            </status>
+         </value>
+         <vis>
+         2
+            <status>
+            GLOBAL_VAR
+            </status>
+         </vis>
+         <type>
+         reg
+            <status>
+            GLOBAL_VAR
+            </status>
+         </type>
+         <comment>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </comment>
+         <color>
+         -16777216
+            <status>
+            GLOBAL_VAR
+            </status>
+         </color>
+         <useratts>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </useratts>
+         <resetval>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </resetval>
+         <x2Obj>
+         0
+         </x2Obj>
+         <y2Obj>
+         0
+         </y2Obj>
+         <page>
+         -1
+         </page>
+      </wr_select>
+      <FIFO_CNT[7:0]>
+            <status>
+            GLOBAL_FIXED
+            </status>
+         <value>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </value>
+         <vis>
+         2
+            <status>
+            GLOBAL_VAR
+            </status>
+         </vis>
+         <type>
+         flag
+            <status>
+            GLOBAL_VAR
+            </status>
+         </type>
+         <comment>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </comment>
+         <color>
+         -16777216
+            <status>
+            GLOBAL_VAR
+            </status>
+         </color>
+         <useratts>
+         suppress_portlist
+            <status>
+            GLOBAL_VAR
+            </status>
+         </useratts>
+         <resetval>
+         8'h00
+            <status>
+            GLOBAL_VAR
+            </status>
+         </resetval>
+         <x2Obj>
+         0
+         </x2Obj>
+         <y2Obj>
+         0
+         </y2Obj>
+         <page>
+         -1
+         </page>
+      </FIFO_CNT[7:0]>
    </outputs>
    <state>
       <name>
@@ -626,6 +738,174 @@
          -1
          </page>
       </name>
+      <rd_select>
+            <status>
+            GLOBAL_FIXED
+            </status>
+         <value>
+         0
+            <status>
+            GLOBAL_VAR
+            </status>
+         </value>
+         <vis>
+         2
+            <status>
+            GLOBAL_VAR
+            </status>
+         </vis>
+         <type>
+         output
+            <status>
+            GLOBAL_VAR
+            </status>
+         </type>
+         <comment>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </comment>
+         <color>
+         -16777216
+            <status>
+            GLOBAL_VAR
+            </status>
+         </color>
+         <useratts>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </useratts>
+         <resetval>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </resetval>
+         <x2Obj>
+         0
+         </x2Obj>
+         <y2Obj>
+         0
+         </y2Obj>
+         <page>
+         -1
+         </page>
+      </rd_select>
+      <wr_select>
+            <status>
+            GLOBAL_FIXED
+            </status>
+         <value>
+         0
+            <status>
+            GLOBAL_VAR
+            </status>
+         </value>
+         <vis>
+         2
+            <status>
+            GLOBAL_VAR
+            </status>
+         </vis>
+         <type>
+         output
+            <status>
+            GLOBAL_VAR
+            </status>
+         </type>
+         <comment>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </comment>
+         <color>
+         -16777216
+            <status>
+            GLOBAL_VAR
+            </status>
+         </color>
+         <useratts>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </useratts>
+         <resetval>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </resetval>
+         <x2Obj>
+         0
+         </x2Obj>
+         <y2Obj>
+         0
+         </y2Obj>
+         <page>
+         -1
+         </page>
+      </wr_select>
+      <FIFO_CNT[7:0]>
+            <status>
+            GLOBAL_FIXED
+            </status>
+         <value>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </value>
+         <vis>
+         2
+            <status>
+            GLOBAL_VAR
+            </status>
+         </vis>
+         <type>
+         output
+            <status>
+            GLOBAL_VAR
+            </status>
+         </type>
+         <comment>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </comment>
+         <color>
+         -16777216
+            <status>
+            GLOBAL_VAR
+            </status>
+         </color>
+         <useratts>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </useratts>
+         <resetval>
+         8'h00
+            <status>
+            GLOBAL_VAR
+            </status>
+         </resetval>
+         <x2Obj>
+         0
+         </x2Obj>
+         <y2Obj>
+         0
+         </y2Obj>
+         <page>
+         -1
+         </page>
+      </FIFO_CNT[7:0]>
    </state>
    <trans>
       <name>
@@ -796,6 +1076,62 @@
          -1
          </page>
       </priority>
+      <FIFO_CNT[7:0]>
+            <status>
+            GLOBAL_FIXED
+            </status>
+         <value>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </value>
+         <vis>
+         0
+            <status>
+            GLOBAL_VAR
+            </status>
+         </vis>
+         <type>
+         output
+            <status>
+            GLOBAL_VAR
+            </status>
+         </type>
+         <comment>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </comment>
+         <color>
+         -16777216
+            <status>
+            GLOBAL_VAR
+            </status>
+         </color>
+         <useratts>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </useratts>
+         <resetval>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </resetval>
+         <x2Obj>
+         0
+         </x2Obj>
+         <y2Obj>
+         0
+         </y2Obj>
+         <page>
+         -1
+         </page>
+      </FIFO_CNT[7:0]>
    </trans>
 </globals>
 <tabs>
@@ -803,10 +1139,10 @@
 </tabs>
 ## START PREFERENCES
 <SCounter>
-4
+5
 </SCounter>
 <TCounter>
-10
+14
 </TCounter>
 <TableVis>
 true
@@ -846,10 +1182,10 @@ false
 <textObj>
 fzm_globalTable
    <x>
-   10
+   5
    </x>
    <y>
-   10
+   12
    </y>
    <page>
    1
@@ -914,18 +1250,186 @@ fzm_globalTable
          1
          </page>
       </name>
+      <rd_select>
+            <status>
+            GLOBAL_FIXED
+            </status>
+         <value>
+         0
+            <status>
+            GLOBAL_VAR
+            </status>
+         </value>
+         <vis>
+         2
+            <status>
+            GLOBAL_VAR
+            </status>
+         </vis>
+         <type>
+         output
+            <status>
+            GLOBAL_VAR
+            </status>
+         </type>
+         <comment>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </comment>
+         <color>
+         -16777216
+            <status>
+            GLOBAL_VAR
+            </status>
+         </color>
+         <useratts>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </useratts>
+         <resetval>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </resetval>
+         <x2Obj>
+         0
+         </x2Obj>
+         <y2Obj>
+         0
+         </y2Obj>
+         <page>
+         1
+         </page>
+      </rd_select>
+      <wr_select>
+            <status>
+            GLOBAL_FIXED
+            </status>
+         <value>
+         0
+            <status>
+            GLOBAL_VAR
+            </status>
+         </value>
+         <vis>
+         2
+            <status>
+            GLOBAL_VAR
+            </status>
+         </vis>
+         <type>
+         output
+            <status>
+            GLOBAL_VAR
+            </status>
+         </type>
+         <comment>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </comment>
+         <color>
+         -16777216
+            <status>
+            GLOBAL_VAR
+            </status>
+         </color>
+         <useratts>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </useratts>
+         <resetval>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </resetval>
+         <x2Obj>
+         0
+         </x2Obj>
+         <y2Obj>
+         0
+         </y2Obj>
+         <page>
+         1
+         </page>
+      </wr_select>
+      <FIFO_CNT[7:0]>
+            <status>
+            GLOBAL_FIXED
+            </status>
+         <value>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </value>
+         <vis>
+         2
+            <status>
+            GLOBAL_VAR
+            </status>
+         </vis>
+         <type>
+         output
+            <status>
+            GLOBAL_VAR
+            </status>
+         </type>
+         <comment>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </comment>
+         <color>
+         -16777216
+            <status>
+            GLOBAL_VAR
+            </status>
+         </color>
+         <useratts>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </useratts>
+         <resetval>
+         8'h00
+            <status>
+            GLOBAL_VAR
+            </status>
+         </resetval>
+         <x2Obj>
+         0
+         </x2Obj>
+         <y2Obj>
+         0
+         </y2Obj>
+         <page>
+         1
+         </page>
+      </FIFO_CNT[7:0]>
    </attributes>
    <x0>
-   332
+   500
    </x0>
    <y0>
-   116
+   297
    </y0>
    <x1>
-   462
+   630
    </x1>
    <y1>
-   246
+   427
    </y1>
    <reset>
    true
@@ -1109,6 +1613,62 @@ fzm_globalTable
          1
          </page>
       </priority>
+      <FIFO_CNT[7:0]>
+            <status>
+            GLOBAL_FIXED
+            </status>
+         <value>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </value>
+         <vis>
+         0
+            <status>
+            GLOBAL_VAR
+            </status>
+         </vis>
+         <type>
+         output
+            <status>
+            GLOBAL_VAR
+            </status>
+         </type>
+         <comment>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </comment>
+         <color>
+         -16777216
+            <status>
+            GLOBAL_VAR
+            </status>
+         </color>
+         <useratts>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </useratts>
+         <resetval>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </resetval>
+         <x2Obj>
+         0
+         </x2Obj>
+         <y2Obj>
+         0
+         </y2Obj>
+         <page>
+         1
+         </page>
+      </FIFO_CNT[7:0]>
    </attributes>
    <startState>
    IDLE
@@ -1117,28 +1677,28 @@ fzm_globalTable
    IDLE
    </endState>
    <startPtX>
-   458.0
+   626.0
    </startPtX>
    <startPtY>
-   158.0
+   339.0
    </startPtY>
    <endPtX>
-   453.0
+   621.0
    </endPtX>
    <endPtY>
-   213.0
+   394.0
    </endPtY>
    <startCtrlPtX>
-   531.0
+   699.0
    </startCtrlPtX>
    <startCtrlPtY>
-   129.0
+   310.0
    </startCtrlPtY>
    <endCtrlPtY>
-   523.0
+   691.0
    </endCtrlPtY>
    <endCtrlPtY>
-   255.0
+   436.0
    </endCtrlPtY>
    <startStateIndex>
    34
@@ -1213,18 +1773,186 @@ fzm_globalTable
          1
          </page>
       </name>
+      <rd_select>
+            <status>
+            GLOBAL_FIXED
+            </status>
+         <value>
+         1
+            <status>
+            LOCAL
+            </status>
+         </value>
+         <vis>
+         2
+            <status>
+            GLOBAL_VAR
+            </status>
+         </vis>
+         <type>
+         output
+            <status>
+            GLOBAL_VAR
+            </status>
+         </type>
+         <comment>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </comment>
+         <color>
+         -16777216
+            <status>
+            GLOBAL_VAR
+            </status>
+         </color>
+         <useratts>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </useratts>
+         <resetval>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </resetval>
+         <x2Obj>
+         0
+         </x2Obj>
+         <y2Obj>
+         0
+         </y2Obj>
+         <page>
+         1
+         </page>
+      </rd_select>
+      <wr_select>
+            <status>
+            GLOBAL_FIXED
+            </status>
+         <value>
+         0
+            <status>
+            GLOBAL_VAR
+            </status>
+         </value>
+         <vis>
+         2
+            <status>
+            GLOBAL_VAR
+            </status>
+         </vis>
+         <type>
+         output
+            <status>
+            GLOBAL_VAR
+            </status>
+         </type>
+         <comment>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </comment>
+         <color>
+         -16777216
+            <status>
+            GLOBAL_VAR
+            </status>
+         </color>
+         <useratts>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </useratts>
+         <resetval>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </resetval>
+         <x2Obj>
+         0
+         </x2Obj>
+         <y2Obj>
+         0
+         </y2Obj>
+         <page>
+         1
+         </page>
+      </wr_select>
+      <FIFO_CNT[7:0]>
+            <status>
+            GLOBAL_FIXED
+            </status>
+         <value>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </value>
+         <vis>
+         2
+            <status>
+            GLOBAL_VAR
+            </status>
+         </vis>
+         <type>
+         output
+            <status>
+            GLOBAL_VAR
+            </status>
+         </type>
+         <comment>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </comment>
+         <color>
+         -16777216
+            <status>
+            GLOBAL_VAR
+            </status>
+         </color>
+         <useratts>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </useratts>
+         <resetval>
+         8'h00
+            <status>
+            GLOBAL_VAR
+            </status>
+         </resetval>
+         <x2Obj>
+         0
+         </x2Obj>
+         <y2Obj>
+         0
+         </y2Obj>
+         <page>
+         1
+         </page>
+      </FIFO_CNT[7:0]>
    </attributes>
    <x0>
-   103
+   192
    </x0>
    <y0>
-   184
+   381
    </y0>
    <x1>
-   233
+   322
    </x1>
    <y1>
-   314
+   511
    </y1>
    <reset>
    false
@@ -1287,6 +2015,62 @@ fzm_globalTable
             </status>
          </resetval>
          <x2Obj>
+         129
+         </x2Obj>
+         <y2Obj>
+         -21
+         </y2Obj>
+         <page>
+         1
+         </page>
+      </name>
+      <rd_select>
+            <status>
+            GLOBAL_FIXED
+            </status>
+         <value>
+         0
+            <status>
+            GLOBAL_VAR
+            </status>
+         </value>
+         <vis>
+         2
+            <status>
+            GLOBAL_VAR
+            </status>
+         </vis>
+         <type>
+         output
+            <status>
+            GLOBAL_VAR
+            </status>
+         </type>
+         <comment>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </comment>
+         <color>
+         -16777216
+            <status>
+            GLOBAL_VAR
+            </status>
+         </color>
+         <useratts>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </useratts>
+         <resetval>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </resetval>
+         <x2Obj>
          0
          </x2Obj>
          <y2Obj>
@@ -1295,19 +2079,131 @@ fzm_globalTable
          <page>
          1
          </page>
-      </name>
+      </rd_select>
+      <wr_select>
+            <status>
+            GLOBAL_FIXED
+            </status>
+         <value>
+         1
+            <status>
+            LOCAL
+            </status>
+         </value>
+         <vis>
+         2
+            <status>
+            GLOBAL_VAR
+            </status>
+         </vis>
+         <type>
+         output
+            <status>
+            GLOBAL_VAR
+            </status>
+         </type>
+         <comment>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </comment>
+         <color>
+         -16777216
+            <status>
+            GLOBAL_VAR
+            </status>
+         </color>
+         <useratts>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </useratts>
+         <resetval>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </resetval>
+         <x2Obj>
+         0
+         </x2Obj>
+         <y2Obj>
+         0
+         </y2Obj>
+         <page>
+         1
+         </page>
+      </wr_select>
+      <FIFO_CNT[7:0]>
+            <status>
+            GLOBAL_FIXED
+            </status>
+         <value>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </value>
+         <vis>
+         2
+            <status>
+            GLOBAL_VAR
+            </status>
+         </vis>
+         <type>
+         output
+            <status>
+            GLOBAL_VAR
+            </status>
+         </type>
+         <comment>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </comment>
+         <color>
+         -16777216
+            <status>
+            GLOBAL_VAR
+            </status>
+         </color>
+         <useratts>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </useratts>
+         <resetval>
+         8'h00
+            <status>
+            GLOBAL_VAR
+            </status>
+         </resetval>
+         <x2Obj>
+         0
+         </x2Obj>
+         <y2Obj>
+         0
+         </y2Obj>
+         <page>
+         1
+         </page>
+      </FIFO_CNT[7:0]>
    </attributes>
    <x0>
-   260
+   378
    </x0>
    <y0>
-   322
+   549
    </y0>
    <x1>
-   390
+   508
    </x1>
    <y1>
-   452
+   679
    </y1>
    <reset>
    false
@@ -1328,7 +2224,7 @@ fzm_globalTable
             ABS
             </status>
          <value>
-         FIFO
+         FIFO_SEND
             <status>
             LOCAL
             </status>
@@ -1379,18 +2275,186 @@ fzm_globalTable
          1
          </page>
       </name>
+      <rd_select>
+            <status>
+            GLOBAL_FIXED
+            </status>
+         <value>
+         0
+            <status>
+            GLOBAL_VAR
+            </status>
+         </value>
+         <vis>
+         2
+            <status>
+            GLOBAL_VAR
+            </status>
+         </vis>
+         <type>
+         output
+            <status>
+            GLOBAL_VAR
+            </status>
+         </type>
+         <comment>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </comment>
+         <color>
+         -16777216
+            <status>
+            GLOBAL_VAR
+            </status>
+         </color>
+         <useratts>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </useratts>
+         <resetval>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </resetval>
+         <x2Obj>
+         0
+         </x2Obj>
+         <y2Obj>
+         0
+         </y2Obj>
+         <page>
+         1
+         </page>
+      </rd_select>
+      <wr_select>
+            <status>
+            GLOBAL_FIXED
+            </status>
+         <value>
+         0
+            <status>
+            GLOBAL_VAR
+            </status>
+         </value>
+         <vis>
+         2
+            <status>
+            GLOBAL_VAR
+            </status>
+         </vis>
+         <type>
+         output
+            <status>
+            GLOBAL_VAR
+            </status>
+         </type>
+         <comment>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </comment>
+         <color>
+         -16777216
+            <status>
+            GLOBAL_VAR
+            </status>
+         </color>
+         <useratts>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </useratts>
+         <resetval>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </resetval>
+         <x2Obj>
+         0
+         </x2Obj>
+         <y2Obj>
+         0
+         </y2Obj>
+         <page>
+         1
+         </page>
+      </wr_select>
+      <FIFO_CNT[7:0]>
+            <status>
+            GLOBAL_FIXED
+            </status>
+         <value>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </value>
+         <vis>
+         2
+            <status>
+            GLOBAL_VAR
+            </status>
+         </vis>
+         <type>
+         output
+            <status>
+            GLOBAL_VAR
+            </status>
+         </type>
+         <comment>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </comment>
+         <color>
+         -16777216
+            <status>
+            GLOBAL_VAR
+            </status>
+         </color>
+         <useratts>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </useratts>
+         <resetval>
+         8'h00
+            <status>
+            GLOBAL_VAR
+            </status>
+         </resetval>
+         <x2Obj>
+         0
+         </x2Obj>
+         <y2Obj>
+         0
+         </y2Obj>
+         <page>
+         1
+         </page>
+      </FIFO_CNT[7:0]>
    </attributes>
    <x0>
-   540
+   734
    </x0>
    <y0>
-   307
+   502
    </y0>
    <x1>
-   670
+   864
    </x1>
    <y1>
-   437
+   632
    </y1>
    <reset>
    false
@@ -1574,6 +2638,62 @@ fzm_globalTable
          1
          </page>
       </priority>
+      <FIFO_CNT[7:0]>
+            <status>
+            GLOBAL_FIXED
+            </status>
+         <value>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </value>
+         <vis>
+         0
+            <status>
+            GLOBAL_VAR
+            </status>
+         </vis>
+         <type>
+         output
+            <status>
+            GLOBAL_VAR
+            </status>
+         </type>
+         <comment>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </comment>
+         <color>
+         -16777216
+            <status>
+            GLOBAL_VAR
+            </status>
+         </color>
+         <useratts>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </useratts>
+         <resetval>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </resetval>
+         <x2Obj>
+         0
+         </x2Obj>
+         <y2Obj>
+         0
+         </y2Obj>
+         <page>
+         1
+         </page>
+      </FIFO_CNT[7:0]>
    </attributes>
    <startState>
    IDLE
@@ -1582,34 +2702,34 @@ fzm_globalTable
    RD
    </endState>
    <startPtX>
-   347.0
+   503.0
    </startPtX>
    <startPtY>
-   222.0
+   384.0
    </startPtY>
    <endPtX>
-   229.0
+   322.0
    </endPtX>
    <endPtY>
-   226.0
+   446.0
    </endPtY>
    <startCtrlPtX>
-   325.0
+   427.0
    </startCtrlPtX>
    <startCtrlPtY>
-   243.0
+   396.0
    </startCtrlPtY>
    <endCtrlPtY>
-   271.0
+   415.0
    </endCtrlPtY>
    <endCtrlPtY>
-   225.0
+   452.0
    </endCtrlPtY>
    <startStateIndex>
-   14
+   16
    </startStateIndex>
    <endStateIndex>
-   34
+   0
    </endStateIndex>
    <page>
    1
@@ -1808,6 +2928,62 @@ fzm_globalTable
             </status>
          </resetval>
          <x2Obj>
+         46
+         </x2Obj>
+         <y2Obj>
+         1
+         </y2Obj>
+         <page>
+         1
+         </page>
+      </priority>
+      <FIFO_CNT[7:0]>
+            <status>
+            GLOBAL_FIXED
+            </status>
+         <value>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </value>
+         <vis>
+         0
+            <status>
+            GLOBAL_VAR
+            </status>
+         </vis>
+         <type>
+         output
+            <status>
+            GLOBAL_VAR
+            </status>
+         </type>
+         <comment>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </comment>
+         <color>
+         -16777216
+            <status>
+            GLOBAL_VAR
+            </status>
+         </color>
+         <useratts>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </useratts>
+         <resetval>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </resetval>
+         <x2Obj>
          0
          </x2Obj>
          <y2Obj>
@@ -1816,7 +2992,7 @@ fzm_globalTable
          <page>
          1
          </page>
-      </priority>
+      </FIFO_CNT[7:0]>
    </attributes>
    <startState>
    IDLE
@@ -1825,28 +3001,28 @@ fzm_globalTable
    WR
    </endState>
    <startPtX>
-   385.0
+   553.0
    </startPtX>
    <startPtY>
-   245.0
+   426.0
    </startPtY>
    <endPtX>
-   357.0
+   475.0
    </endPtX>
    <endPtY>
-   330.0
+   557.0
    </endPtY>
    <startCtrlPtX>
-   385.0
+   553.0
    </startCtrlPtX>
    <startCtrlPtY>
-   257.0
+   438.0
    </startCtrlPtY>
    <endCtrlPtY>
-   362.0
+   480.0
    </endCtrlPtY>
    <endCtrlPtY>
-   322.0
+   549.0
    </endCtrlPtY>
    <startStateIndex>
    10
@@ -2060,36 +3236,92 @@ fzm_globalTable
          1
          </page>
       </priority>
+      <FIFO_CNT[7:0]>
+            <status>
+            GLOBAL_FIXED
+            </status>
+         <value>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </value>
+         <vis>
+         0
+            <status>
+            GLOBAL_VAR
+            </status>
+         </vis>
+         <type>
+         output
+            <status>
+            GLOBAL_VAR
+            </status>
+         </type>
+         <comment>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </comment>
+         <color>
+         -16777216
+            <status>
+            GLOBAL_VAR
+            </status>
+         </color>
+         <useratts>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </useratts>
+         <resetval>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </resetval>
+         <x2Obj>
+         0
+         </x2Obj>
+         <y2Obj>
+         0
+         </y2Obj>
+         <page>
+         1
+         </page>
+      </FIFO_CNT[7:0]>
    </attributes>
    <startState>
    IDLE
    </startState>
    <endState>
-   FIFO
+   FIFO_SEND
    </endState>
    <startPtX>
-   446.0
+   614.0
    </startPtX>
    <startPtY>
-   222.0
+   403.0
    </startPtY>
    <endPtX>
-   572.0
+   766.0
    </endPtX>
    <endPtY>
-   315.0
+   510.0
    </endPtY>
    <startCtrlPtX>
-   458.0
+   660.0
    </startCtrlPtX>
    <startCtrlPtY>
-   228.0
+   422.0
    </startCtrlPtY>
    <endCtrlPtY>
-   570.0
+   757.0
    </endCtrlPtY>
    <endCtrlPtY>
-   297.0
+   453.0
    </endCtrlPtY>
    <startStateIndex>
    4
@@ -2303,6 +3535,62 @@ fzm_globalTable
          1
          </page>
       </priority>
+      <FIFO_CNT[7:0]>
+            <status>
+            GLOBAL_FIXED
+            </status>
+         <value>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </value>
+         <vis>
+         0
+            <status>
+            GLOBAL_VAR
+            </status>
+         </vis>
+         <type>
+         output
+            <status>
+            GLOBAL_VAR
+            </status>
+         </type>
+         <comment>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </comment>
+         <color>
+         -16777216
+            <status>
+            GLOBAL_VAR
+            </status>
+         </color>
+         <useratts>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </useratts>
+         <resetval>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </resetval>
+         <x2Obj>
+         0
+         </x2Obj>
+         <y2Obj>
+         0
+         </y2Obj>
+         <page>
+         1
+         </page>
+      </FIFO_CNT[7:0]>
    </attributes>
    <startState>
    RD
@@ -2311,28 +3599,28 @@ fzm_globalTable
    RD
    </endState>
    <startPtX>
-   106.0
+   195.0
    </startPtX>
    <startPtY>
-   271.0
+   468.0
    </startPtY>
    <endPtX>
-   111.0
+   200.0
    </endPtX>
    <endPtY>
-   216.0
+   413.0
    </endPtY>
    <startCtrlPtX>
-   33.0
+   122.0
    </startCtrlPtX>
    <startCtrlPtY>
-   300.0
+   497.0
    </startCtrlPtY>
    <endCtrlPtY>
-   41.0
+   130.0
    </endCtrlPtY>
    <endCtrlPtY>
-   174.0
+   371.0
    </endCtrlPtY>
    <startStateIndex>
    16
@@ -2519,6 +3807,62 @@ fzm_globalTable
          1
          </page>
       </priority>
+      <FIFO_CNT[7:0]>
+            <status>
+            GLOBAL_FIXED
+            </status>
+         <value>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </value>
+         <vis>
+         0
+            <status>
+            GLOBAL_VAR
+            </status>
+         </vis>
+         <type>
+         output
+            <status>
+            GLOBAL_VAR
+            </status>
+         </type>
+         <comment>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </comment>
+         <color>
+         -16777216
+            <status>
+            GLOBAL_VAR
+            </status>
+         </color>
+         <useratts>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </useratts>
+         <resetval>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </resetval>
+         <x2Obj>
+         0
+         </x2Obj>
+         <y2Obj>
+         0
+         </y2Obj>
+         <page>
+         1
+         </page>
+      </FIFO_CNT[7:0]>
    </attributes>
    <startState>
    WR
@@ -2527,250 +3871,34 @@ fzm_globalTable
    WR
    </endState>
    <startPtX>
-   381.0
+   499.0
    </startPtX>
    <startPtY>
-   354.0
+   581.0
    </startPtY>
    <endPtX>
-   386.0
+   504.0
    </endPtX>
    <endPtY>
-   409.0
+   636.0
    </endPtY>
    <startCtrlPtX>
-   451.0
+   569.0
    </startCtrlPtX>
    <startCtrlPtY>
-   312.0
+   539.0
    </startCtrlPtY>
    <endCtrlPtY>
-   459.0
+   577.0
    </endCtrlPtY>
    <endCtrlPtY>
-   438.0
+   665.0
    </endCtrlPtY>
    <startStateIndex>
    33
    </startStateIndex>
    <endStateIndex>
    2
-   </endStateIndex>
-   <page>
-   1
-   </page>
-   <color>
-   -16777216
-   </color>
-</transition>
-## START LOOPBACK TRANSITION OBJECT
-## START LOOPBACK TRANSITION OBJECT
-<transition>
-   <attributes>
-      <name>
-            <status>
-            ABS
-            </status>
-         <value>
-         trans6
-            <status>
-            LOCAL
-            </status>
-         </value>
-         <vis>
-         0
-            <status>
-            GLOBAL_VAR
-            </status>
-         </vis>
-         <type>
-         def_type
-            <status>
-            GLOBAL_VAR
-            </status>
-         </type>
-         <comment>
-         
-            <status>
-            GLOBAL_VAR
-            </status>
-         </comment>
-         <color>
-         -16777216
-            <status>
-            GLOBAL_VAR
-            </status>
-         </color>
-         <useratts>
-         
-            <status>
-            GLOBAL_VAR
-            </status>
-         </useratts>
-         <resetval>
-         
-            <status>
-            GLOBAL_VAR
-            </status>
-         </resetval>
-         <x2Obj>
-         0
-         </x2Obj>
-         <y2Obj>
-         0
-         </y2Obj>
-         <page>
-         1
-         </page>
-      </name>
-      <equation>
-            <status>
-            ABS
-            </status>
-         <value>
-         RD<NF
-            <status>
-            LOCAL
-            </status>
-         </value>
-         <vis>
-         1
-            <status>
-            GLOBAL_VAR
-            </status>
-         </vis>
-         <type>
-         def_type
-            <status>
-            GLOBAL_VAR
-            </status>
-         </type>
-         <comment>
-         
-            <status>
-            GLOBAL_VAR
-            </status>
-         </comment>
-         <color>
-         -16777216
-            <status>
-            GLOBAL_VAR
-            </status>
-         </color>
-         <useratts>
-         
-            <status>
-            GLOBAL_VAR
-            </status>
-         </useratts>
-         <resetval>
-         
-            <status>
-            GLOBAL_VAR
-            </status>
-         </resetval>
-         <x2Obj>
-         93
-         </x2Obj>
-         <y2Obj>
-         46
-         </y2Obj>
-         <page>
-         1
-         </page>
-      </equation>
-      <priority>
-            <status>
-            GLOBAL_FIXED
-            </status>
-         <value>
-         1000
-            <status>
-            GLOBAL_VAR
-            </status>
-         </value>
-         <vis>
-         2
-            <status>
-            GLOBAL_VAR
-            </status>
-         </vis>
-         <type>
-         
-            <status>
-            GLOBAL_VAR
-            </status>
-         </type>
-         <comment>
-         
-            <status>
-            GLOBAL_VAR
-            </status>
-         </comment>
-         <color>
-         -16777216
-            <status>
-            GLOBAL_VAR
-            </status>
-         </color>
-         <useratts>
-         
-            <status>
-            GLOBAL_VAR
-            </status>
-         </useratts>
-         <resetval>
-         
-            <status>
-            GLOBAL_VAR
-            </status>
-         </resetval>
-         <x2Obj>
-         0
-         </x2Obj>
-         <y2Obj>
-         0
-         </y2Obj>
-         <page>
-         1
-         </page>
-      </priority>
-   </attributes>
-   <startState>
-   FIFO
-   </startState>
-   <endState>
-   FIFO
-   </endState>
-   <startPtX>
-   563.0
-   </startPtX>
-   <startPtY>
-   322.0
-   </startPtY>
-   <endPtX>
-   616.0
-   </endPtX>
-   <endPtY>
-   307.0
-   </endPtY>
-   <startCtrlPtX>
-   512.0
-   </startCtrlPtX>
-   <startCtrlPtY>
-   258.0
-   </startCtrlPtY>
-   <endCtrlPtY>
-   628.0
-   </endCtrlPtY>
-   <endCtrlPtY>
-   224.0
-   </endCtrlPtY>
-   <startStateIndex>
-   23
-   </startStateIndex>
-   <endStateIndex>
-   28
    </endStateIndex>
    <page>
    1
@@ -2886,10 +4014,10 @@ fzm_globalTable
             </status>
          </resetval>
          <x2Obj>
-         0
+         -59
          </x2Obj>
          <y2Obj>
-         0
+         20
          </y2Obj>
          <page>
          1
@@ -2951,6 +4079,62 @@ fzm_globalTable
          1
          </page>
       </priority>
+      <FIFO_CNT[7:0]>
+            <status>
+            GLOBAL_FIXED
+            </status>
+         <value>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </value>
+         <vis>
+         0
+            <status>
+            GLOBAL_VAR
+            </status>
+         </vis>
+         <type>
+         output
+            <status>
+            GLOBAL_VAR
+            </status>
+         </type>
+         <comment>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </comment>
+         <color>
+         -16777216
+            <status>
+            GLOBAL_VAR
+            </status>
+         </color>
+         <useratts>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </useratts>
+         <resetval>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </resetval>
+         <x2Obj>
+         0
+         </x2Obj>
+         <y2Obj>
+         0
+         </y2Obj>
+         <page>
+         1
+         </page>
+      </FIFO_CNT[7:0]>
    </attributes>
    <startState>
    WR
@@ -2959,28 +4143,28 @@ fzm_globalTable
    IDLE
    </endState>
    <startPtX>
-   336.0
+   454.0
    </startPtX>
    <startPtY>
-   322.0
+   549.0
    </startPtY>
    <endPtX>
-   364.0
+   532.0
    </endPtX>
    <endPtY>
-   237.0
+   418.0
    </endPtY>
    <startCtrlPtX>
-   334.0
+   452.0
    </startCtrlPtX>
    <startCtrlPtY>
-   294.0
+   521.0
    </startCtrlPtY>
    <endCtrlPtY>
-   357.0
+   525.0
    </endCtrlPtY>
    <endCtrlPtY>
-   255.0
+   436.0
    </endCtrlPtY>
    <startStateIndex>
    28
@@ -3194,6 +4378,62 @@ fzm_globalTable
          1
          </page>
       </priority>
+      <FIFO_CNT[7:0]>
+            <status>
+            GLOBAL_FIXED
+            </status>
+         <value>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </value>
+         <vis>
+         0
+            <status>
+            GLOBAL_VAR
+            </status>
+         </vis>
+         <type>
+         output
+            <status>
+            GLOBAL_VAR
+            </status>
+         </type>
+         <comment>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </comment>
+         <color>
+         -16777216
+            <status>
+            GLOBAL_VAR
+            </status>
+         </color>
+         <useratts>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </useratts>
+         <resetval>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </resetval>
+         <x2Obj>
+         0
+         </x2Obj>
+         <y2Obj>
+         0
+         </y2Obj>
+         <page>
+         1
+         </page>
+      </FIFO_CNT[7:0]>
    </attributes>
    <startState>
    RD
@@ -3202,34 +4442,34 @@ fzm_globalTable
    IDLE
    </endState>
    <startPtX>
-   224.0
+   318.0
    </startPtX>
    <startPtY>
-   216.0
+   423.0
    </startPtY>
    <endPtX>
-   332.0
+   500.0
    </endPtX>
    <endPtY>
-   192.0
+   362.0
    </endPtY>
    <startCtrlPtX>
-   248.0
+   393.0
    </startCtrlPtX>
    <startCtrlPtY>
-   210.0
+   410.0
    </startCtrlPtY>
    <endCtrlPtY>
-   296.0
+   405.0
    </endCtrlPtY>
    <endCtrlPtY>
-   190.0
+   355.0
    </endCtrlPtY>
    <startStateIndex>
-   33
+   34
    </startStateIndex>
    <endStateIndex>
-   17
+   18
    </endStateIndex>
    <page>
    1
@@ -3275,6 +4515,577 @@ fzm_globalTable
             </status>
          <value>
          trans9
+            <status>
+            LOCAL
+            </status>
+         </value>
+         <vis>
+         0
+            <status>
+            GLOBAL_VAR
+            </status>
+         </vis>
+         <type>
+         def_type
+            <status>
+            GLOBAL_VAR
+            </status>
+         </type>
+         <comment>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </comment>
+         <color>
+         -16777216
+            <status>
+            GLOBAL_VAR
+            </status>
+         </color>
+         <useratts>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </useratts>
+         <resetval>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </resetval>
+         <x2Obj>
+         0
+         </x2Obj>
+         <y2Obj>
+         0
+         </y2Obj>
+         <page>
+         1
+         </page>
+      </name>
+      <equation>
+            <status>
+            ABS
+            </status>
+         <value>
+         DONE==1 && FIFO_CNT==0
+            <status>
+            LOCAL
+            </status>
+         </value>
+         <vis>
+         1
+            <status>
+            GLOBAL_VAR
+            </status>
+         </vis>
+         <type>
+         def_type
+            <status>
+            GLOBAL_VAR
+            </status>
+         </type>
+         <comment>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </comment>
+         <color>
+         -16777216
+            <status>
+            GLOBAL_VAR
+            </status>
+         </color>
+         <useratts>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </useratts>
+         <resetval>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </resetval>
+         <x2Obj>
+         -37
+         </x2Obj>
+         <y2Obj>
+         6
+         </y2Obj>
+         <page>
+         1
+         </page>
+      </equation>
+      <priority>
+            <status>
+            GLOBAL_FIXED
+            </status>
+         <value>
+         1
+            <status>
+            LOCAL
+            </status>
+         </value>
+         <vis>
+         2
+            <status>
+            GLOBAL_VAR
+            </status>
+         </vis>
+         <type>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </type>
+         <comment>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </comment>
+         <color>
+         -16777216
+            <status>
+            GLOBAL_VAR
+            </status>
+         </color>
+         <useratts>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </useratts>
+         <resetval>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </resetval>
+         <x2Obj>
+         -3
+         </x2Obj>
+         <y2Obj>
+         11
+         </y2Obj>
+         <page>
+         1
+         </page>
+      </priority>
+      <FIFO_CNT[7:0]>
+            <status>
+            GLOBAL_FIXED
+            </status>
+         <value>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </value>
+         <vis>
+         0
+            <status>
+            GLOBAL_VAR
+            </status>
+         </vis>
+         <type>
+         output
+            <status>
+            GLOBAL_VAR
+            </status>
+         </type>
+         <comment>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </comment>
+         <color>
+         -16777216
+            <status>
+            GLOBAL_VAR
+            </status>
+         </color>
+         <useratts>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </useratts>
+         <resetval>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </resetval>
+         <x2Obj>
+         0
+         </x2Obj>
+         <y2Obj>
+         0
+         </y2Obj>
+         <page>
+         1
+         </page>
+      </FIFO_CNT[7:0]>
+   </attributes>
+   <startState>
+   FIFO_SEND
+   </startState>
+   <endState>
+   IDLE
+   </endState>
+   <startPtX>
+   749.0
+   </startPtX>
+   <startPtY>
+   525.0
+   </startPtY>
+   <endPtX>
+   597.0
+   </endPtX>
+   <endPtY>
+   418.0
+   </endPtY>
+   <startCtrlPtX>
+   702.0
+   </startCtrlPtX>
+   <startCtrlPtY>
+   505.0
+   </startCtrlPtY>
+   <endCtrlPtY>
+   605.0
+   </endCtrlPtY>
+   <endCtrlPtY>
+   474.0
+   </endCtrlPtY>
+   <startStateIndex>
+   22
+   </startStateIndex>
+   <endStateIndex>
+   6
+   </endStateIndex>
+   <page>
+   1
+   </page>
+   <color>
+   -16777216
+   </color>
+   <pageSX>
+   0.0
+   </pageSX>
+   <pageSY>
+   0.0
+   </pageSY>
+   <pageSCX>
+   0.0
+   </pageSCX>
+   <pageSCY>
+   0.0
+   </pageSCY>
+   <pageEX>
+   0.0
+   </pageEX>
+   <pageEY>
+   0.0
+   </pageEY>
+   <pageECX>
+   0.0
+   </pageECX>
+   <pageECY>
+   0.0
+   </pageECY>
+   <stub>
+   false
+   </stub>
+</transition>
+## END STATE TRANSITION OBJECT
+## START LOOPBACK TRANSITION OBJECT
+<transition>
+   <attributes>
+      <name>
+            <status>
+            ABS
+            </status>
+         <value>
+         trans10
+            <status>
+            LOCAL
+            </status>
+         </value>
+         <vis>
+         0
+            <status>
+            GLOBAL_VAR
+            </status>
+         </vis>
+         <type>
+         def_type
+            <status>
+            GLOBAL_VAR
+            </status>
+         </type>
+         <comment>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </comment>
+         <color>
+         -16777216
+            <status>
+            GLOBAL_VAR
+            </status>
+         </color>
+         <useratts>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </useratts>
+         <resetval>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </resetval>
+         <x2Obj>
+         0
+         </x2Obj>
+         <y2Obj>
+         0
+         </y2Obj>
+         <page>
+         1
+         </page>
+      </name>
+      <equation>
+            <status>
+            ABS
+            </status>
+         <value>
+         1
+            <status>
+            GLOBAL_VAR
+            </status>
+         </value>
+         <vis>
+         1
+            <status>
+            GLOBAL_VAR
+            </status>
+         </vis>
+         <type>
+         def_type
+            <status>
+            GLOBAL_VAR
+            </status>
+         </type>
+         <comment>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </comment>
+         <color>
+         -16777216
+            <status>
+            GLOBAL_VAR
+            </status>
+         </color>
+         <useratts>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </useratts>
+         <resetval>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </resetval>
+         <x2Obj>
+         0
+         </x2Obj>
+         <y2Obj>
+         0
+         </y2Obj>
+         <page>
+         1
+         </page>
+      </equation>
+      <priority>
+            <status>
+            GLOBAL_FIXED
+            </status>
+         <value>
+         1000
+            <status>
+            GLOBAL_VAR
+            </status>
+         </value>
+         <vis>
+         2
+            <status>
+            GLOBAL_VAR
+            </status>
+         </vis>
+         <type>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </type>
+         <comment>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </comment>
+         <color>
+         -16777216
+            <status>
+            GLOBAL_VAR
+            </status>
+         </color>
+         <useratts>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </useratts>
+         <resetval>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </resetval>
+         <x2Obj>
+         0
+         </x2Obj>
+         <y2Obj>
+         0
+         </y2Obj>
+         <page>
+         1
+         </page>
+      </priority>
+      <FIFO_CNT[7:0]>
+            <status>
+            GLOBAL_FIXED
+            </status>
+         <value>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </value>
+         <vis>
+         0
+            <status>
+            GLOBAL_VAR
+            </status>
+         </vis>
+         <type>
+         output
+            <status>
+            GLOBAL_VAR
+            </status>
+         </type>
+         <comment>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </comment>
+         <color>
+         -16777216
+            <status>
+            GLOBAL_VAR
+            </status>
+         </color>
+         <useratts>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </useratts>
+         <resetval>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </resetval>
+         <x2Obj>
+         0
+         </x2Obj>
+         <y2Obj>
+         0
+         </y2Obj>
+         <page>
+         1
+         </page>
+      </FIFO_CNT[7:0]>
+   </attributes>
+   <startState>
+   FIFO_SEND
+   </startState>
+   <endState>
+   FIFO_SEND
+   </endState>
+   <startPtX>
+   855.0
+   </startPtX>
+   <startPtY>
+   599.0
+   </startPtY>
+   <endPtX>
+   810.0
+   </endPtX>
+   <endPtY>
+   631.0
+   </endPtY>
+   <startCtrlPtX>
+   925.0
+   </startCtrlPtX>
+   <startCtrlPtY>
+   641.0
+   </startCtrlPtY>
+   <endCtrlPtY>
+   822.0
+   </endCtrlPtY>
+   <endCtrlPtY>
+   714.0
+   </endCtrlPtY>
+   <startStateIndex>
+   3
+   </startStateIndex>
+   <endStateIndex>
+   8
+   </endStateIndex>
+   <page>
+   1
+   </page>
+   <color>
+   -16777216
+   </color>
+</transition>
+## START LOOPBACK TRANSITION OBJECT
+## START LOOPBACK TRANSITION OBJECT
+<transition>
+   <attributes>
+      <name>
+            <status>
+            ABS
+            </status>
+         <value>
+         trans13
             <status>
             LOCAL
             </status>
@@ -3386,9 +5197,9 @@ fzm_globalTable
             GLOBAL_FIXED
             </status>
          <value>
-         1000
+         2
             <status>
-            GLOBAL_VAR
+            LOCAL
             </status>
          </value>
          <vis>
@@ -3437,42 +5248,98 @@ fzm_globalTable
          1
          </page>
       </priority>
+      <FIFO_CNT[7:0]>
+            <status>
+            GLOBAL_FIXED
+            </status>
+         <value>
+         FIFO_CNT[7:0] -1
+            <status>
+            LOCAL
+            </status>
+         </value>
+         <vis>
+         2
+            <status>
+            LOCAL
+            </status>
+         </vis>
+         <type>
+         output
+            <status>
+            GLOBAL_VAR
+            </status>
+         </type>
+         <comment>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </comment>
+         <color>
+         -16777216
+            <status>
+            GLOBAL_VAR
+            </status>
+         </color>
+         <useratts>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </useratts>
+         <resetval>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </resetval>
+         <x2Obj>
+         0
+         </x2Obj>
+         <y2Obj>
+         0
+         </y2Obj>
+         <page>
+         1
+         </page>
+      </FIFO_CNT[7:0]>
    </attributes>
    <startState>
-   FIFO
+   FIFO_SEND
    </startState>
    <endState>
-   IDLE
+   FIFO_SEND
    </endState>
    <startPtX>
-   548.0
+   749.0
    </startPtX>
    <startPtY>
-   339.0
+   608.0
    </startPtY>
    <endPtX>
-   438.0
+   734.0
    </endPtX>
    <endPtY>
-   230.0
+   555.0
    </endPtY>
    <startCtrlPtX>
-   512.0
+   685.0
    </startCtrlPtX>
    <startCtrlPtY>
-   331.0
+   662.0
    </startCtrlPtY>
    <endCtrlPtY>
-   448.0
+   660.0
    </endCtrlPtY>
    <endCtrlPtY>
-   264.0
+   540.0
    </endCtrlPtY>
    <startStateIndex>
-   21
+   14
    </startStateIndex>
    <endStateIndex>
-   5
+   19
    </endStateIndex>
    <page>
    1
@@ -3480,33 +5347,6 @@ fzm_globalTable
    <color>
    -16777216
    </color>
-   <pageSX>
-   0.0
-   </pageSX>
-   <pageSY>
-   0.0
-   </pageSY>
-   <pageSCX>
-   0.0
-   </pageSCX>
-   <pageSCY>
-   0.0
-   </pageSCY>
-   <pageEX>
-   0.0
-   </pageEX>
-   <pageEY>
-   0.0
-   </pageEY>
-   <pageECX>
-   0.0
-   </pageECX>
-   <pageECY>
-   0.0
-   </pageECY>
-   <stub>
-   false
-   </stub>
 </transition>
-## END STATE TRANSITION OBJECT
+## START LOOPBACK TRANSITION OBJECT
 ## END OBJECTS
