@@ -1,5 +1,5 @@
 
-// Created by fizzim.pl version 5.10 on 2016:09:26 at 13:04:46 (www.fizzim.com)
+// Created by fizzim.pl version 5.10 on 2016:09:26 at 14:02:32 (www.fizzim.com)
 
 module SPI_SM ( // State machine for SPI slave on CycloneIII
   output reg rd_select,
@@ -37,6 +37,7 @@ module SPI_SM ( // State machine for SPI slave on CycloneIII
         end
         else if (CMD == FIFO) begin
           nextstate[FIFO_SEND] = 1'b1;
+          next_FIFO_CNT[7:0] = FIFO_PK_SZ[7:0];
         end
         else begin
           nextstate[IDLE] = 1'b1;

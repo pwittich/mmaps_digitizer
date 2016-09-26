@@ -1,4 +1,4 @@
-## File last modified by Fizzim: 1:04:38 PM on 9/26/16
+## File last modified by Fizzim: 2:02:27 PM on 9/26/16
 <version>
    14.02.26
 </version>
@@ -3171,10 +3171,10 @@ fzm_globalTable
             </status>
          </resetval>
          <x2Obj>
-         13
+         63
          </x2Obj>
          <y2Obj>
-         -19
+         -18
          </y2Obj>
          <page>
          1
@@ -3241,15 +3241,15 @@ fzm_globalTable
             GLOBAL_FIXED
             </status>
          <value>
-         
+         FIFO_PK_SZ[7:0]
             <status>
-            GLOBAL_VAR
+            LOCAL
             </status>
          </value>
          <vis>
-         0
+         2
             <status>
-            GLOBAL_VAR
+            LOCAL
             </status>
          </vis>
          <type>
@@ -3283,10 +3283,10 @@ fzm_globalTable
             </status>
          </resetval>
          <x2Obj>
-         0
+         89
          </x2Obj>
          <y2Obj>
-         0
+         -80
          </y2Obj>
          <page>
          1
@@ -4612,10 +4612,10 @@ fzm_globalTable
             </status>
          </resetval>
          <x2Obj>
-         -37
+         -26
          </x2Obj>
          <y2Obj>
-         6
+         13
          </y2Obj>
          <page>
          1
@@ -4668,10 +4668,10 @@ fzm_globalTable
             </status>
          </resetval>
          <x2Obj>
-         -3
+         -1
          </x2Obj>
          <y2Obj>
-         11
+         46
          </y2Obj>
          <page>
          1
