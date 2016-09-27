@@ -1,5 +1,7 @@
+`include "spi_defines.v"
 
-// Created by fizzim.pl version 5.10 on 2016:09:26 at 14:02:32 (www.fizzim.com)
+
+// Created by fizzim.pl version 5.10 on 2016:09:27 at 17:03:42 (www.fizzim.com)
 
 module SPI_SM ( // State machine for SPI slave on CycloneIII
   output reg rd_select,
@@ -29,13 +31,13 @@ module SPI_SM ( // State machine for SPI slave on CycloneIII
     next_FIFO_CNT[7:0] = FIFO_CNT[7:0];
     case (1'b1) // synopsys parallel_case full_case
       state[IDLE]     : begin
-        if (CMD == RD) begin
+        if (CMD == `RD) begin
           nextstate[RD] = 1'b1;
         end
-        else if (CMD == WR) begin
+        else if (CMD == `WR) begin
           nextstate[WR] = 1'b1;
         end
-        else if (CMD == FIFO) begin
+        else if (CMD == `FIFO) begin
           nextstate[FIFO_SEND] = 1'b1;
           next_FIFO_CNT[7:0] = FIFO_PK_SZ[7:0];
         end

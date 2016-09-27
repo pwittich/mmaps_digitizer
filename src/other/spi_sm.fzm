@@ -1,4 +1,4 @@
-## File last modified by Fizzim: 2:02:27 PM on 9/26/16
+## File last modified by Fizzim: 5:03:32 PM on 9/27/16
 <version>
    14.02.26
 </version>
@@ -228,6 +228,62 @@
          -1
          </page>
       </reset_state>
+      <insert_at_top_of_file>
+            <status>
+            GLOBAL_FIXED
+            </status>
+         <value>
+         `include "spi_defines.v"\n\n
+            <status>
+            GLOBAL_VAR
+            </status>
+         </value>
+         <vis>
+         0
+            <status>
+            GLOBAL_VAR
+            </status>
+         </vis>
+         <type>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </type>
+         <comment>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </comment>
+         <color>
+         -16777216
+            <status>
+            GLOBAL_VAR
+            </status>
+         </color>
+         <useratts>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </useratts>
+         <resetval>
+         
+            <status>
+            GLOBAL_VAR
+            </status>
+         </resetval>
+         <x2Obj>
+         0
+         </x2Obj>
+         <y2Obj>
+         0
+         </y2Obj>
+         <page>
+         -1
+         </page>
+      </insert_at_top_of_file>
    </machine>
    <inputs>
       <CMD[3:0]>
@@ -477,7 +533,7 @@
             </status>
          </type>
          <comment>
-          number of words to send
+         number of words to send
             <status>
             GLOBAL_VAR
             </status>
@@ -2531,7 +2587,7 @@ fzm_globalTable
             ABS
             </status>
          <value>
-         CMD == RD
+         CMD == `RD
             <status>
             LOCAL
             </status>
@@ -2830,7 +2886,7 @@ fzm_globalTable
             ABS
             </status>
          <value>
-         CMD == WR
+         CMD == `WR
             <status>
             LOCAL
             </status>
@@ -3129,7 +3185,7 @@ fzm_globalTable
             ABS
             </status>
          <value>
-         CMD == FIFO
+         CMD == `FIFO
             <status>
             LOCAL
             </status>
