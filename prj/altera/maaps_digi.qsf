@@ -148,14 +148,6 @@ set_location_assignment PIN_T8 -to TDC[29]
 set_location_assignment PIN_U8 -to TDC[30]
 set_location_assignment PIN_V8 -to TDC[31]
 #set_location_assignment PIN_T17 -to PMT_trigger
-set_location_assignment PIN_E17 -to Z0[0]
-set_location_assignment PIN_E18 -to "Z0[0](n)"
-set_location_assignment PIN_D17 -to Z0[1]
-set_location_assignment PIN_D18 -to "Z0[1](n)"
-set_location_assignment PIN_G17 -to Z0_CLK
-set_location_assignment PIN_G18 -to "Z0_CLK(n)"
-set_location_assignment PIN_H17 -to Z0_FRAME
-set_location_assignment PIN_H18 -to "Z0_FRAME(n)"
 set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_DUPLICATION ON
 set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC ON
 set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_RETIMING ON
@@ -232,15 +224,7 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[23]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[29]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[30]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[31]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to spi_cs
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to spi_data_in
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to spi_data_out
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to spi_sclk
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PMT_trigger
-set_instance_assignment -name IO_STANDARD LVDS -to Z0[1]
-set_instance_assignment -name IO_STANDARD LVDS -to Z0[0]
-set_instance_assignment -name IO_STANDARD LVDS -to Z0_CLK
-set_instance_assignment -name IO_STANDARD LVDS -to Z0_FRAME
 set_instance_assignment -name IO_STANDARD LVDS -to adcdata_p[8]
 set_instance_assignment -name IO_STANDARD LVDS -to adcdata_p[9]
 set_instance_assignment -name IO_STANDARD LVDS -to adcdata_p[10]
@@ -279,4 +263,19 @@ set_global_assignment -name PHYSICAL_SYNTHESIS_EFFORT EXTRA
 set_global_assignment -name CYCLONEII_OPTIMIZATION_TECHNIQUE SPEED
 set_global_assignment -name OPTIMIZE_HOLD_TIMING "ALL PATHS"
 set_global_assignment -name OPTIMIZE_MULTI_CORNER_TIMING ON
+set_instance_assignment -name IO_STANDARD LVDS -to SPI_MISO
+set_instance_assignment -name IO_STANDARD "2.5 V" -to L0
+set_instance_assignment -name IO_STANDARD "2.5 V" -to CK50
+set_instance_assignment -name IO_STANDARD "2.5 V" -to L1
+set_instance_assignment -name IO_STANDARD LVDS -to SPI_MOSI
+set_instance_assignment -name IO_STANDARD LVDS -to SPI_SCLK
+set_instance_assignment -name IO_STANDARD LVDS -to SPI_SS
+set_location_assignment PIN_E17 -to SPI_MISO
+set_location_assignment PIN_E18 -to "SPI_MISO(n)"
+set_location_assignment PIN_D17 -to SPI_MOSI
+set_location_assignment PIN_D18 -to "SPI_MOSI(n)"
+set_location_assignment PIN_G17 -to SPI_SCLK
+set_location_assignment PIN_G18 -to "SPI_SCLK(n)"
+set_location_assignment PIN_H17 -to SPI_SS
+set_location_assignment PIN_H18 -to "SPI_SS(n)"
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
