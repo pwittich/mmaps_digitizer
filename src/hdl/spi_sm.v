@@ -1,9 +1,10 @@
 `include "spi_defines.v"
 
 
-// Created by fizzim.pl version 5.10 on 2016:09:27 at 17:03:42 (www.fizzim.com)
+// Created by fizzim.pl version 5.10 on 2016:09:29 at 22:24:29 (www.fizzim.com)
 
 module SPI_SM ( // State machine for SPI slave on CycloneIII
+  output reg fifo_select,
   output reg rd_select,
   output reg wr_select,
   input wire [3:0] CMD,
@@ -91,18 +92,20 @@ module SPI_SM ( // State machine for SPI slave on CycloneIII
   // datapath sequential always block
   always @(posedge clk) begin
     if (rst) begin
+      fifo_select <= 0;
       rd_select <= 0;
       wr_select <= 0;
     end
     else begin
+      fifo_select <= 0; // default
       rd_select <= 0; // default
       wr_select <= 0; // default
       case (1'b1) // synopsys parallel_case full_case
-        nextstate[IDLE]     : begin
-          ; // case must be complete for onehot
-        end
+        // nextstate[IDLE]     : begin
+        //   ; // case must be complete for onehot
+        // end
         nextstate[FIFO_SEND]: begin
-          ; // case must be complete for onehot
+          fifo_select <= 1;
         end
         nextstate[RD]       : begin
           rd_select <= 1;
