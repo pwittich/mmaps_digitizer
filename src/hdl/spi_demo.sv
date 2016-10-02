@@ -4,7 +4,7 @@
 `timescale 1ns/1ns
 `default_nettype none
   module spi_demo;
-   localparam NSLAVE = 2;
+   localparam NSLAVE = 1;
 
    reg CLK; // input clock
    reg RST;

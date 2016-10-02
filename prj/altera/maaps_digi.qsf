@@ -174,9 +174,6 @@ set_global_assignment -name EDA_DESIGN_INSTANCE_NAME maaps_daq_toplevel -section
 set_global_assignment -name EDA_TEST_BENCH_RUN_SIM_FOR "2000 ns" -section_id digi_testbench
 set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME maaps_daq_toplevel_vlg_tst -section_id digi_testbench
 set_global_assignment -name EDA_TEST_BENCH_FILE simulation/modelsim/maaps_daq_toplevel.vt -section_id digi_testbench
-set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
-set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
-set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[3]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[2]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[1]
@@ -235,6 +232,26 @@ set_instance_assignment -name IO_STANDARD LVDS -to adcdata_p[14]
 set_instance_assignment -name IO_STANDARD LVDS -to adcdata_p[15]
 set_global_assignment -name ALLOW_POWER_UP_DONT_CARE OFF
 set_global_assignment -name SYNTH_TIMING_DRIVEN_SYNTHESIS ON
+set_global_assignment -name PHYSICAL_SYNTHESIS_EFFORT EXTRA
+set_global_assignment -name CYCLONEII_OPTIMIZATION_TECHNIQUE SPEED
+set_global_assignment -name OPTIMIZE_HOLD_TIMING "ALL PATHS"
+set_global_assignment -name OPTIMIZE_MULTI_CORNER_TIMING ON
+set_instance_assignment -name IO_STANDARD LVDS -to SPI_MISO
+set_instance_assignment -name IO_STANDARD "2.5 V" -to L0
+set_instance_assignment -name IO_STANDARD "2.5 V" -to CK50
+set_instance_assignment -name IO_STANDARD "2.5 V" -to L1
+set_instance_assignment -name IO_STANDARD LVDS -to SPI_MOSI
+set_instance_assignment -name IO_STANDARD LVDS -to SPI_SCLK
+set_instance_assignment -name IO_STANDARD LVDS -to SPI_SS
+set_location_assignment PIN_E17 -to SPI_MISO
+set_location_assignment PIN_E18 -to "SPI_MISO(n)"
+set_location_assignment PIN_D17 -to SPI_MOSI
+set_location_assignment PIN_D18 -to "SPI_MOSI(n)"
+set_location_assignment PIN_G17 -to SPI_SCLK
+set_location_assignment PIN_G18 -to "SPI_SCLK(n)"
+set_location_assignment PIN_H17 -to SPI_SS
+set_location_assignment PIN_H18 -to "SPI_SS(n)"
+set_global_assignment -name VERILOG_FILE ../../src/hdl/spi_master.v
 set_global_assignment -name VERILOG_FILE ../../src/hdl/spi_slave.v
 set_global_assignment -name VHDL_FILE ../../src/hdl/lvdsreceiver.vhd
 set_global_assignment -name QIP_FILE fifo.qip
@@ -259,23 +276,10 @@ set_global_assignment -name VERILOG_FILE ../../src/hdl/lvds_transmitter.v
 set_global_assignment -name VERILOG_TEST_BENCH_FILE simulation/modelsim/maaps_daq_toplevel.vt
 set_global_assignment -name VERILOG_FILE simulation/modelsim/maaps_daq_toplevel_vlg_tst.v
 set_global_assignment -name QIP_FILE local_altddio_in.qip
-set_global_assignment -name PHYSICAL_SYNTHESIS_EFFORT EXTRA
-set_global_assignment -name CYCLONEII_OPTIMIZATION_TECHNIQUE SPEED
-set_global_assignment -name OPTIMIZE_HOLD_TIMING "ALL PATHS"
-set_global_assignment -name OPTIMIZE_MULTI_CORNER_TIMING ON
-set_instance_assignment -name IO_STANDARD LVDS -to SPI_MISO
-set_instance_assignment -name IO_STANDARD "2.5 V" -to L0
-set_instance_assignment -name IO_STANDARD "2.5 V" -to CK50
-set_instance_assignment -name IO_STANDARD "2.5 V" -to L1
-set_instance_assignment -name IO_STANDARD LVDS -to SPI_MOSI
-set_instance_assignment -name IO_STANDARD LVDS -to SPI_SCLK
-set_instance_assignment -name IO_STANDARD LVDS -to SPI_SS
-set_location_assignment PIN_E17 -to SPI_MISO
-set_location_assignment PIN_E18 -to "SPI_MISO(n)"
-set_location_assignment PIN_D17 -to SPI_MOSI
-set_location_assignment PIN_D18 -to "SPI_MOSI(n)"
-set_location_assignment PIN_G17 -to SPI_SCLK
-set_location_assignment PIN_G18 -to "SPI_SCLK(n)"
-set_location_assignment PIN_H17 -to SPI_SS
-set_location_assignment PIN_H18 -to "SPI_SS(n)"
+set_global_assignment -name SYSTEMVERILOG_FILE ../../src/hdl/spi_demo_sm.sv
+set_global_assignment -name VERILOG_FILE ../../src/hdl/spi_defines.v
+set_global_assignment -name VERILOG_FILE ../../src/hdl/spi_sm.v
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
