@@ -110,7 +110,7 @@
                                         .adc_frame(adcframe_p),
                                         .adcdata_p(adcdata_p), 
                                         .DOUT(dout), // output to remote
-                                        .ZYNQ_RD_REQUEST(1),
+                                        .ZYNQ_RD_REQUEST(fifo_rd_one),
                                         .GLBL_EMPTY(fifo_empty),
                                         .howmany(howmany), // configuration
                                         .offset(offset), // configuration
@@ -170,17 +170,17 @@
    end
 
    // state machine outputs
-   wire       rd_select, wr_select, fifo_select, latch_cmd;
+   wire       rd_select, wr_select, fifo_select, latch_cmd, fifo_rd_one;
 
    // handle the read and write 
    always @(posedge sysclk ) begin
       if ( rd_select) begin
          SPI_tx_reg <= ctrl_regs[SPI_addr];
       end 
-      else if ( SPI_done && wr_select ) begin
+      else if ( SPI_done & wr_select ) begin
          ctrl_regs[SPI_addr] <= SPI_rx_reg;
       end
-      else if ( SPI_done && fifo_select ) begin
+      else if ( SPI_done & fifo_select & fifo_rd_one ) begin
 	 // needs to set ZYNQ_RD_REQUEST for one clock cycle
 	 // BROKEN. Update SPI state machine to handle this.
 	 SPI_tx_reg <= dout[7:0];
@@ -202,6 +202,7 @@
               .wr_select(wr_select),
               .fifo_select(fifo_select),
               .latch_cmd(latch_cmd),
+	      .fifo_rd_enable(fifo_rd_one),
               .CMD(SPI_rx_reg[3:0]), // before they are latched
               .DONE(SPI_done),
               .FIFO_PK_SZ(FIFO_PK_SZ),   // number of words to send
