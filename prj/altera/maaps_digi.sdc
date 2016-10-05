@@ -32,13 +32,14 @@ set_time_format -unit ns -decimal_places 3
 # Create Clock
 #**************************************************************
 
-create_clock -name {sysclk} -period 20.000 [get_ports {CK50}]
+create_clock -name {sysclk} -period 50MHz  [get_ports {CK50}]
 create_clock -name {adcclk1} -period 20.000 [get_ports {adcclk1_p}]
 create_clock -name {adcclk2} -period 20.000 [get_ports {adcclk2_p}]
-create_clock -name {adcfastclk} -period 3.333  [get_ports {adcfastclk_p}]
+create_clock -name {adcfastclk} -period 300MHz  [get_ports {adcfastclk_p}]
 create_clock -name {adcframe} -period 20.000 [get_ports {adcframe_p}]
 create_clock -name {spi_clk} -period 187.5  [get_ports {spi_sclk}]
-create_clock -name {adc_sclk} -period 20.000 [get_ports {adc_sclk1}]
+create_clock -name {adc_sclk1} -period 20.000 [get_ports {adc_sclk1}]
+create_clock -name {adc_sclk2} -period 20.000 [get_ports {adc_sclk2}]
 
 
 set_false_path -to [get_ports {adc_sclk1}]
