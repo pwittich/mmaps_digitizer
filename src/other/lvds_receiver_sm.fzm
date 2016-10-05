@@ -1,4 +1,4 @@
-## File last modified by Fizzim: 5:28:49 AM on 7/22/16
+## File last modified by Fizzim: 10:12:09 PM on 10/4/16
 <version>
    14.02.26
 </version>
@@ -65,7 +65,7 @@
             ABS
             </status>
          <value>
-         FASTCLK
+         fastclk
             <status>
             GLOBAL_VAR
             </status>
@@ -529,7 +529,7 @@
             </status>
          </vis>
          <type>
-         reg
+         regdp
             <status>
             GLOBAL_VAR
             </status>
@@ -553,7 +553,7 @@
             </status>
          </useratts>
          <resetval>
-         
+         0
             <status>
             GLOBAL_VAR
             </status>
@@ -609,7 +609,7 @@
             </status>
          </useratts>
          <resetval>
-         
+         8'h00
             <status>
             GLOBAL_VAR
             </status>
@@ -665,7 +665,7 @@
             </status>
          </useratts>
          <resetval>
-         
+         12'h000
             <status>
             GLOBAL_VAR
             </status>
@@ -779,7 +779,7 @@
             </status>
          </useratts>
          <resetval>
-         
+         0
             <status>
             GLOBAL_VAR
             </status>
@@ -835,7 +835,7 @@
             </status>
          </useratts>
          <resetval>
-         
+         8'h00
             <status>
             GLOBAL_VAR
             </status>
@@ -891,7 +891,7 @@
             </status>
          </useratts>
          <resetval>
-         
+         12'h000
             <status>
             GLOBAL_VAR
             </status>
