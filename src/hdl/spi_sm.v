@@ -1,7 +1,7 @@
 `include "spi_defines.v"
 
 
-// Created by fizzim.pl version 5.10 on 2016:10:03 at 22:22:40 (www.fizzim.com)
+// Created by fizzim.pl version 5.10 on 2016:10:04 at 13:39:25 (www.fizzim.com)
 
 module SPI_SM ( // State machine for SPI slave on CycloneIII
   output reg fifo_rd_enable,
@@ -70,6 +70,7 @@ module SPI_SM ( // State machine for SPI slave on CycloneIII
         end
         else if (CMD==`FIFO) begin
           nextstate = FIFO_SEND;
+          next_FIFO_CNT[7:0] = FIFO_PK_SZ[7:0];
         end
         else begin
           nextstate = IDLE;
