@@ -17,46 +17,54 @@
 // CREATED              "Fri Jun 24 17:07:43 2016"
 `timescale 1ns / 1ps
 `default_nettype none
+
+`include "spi_defines.v"
   // Top level HDL module
   module maaps_daq_toplevel(
                             CK50,
                             adcfastclk_p,
                             adcframe_p,
-                                 SPI_MOSI,
-                                 SPI_MISO,
-                                 SPI_SCLK,
-                                 SPI_SS,
+                            SPI_MOSI,
+                            SPI_MISO,
+                            SPI_SCLK,
+                            SPI_SS,
                             PMT_trigger, // external trigger - how to input? not in the SDC file now
                             adcdata_p,
                             TDC,
                             ADC_SCLK1,
                             ADC_nCS1,
+                            ADC_SDIO1,
+                            ADC_SCLK2,
+                            ADC_nCS2,
+                            ADC_SDIO2,
                             ADCCLK1_p,
                             ADCCLK2_p,
                             L1,
                             L0,
-                            ADC_SDIO1,
                             );
 
 
    input wire   CK50;
    input wire   adcfastclk_p;
    input wire   adcframe_p;
-        input wire      SPI_MOSI;
-        input wire      SPI_SCLK;
-        input wire      SPI_SS;
+   input wire 	SPI_MOSI;
+   input wire 	SPI_SCLK;
+   input wire 	SPI_SS;
    input wire   PMT_trigger;
    input wire [15:0] adcdata_p; // 16 serial lines
    input wire [31:0] TDC; // unused
    output wire       ADC_SCLK1;
    output wire       ADC_nCS1;
+   inout wire        ADC_SDIO1;
+   output wire       ADC_SCLK2;
+   output wire       ADC_nCS2;
+   inout wire        ADC_SDIO2;
    output wire       ADCCLK1_p;
    output wire       ADCCLK2_p;
    output wire       L1;
    output wire       L0;
-        output wire                       SPI_MISO;
-   inout wire        ADC_SDIO1;
-
+   output wire 	     SPI_MISO;
+   
    
    reg               rst;
 
@@ -69,32 +77,36 @@
    assign ADCCLK2_p = sysclk;
 
    wire [15:0]       dout;
-   wire              adc_ready; // output
-
-   wire              adc_flag;
-   reg [7:0]         adc_mode;
 
    // ugh
 
-   // // hard-wired for now
-   //   // SPI controller to configure the external ADCs
-   // synthesis read_comments_as_HDL on
-   //   initial adc_mode = 8'h09;
-   //   adc_spimaster adc_spimaster_inst(
-   //                               .sys_clk(sysclk),
-   //                               .reset_n(~rst),
-   //      
-   //                               .adc_sclk(ADC_SCLK1),
-   //                               .adc_sdio(ADC_SDIO1),
-   //                               .adc_cs(ADC_nCS1),
-   //      
-   //                               .adc_flag(adc_flag),
-   //                               .adc_mode(adc_mode),
-   //                               .adc_ready(adc_ready)
-   //                               );
-   //
-   //   
-   // synthesis read_comments_as_HDL off
+   // SPI controller to configure the external ADCs
+   // one each for each octal ADC
+   wire              adc_ready1, adc_ready2; // output
+   wire              adc_flag1, adc_flag2;
+   reg [7:0]         adc_mode1, adc_mode2;
+   adc_spimaster adc_spimaster_inst_1(
+                                      .sys_clk(sysclk),
+                                      .reset_n(~rst),
+                                      .adc_sclk(ADC_SCLK1),
+                                      .adc_sdio(ADC_SDIO1),
+                                      .adc_cs(ADC_nCS1),
+                                      .adc_flag(adc_flag1),
+                                      .adc_mode(adc_mode1),
+                                      .adc_ready(adc_ready1)
+                                      );
+   adc_spimaster adc_spimaster_inst_2(
+                                      .sys_clk(sysclk),
+                                      .reset_n(~rst),
+                                      .adc_sclk(ADC_SCLK2),
+                                      .adc_sdio(ADC_SDIO2),
+                                      .adc_cs(ADC_nCS2),
+                                      .adc_flag(adc_flag2),
+                                      .adc_mode(adc_mode2),
+                                      .adc_ready(adc_ready2)
+                                      );
+   
+     
 
    wire              fifo_empty;
    wire [7:0]        offset;
@@ -104,7 +116,7 @@
    // howmany, offset should be made configurable - hardwired for now
    // DAVAIL and TRIGGER should also not be hardwired to their current widths.
    digi_many #(.CHAN(8)) digi_many_inst(
-                                        .RST(rst&adc_ready), 
+                                        .RST(rst&adc_ready1&adc_ready2), 
                                         .CK50(sysclk), 
                                         .adc_clk(adcfastclk_p), 
                                         .adc_frame(adcframe_p),
@@ -118,6 +130,7 @@
                                         .TRIGGER(TDC[16:8]) // FIXME -- replace with PMT_trigger?
                                         );
 
+/* -----\/----- EXCLUDED -----\/-----
    // counter just to twiddle the LED on the digitzer
    wire [31:0]       dcount;
    bc_counter #(.BITS(32)) counter_inst0(
@@ -125,7 +138,6 @@
                                          .RST(rst), 
                                          .BC(dcount)
                                          );
-/* -----\/----- EXCLUDED -----\/-----
    assign L0 = dcount[26]; // should be about 1 Hz
    assign L1 = dcount[25]; // should be 2x as fast as L1
  -----/\----- EXCLUDED -----/\----- */
@@ -159,8 +171,19 @@
                                                 .sck(SPI_SCLK),
                                                 .done(SPI_done),
                                                 .din(SPI_tx_reg),
+                                                //.din(hack),
                                                 .dout(SPI_s)
                                                 );
+   wire       led_hack;
+
+   //wire [7:0] hack;
+   //assign hack = SPI_rx_reg;
+
+   // L0: blue LED
+   // L1: green LED
+   assign L0 = (SPI_addr == 4'h0)&(SPI_cmd == `WR); // blue LED
+   //assign L1 = ctrl_regs[0][7]; // green LED
+   assign L1 = SPI_tx_reg[7]; // green LED
 
    // store slave's data
    always @(posedge sysclk) begin
@@ -168,6 +191,8 @@
          SPI_rx_reg <= SPI_s;
       end
    end
+
+   
 
    // state machine outputs
    wire       rd_select, wr_select, fifo_select, latch_cmd, fifo_rd_one;
@@ -177,7 +202,7 @@
       if ( rd_select) begin
          SPI_tx_reg <= ctrl_regs[SPI_addr];
       end 
-      else if ( SPI_done & wr_select ) begin
+      else if ( wr_select ) begin
          ctrl_regs[SPI_addr] <= SPI_rx_reg;
       end
       else if ( SPI_done & fifo_select & fifo_rd_one ) begin
@@ -194,33 +219,37 @@
          SPI_cmd <= SPI_rx_reg[3:0];
       end
    end
-   assign L0 = rd_select;
-   assign L1 = wr_select;
    
    SPI_SM sm( // State machine for SPI slave on CycloneIII
               .rd_select(rd_select),
               .wr_select(wr_select),
+	      .led(led_hack),
               .fifo_select(fifo_select),
               .latch_cmd(latch_cmd),
-	      .fifo_rd_enable(fifo_rd_one),
-              .CMD(SPI_rx_reg[3:0]), // before they are latched
-              .DONE(SPI_done),
-              .FIFO_PK_SZ(FIFO_PK_SZ),   // number of words to send
+	      //.fifo_rd_enable(fifo_rd_one),
+              .cmd(SPI_rx_reg[3:0]), // before they are latched
+              .done(SPI_done),
+              //.FIFO_PK_SZ(FIFO_PK_SZ),   // number of words to send
               .clk(sysclk),
               .rst(rst) 
               );
-   
+   // END SPI INTERFACE
    
    // 16 control registers
    reg [ZSPI_WORDSIZE-1:0]  ctrl_regs [15:0];
-   wire                     FIFO_PK_SZ;
+   wire [7:0] 		    FIFO_PK_SZ;
 
    assign howmany = ctrl_regs[1] ;
    assign offset = ctrl_regs[2] ;
    assign FIFO_PK_SZ = ctrl_regs[3];
 
-
-   
+   // preload some registers
+   initial begin
+      ctrl_regs[0] = 8'haa;
+      ctrl_regs[1] = 8'h55;
+      ctrl_regs[2] = 8'ha5;
+      ctrl_regs[3] = 8'h5a;
+   end
 
    //--------------------------------------------------
    // self-reset on startup for now. This is a hack.
@@ -228,11 +257,11 @@
    initial rst_cnt = 0;
    always @(posedge sysclk ) begin
       if ( rst_cnt < 5'd31 )
-                        rst_cnt <= rst_cnt + 5'b1;
+        rst_cnt <= rst_cnt + 5'b1;
       if ( rst_cnt < 5'd25) 
-                        rst = 1;
+        rst = 1;
       else
-                        rst = 0;
+        rst = 0;
    end
    
 endmodule
