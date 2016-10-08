@@ -24,12 +24,12 @@ module addr_cntrl #(parameter SIZE=8) (
 			offset <= {SIZE{1'b0}};
 		end
 		else if ( ! rd_request) begin
-			reg_addr <= ain - offset; 
+			reg_addr <= ain - offset - 1'b1; 
 			howmany <= howmany_i -1'b1; // without the -1 leads to an off-by-one error
 			offset <= offset_i;
 		end
 		else if ( rd_request) begin 	// readout block
-			reg_addr <= reg_addr + 1'b1;
+			reg_addr <= reg_addr - 1'b1;
 			howmany <= howmany - 1'b1;
 		end
 

@@ -35,7 +35,7 @@ module SPI_SM ( // State machine for SPI slave on CycloneIII
         else if (CMD == WR) begin
           nextstate[WR] = 1'b1;
         end
-        else if (CMD == FIFO) begin
+        else if (CMD == FIFO_SEND) begin
           nextstate[FIFO_SEND] = 1'b1;
           next_FIFO_CNT[7:0] = FIFO_PK_SZ[7:0];
         end

@@ -66,8 +66,9 @@ add wave -position end  -radix hex sim:/single_channel/receiver_inst/lvds_sr
 add wave -position end  sim:/single_channel/receiver_inst/LATCHFRAME
 add wave -position end  sim:/single_channel/receiver_inst/LATCHFRAME1
 add wave -position end  sim:/single_channel/receiver_inst/lvds_rx
-add wave -position end  sim:/single_channel/receiver_inst/address
-add wave -position end  -radix hex sim:/single_channel/receiver_inst/cbdata_r
+add wave -position end  sim:/single_channel/receiver_inst/address_q
+add wave -position end  sim:/single_channel/receiver_inst/timetowait_q
+add wave -position end  -radix hex sim:/single_channel/receiver_inst/cbdata_r_q
 add wave -position end  -radix ascii sim:/single_channel/receiver_inst/statename
 
 
@@ -85,6 +86,24 @@ add wave -position end  sim:/single_channel/ringbuffer_inst0/wr_en
 add wave -position end  sim:/single_channel/ringbuffer_inst0/rd_en
 add wave -position end  sim:/single_channel/ringbuffer_inst0/rst
 add wave -position end  sim:/single_channel/ringbuffer_inst0/clk
+
+#add address control objects to wave viewer
+add wave -noupdate -divider -height 24 Addr_ctrl
+#inputs
+add wave -position end -radix hex sim:/single_channel/ch_addrctrl/offset_i
+add wave -position end -radix hex sim:/single_channel/ch_addrctrl/howmany_i
+add wave -position end -radix hex sim:/single_channel/ch_addrctrl/ain
+add wave -position end -radix hex sim:/single_channel/ch_addrctrl/rd_request
+add wave -position end -radix hex sim:/single_channel/ch_addrctrl/clk
+add wave -position end -radix hex sim:/single_channel/ch_addrctrl/rst
+#outputs
+add wave -position end -radix hex sim:/single_channel/ch_addrctrl/address
+add wave -position end -radix hex sim:/single_channel/ch_addrctrl/ro_done_n
+#internal states
+add wave -position end -radix hex sim:/single_channel/ch_addrctrl/reg_addr
+add wave -position end -radix hex sim:/single_channel/ch_addrctrl/offset
+add wave -position end -radix hex sim:/single_channel/ch_addrctrl/howmany
+
 
 
 #SET UP WAVES
@@ -105,7 +124,7 @@ force -drive sim:/single_channel/reset 0 0, 1 10ns, 0 110ns
 
 #set how_many to 15, offset to 0
 #how_many is not consistent with global setting 255
-force -drive sim:/single_channel/how_many 00001111 0
+force -drive sim:/single_channel/how_many 00000111 0
 force -drive sim:/single_channel/offset 00000000 0
 
 #set up adc_frame according to Figure 6 in MAXIM19527 Datasheet
@@ -159,17 +178,19 @@ force -freeze sim:/single_channel/adc_fast_clk 0 1, 1 1.5ns -r 3ns
 force -drive sim:/single_channel/adc_data_ready 0 0, 1 153.5ns
 
 #assume trigger resets to 0 with reset driven high - timing align with reset signal
-force -drive sim:/single_channel/trigger 0 0
+force -drive sim:/single_channel/trigger 0 0ns
 #drive trigger high at 200ns for 1 clock period
-force -drive sim:/single_channel/trigger 1 400ns
-force -drive sim:/single_channel/trigger 0 420ns
+#force -drive sim:/single_channel/trigger 1 400ns
+#force -drive sim:/single_channel/trigger 0 420ns
 
 #assume read_request resets to 0 with reset driven high - timing align with reset signal
 force -drive sim:/single_channel/read_request 0 18ns
 #drive trigger high at 230ns for 1 clock period
-force -drive sim:/single_channel/read_request 1 230ns
-force -drive sim:/single_channel/read_request 0 248ns
+#force -drive sim:/single_channel/read_request 1 230ns
+#force -drive sim:/single_channel/read_request 0 248ns
+#force -drive sim:/single_channel/read_request 1 700ns
+#force -drive sim:/single_channel/read_request 0 718ns
 
 
 
-run 800ns
+run 1500ns

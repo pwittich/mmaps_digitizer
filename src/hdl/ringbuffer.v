@@ -23,7 +23,22 @@ module ringbuffer #(parameter SIZE=12, WIDTH=14)(
 	
 	initial address <= {SIZE{1'b0}};
 	
-	always @(posedge clk) begin
+//	always @(*) begin
+//		if (rst) begin
+//			dout_reg_d = {SIZE{1'b0}};
+//		end
+//		else begin
+//			if (wr_en) begin
+//				data[address] = din;
+//				address = address + 1'b1;
+//			end
+//			if (rd_en) begin
+//				dout_reg_d = data[ain_reg];
+//			end
+//			else begin
+//				dout_reg_
+	
+	always @(negedge clk) begin
 		ain_reg <= ain;
 		if ( rst == 1 ) begin
 			address <= {SIZE{1'b0}};
@@ -37,8 +52,8 @@ module ringbuffer #(parameter SIZE=12, WIDTH=14)(
 			if ( rd_en == 1) begin
 				dout_reg <= data[ain_reg];
 			end
-			else
-				dout_reg <= {SIZE{1'b0}};
+//			else
+//				//dout_reg <= {SIZE{1'b0}};
 		end
 	end
 	

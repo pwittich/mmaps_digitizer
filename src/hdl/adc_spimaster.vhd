@@ -91,7 +91,7 @@ begin
               
             when SET1 =>
               state <= RUNNING;
-              adc_tx_addr <= X"01";
+				  adc_tx_addr <= X"01";
               if adc_mode = X"00" then
                 adc_tx_data <= X"09";
               elsif adc_mode = X"01" then

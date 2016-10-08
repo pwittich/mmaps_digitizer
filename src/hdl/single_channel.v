@@ -34,6 +34,7 @@
     input wire 	adc_frame,
     input wire 	adc_data_p, // single channel serial input
     output wire 	[WIDTH-1:0] data_out,
+	 //output wire	sc_wr_enable,
     input wire		[SIZE-1:0]  how_many,
     input wire 	[SIZE-1:0]  offset,
     input wire    read_request
@@ -47,6 +48,10 @@
    wire 	[SIZE-1:0] 	 	RD_ADDR;
 
    wire 	[WIDTH-1:0] 	cbdata;
+	
+	//initial cbdata = 12'haaa;
+	
+	//assign sc_wr_enable = WR_ENABLE_SM;
    
 
    lvds_receiver receiver_inst(

@@ -17,10 +17,12 @@ module lvds_receiver(
    reg 	[11:0] 	lvds_sr;
    wire 			 	LATCHFRAME, LATCHFRAME1;
    wire 	[11:0] 	lvds_rx;
-   reg 	[7:0] 	address;
-	reg 	[11:0] 	cbdata_r;
+   reg 	[7:0] 	address_q;
+	reg	[7:0]		address_d;
+	reg 	[11:0] 	cbdata_r_q;
+	reg	[11:0]	cbdata_r_d;
 	
-	assign CBDATA = cbdata_r;
+	assign CBDATA = cbdata_r_q;
 
    // shift register
    always @(negedge FASTCLK) 	
@@ -95,9 +97,12 @@ module lvds_receiver(
       end
     endcase
   end
-
+  
+  reg wenable_d;
+  reg wenable_q;
   // Assign reg'd outputs to state bits
-  assign WENABLE = state[0];
+  //assign WENABLE = state[0];
+  assign WENABLE = wenable_q;
 
   // sequential always block
   always @(negedge FASTCLK) begin
@@ -106,26 +111,73 @@ module lvds_receiver(
     else
       state <= nextstate;
   end
-
-  // datapath sequential always block
-  always @(posedge FASTCLK) begin
-    if (!RESET_n) begin
-      // Warning R18: No reset value set for datapath output address.   Assigning a reset value of 8'h00 based on value in reset state init 
-      address <= 8'h00;
-      // Warning R18: No reset value set for datapath output cbdata_r.   Assigning a reset value of 12'h000 based on value in reset state init 
-      cbdata_r <= 12'h000;
-    end
-    else begin
-      address <= 8'h00; // default
-      cbdata_r <= 12'h000; // default
-      case (nextstate)
-        wait4data : begin
-          address <= address + 8'h01;
-          cbdata_r <= lvds_sr;
-        end
-      endcase
-    end
+  
+  reg [2:0] timetowait_d;
+  reg [2:0] timetowait_q;
+  
+  always @ (posedge FASTCLK) begin
+	 if (!RESET_n) begin
+		cbdata_r_q <= 12'hfff;
+		address_q <= 8'h00;
+		timetowait_q <= 3'b000;
+		wenable_q <= 1'b0;
+	 end else begin
+		if (timetowait_d == 3'b011) begin
+			cbdata_r_q <= cbdata_r_d;
+			address_q <= address_d;
+			wenable_q <= wenable_d;
+			timetowait_q <= timetowait_d - 3'b001;
+		end else if (timetowait_d > 3'b000) begin
+			timetowait_q <= timetowait_d - 3'b001;
+		end else begin
+			cbdata_r_q <= 12'h000;
+			address_q <= 8'h00;
+			wenable_q <= 1'b0;
+		end			
+	 end
   end
+  
+  always @ (*) begin
+	 cbdata_r_d = cbdata_r_q;
+	 address_d = address_q;
+	 timetowait_d = timetowait_q;
+	 wenable_d = wenable_q;
+	 case (nextstate)
+		latchdata: begin
+			cbdata_r_d = lvds_sr;
+			address_d = address_q + 8'h01;
+			timetowait_d = 3'b011;
+			wenable_d = 1'b1;
+		end
+	 endcase
+  end
+  
+	 
+
+//  // datapath sequential always block
+//  always @(posedge FASTCLK) begin
+//    if (!RESET_n) begin
+//      // Warning R18: No reset value set for datapath output address.   Assigning a reset value of 8'h00 based on value in reset state init 
+//      address <= 8'h00;
+//      // Warning R18: No reset value set for datapath output cbdata_r.   Assigning a reset value of 12'h000 based on value in reset state init 
+//      cbdata_r <= 12'h000;
+//    end
+//    else begin
+//      address <= 8'h00; // default
+//      cbdata_r <= 12'h000; // default
+//		//cbdata_r <= lvds_sr;
+//      case (nextstate)
+////        wait4data : begin
+////          address <= address + 8'h01;
+////          cbdata_r <= lvds_sr;
+////        end
+//		  latchdata : begin
+//			 address <= address + 8'h01;
+//			 cbdata_r <= lvds_sr;
+//		  end
+//      endcase
+//    end
+//  end
 
   // This code allows you to see state names in simulation
   `ifndef SYNTHESIS
