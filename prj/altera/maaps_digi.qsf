@@ -73,6 +73,9 @@ set_location_assignment PIN_A8 -to TDC[0]
 set_location_assignment PIN_P2 -to ADC_nCS1
 set_location_assignment PIN_R1 -to ADC_SCLK1
 set_location_assignment PIN_P1 -to ADC_SDIO1
+set_location_assignment PIN_T2 -to ADC_nCS2
+set_location_assignment PIN_T1 -to ADC_SCLK2
+set_location_assignment PIN_R2 -to ADC_SDIO2
 set_global_assignment -name EDA_SIMULATION_TOOL "ModelSim-Altera (Verilog)"
 set_global_assignment -name EDA_OUTPUT_DATA_FORMAT "VERILOG HDL" -section_id eda_simulation
 set_location_assignment PIN_K2 -to ADCCLK1_p
@@ -181,6 +184,10 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[0]
 set_instance_assignment -name IO_STANDARD "2.5 V" -to ADC_nCS1
 set_instance_assignment -name IO_STANDARD "2.5 V" -to ADC_SCLK1
 set_instance_assignment -name IO_STANDARD "2.5 V" -to ADC_SDIO1
+set_instance_assignment -name IO_STANDARD "2.5 V" -to ADC_nCS2
+set_instance_assignment -name IO_STANDARD "2.5 V" -to ADC_SCLK2
+set_instance_assignment -name IO_STANDARD "2.5 V" -to ADC_SDIO2
+
 set_instance_assignment -name IO_STANDARD LVDS -to ADCCLK1_p
 set_instance_assignment -name IO_STANDARD LVDS -to adcframe_p
 set_instance_assignment -name IO_STANDARD LVDS -to adcdata_p[0]
