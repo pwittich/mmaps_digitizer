@@ -73,6 +73,9 @@ set_location_assignment PIN_A8 -to TDC[0]
 set_location_assignment PIN_P2 -to ADC_nCS1
 set_location_assignment PIN_R1 -to ADC_SCLK1
 set_location_assignment PIN_P1 -to ADC_SDIO1
+set_location_assignment PIN_T2 -to ADC_nCS2
+set_location_assignment PIN_T1 -to ADC_SCLK2
+set_location_assignment PIN_R2 -to ADC_SDIO2
 set_global_assignment -name EDA_SIMULATION_TOOL "ModelSim-Altera (Verilog)"
 set_global_assignment -name EDA_OUTPUT_DATA_FORMAT "VERILOG HDL" -section_id eda_simulation
 set_location_assignment PIN_K2 -to ADCCLK1_p
@@ -174,9 +177,6 @@ set_global_assignment -name EDA_DESIGN_INSTANCE_NAME maaps_daq_toplevel -section
 set_global_assignment -name EDA_TEST_BENCH_RUN_SIM_FOR "2000 ns" -section_id digi_testbench
 set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME maaps_daq_toplevel_vlg_tst -section_id digi_testbench
 set_global_assignment -name EDA_TEST_BENCH_FILE simulation/modelsim/maaps_daq_toplevel.vt -section_id digi_testbench
-set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
-set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
-set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[3]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[2]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[1]
@@ -184,6 +184,10 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[0]
 set_instance_assignment -name IO_STANDARD "2.5 V" -to ADC_nCS1
 set_instance_assignment -name IO_STANDARD "2.5 V" -to ADC_SCLK1
 set_instance_assignment -name IO_STANDARD "2.5 V" -to ADC_SDIO1
+set_instance_assignment -name IO_STANDARD "2.5 V" -to ADC_nCS2
+set_instance_assignment -name IO_STANDARD "2.5 V" -to ADC_SCLK2
+set_instance_assignment -name IO_STANDARD "2.5 V" -to ADC_SDIO2
+
 set_instance_assignment -name IO_STANDARD LVDS -to ADCCLK1_p
 set_instance_assignment -name IO_STANDARD LVDS -to adcframe_p
 set_instance_assignment -name IO_STANDARD LVDS -to adcdata_p[0]
@@ -254,7 +258,7 @@ set_location_assignment PIN_G17 -to SPI_SCLK
 set_location_assignment PIN_G18 -to "SPI_SCLK(n)"
 set_location_assignment PIN_H17 -to SPI_SS
 set_location_assignment PIN_H18 -to "SPI_SS(n)"
-set_global_assignment -name VERILOG_FILE ../../src/hdl/spi_cmd_sm.v
+set_global_assignment -name VERILOG_FILE ../../src/hdl/spi_master.v
 set_global_assignment -name VERILOG_FILE ../../src/hdl/spi_slave.v
 set_global_assignment -name VHDL_FILE ../../src/hdl/lvdsreceiver.vhd
 set_global_assignment -name QIP_FILE fifo.qip
@@ -279,8 +283,12 @@ set_global_assignment -name VERILOG_FILE ../../src/hdl/lvds_transmitter.v
 set_global_assignment -name VERILOG_TEST_BENCH_FILE simulation/modelsim/maaps_daq_toplevel.vt
 set_global_assignment -name VERILOG_FILE simulation/modelsim/maaps_daq_toplevel_vlg_tst.v
 set_global_assignment -name QIP_FILE local_altddio_in.qip
-set_global_assignment -name STRATIXIII_UPDATE_MODE STANDARD
-set_global_assignment -name USER_START_UP_CLOCK OFF
 set_global_assignment -name VERILOG_FILE ../../src/hdl/single_channel_tb.v
 set_global_assignment -name VERILOG_FILE ../../src/hdl/lvds_receiver_tb.v
+set_global_assignment -name SYSTEMVERILOG_FILE ../../src/hdl/spi_demo_sm.sv
+set_global_assignment -name VERILOG_FILE ../../src/hdl/spi_defines.v
+set_global_assignment -name VERILOG_FILE ../../src/hdl/spi_sm.v
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

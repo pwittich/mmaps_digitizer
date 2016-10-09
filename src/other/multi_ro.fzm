@@ -1,4 +1,4 @@
-## File last modified by Fizzim: 10:41:20 AM on 9/26/16
+## File last modified by Fizzim: 1:39:55 PM on 10/4/16
 <version>
    14.02.26
 </version>
@@ -473,7 +473,7 @@
             </status>
          </vis>
          <type>
-         reg
+         regdp
             <status>
             GLOBAL_VAR
             </status>
@@ -529,7 +529,7 @@
             </status>
          </vis>
          <type>
-         reg
+         regdp
             <status>
             GLOBAL_VAR
             </status>
@@ -927,14 +927,14 @@ true
 20
 </TableSpace>
 <TableFont>
-Dialog.plain
+Abyssinica SIL
 11
 </TableFont>
 <TableColor>
 -16777216
 </TableColor>
 <Font>
-Dialog.plain
+Abyssinica SIL
 11
 </Font>
 <Grid>
