@@ -38,7 +38,7 @@ module ringbuffer #(parameter SIZE=12, WIDTH=14)(
 //			else begin
 //				dout_reg_
 	
-	always @(negedge clk) begin
+	always @(posedge clk) begin
 		ain_reg <= ain;
 		if ( rst == 1 ) begin
 			address <= {SIZE{1'b0}};

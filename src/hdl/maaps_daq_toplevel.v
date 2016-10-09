@@ -79,7 +79,7 @@
    wire [15:0] 	     dout;
 	
    wire              adc_ready1, adc_ready2; // output
-   wire              adc_flag1, adc_flag2;
+   reg              adc_flag1, adc_flag2;
    reg [7:0]         adc_mode1, adc_mode2;
 	
 	reg [31:0] ticks;
@@ -99,7 +99,7 @@
 		if (ticks > 100000) begin
 			adc_flag1 = 1'b1;
 			adc_flag2 = 1'b1;
-			if (ticks > 100010) begin
+			if (ticks > 100100) begin
 				adc_flag1 = 1'b0;
 				adc_flag2 = 1'b0;
 			end
@@ -136,27 +136,27 @@
    wire              fifo_empty;
    wire [7:0]        offset;
    wire [7:0]        howmany;
-	wire					trigger;
-	wire					read_request;
+	reg					trigger;
+	reg					read_request;
 	
    // module to contain the input from the digitizer channels.
    // configurable how many it controls by the CHAN variable.
    // howmany, offset should be made configurable - hardwired for now
    // DAVAIL and TRIGGER should also not be hardwired to their current widths.
-   digi_many #(.CHAN(8)) digi_many_inst(
-                                        .RST(rst&adc_ready1&adc_ready2), 
-                                        .CK50(sysclk), 
-                                        .adc_clk(adcfastclk_p), 
-                                        .adc_frame(adcframe_p),
-                                        .adcdata_p(adcdata_p), 
-                                        .DOUT(dout), // output to remote
-                                        .ZYNQ_RD_REQUEST(fifo_rd_one),
-                                        .GLBL_EMPTY(fifo_empty),
-                                        .howmany(howmany), // configuration
-                                        .offset(offset), // configuration
-                                        .DAVAIL(TDC[7:0]), // FIXME
-                                        .TRIGGER(TDC[16:8]) // FIXME -- replace with PMT_trigger?
-                                        );
+//   digi_many #(.CHAN(8)) digi_many_inst(
+//                                        .RST(rst&adc_ready1&adc_ready2), 
+//                                        .CK50(sysclk), 
+//                                        .adc_clk(adcfastclk_p), 
+//                                        .adc_frame(adcframe_p),
+//                                        .adcdata_p(adcdata_p), 
+//                                        .DOUT(dout), // output to remote
+//                                        .ZYNQ_RD_REQUEST(fifo_rd_one),
+//                                        .GLBL_EMPTY(fifo_empty),
+//                                        .howmany(howmany), // configuration
+//                                        .offset(offset), // configuration
+//                                        .DAVAIL(TDC[7:0]), // FIXME
+//                                        .TRIGGER(TDC[16:8]) // FIXME -- replace with PMT_trigger?
+//                                        );
 
 /* -----\/----- EXCLUDED -----\/-----
    // counter just to twiddle the LED on the digitzer
@@ -171,9 +171,11 @@
  -----/\----- EXCLUDED -----/\----- */
  
 
-	wire [11:0] adc_data_out;
+	wire [11:0] adc_data_out, adc_data_out2;
 	reg [7:0] adc_addr_out;
 	reg adc_wenable;
+	wire adc_wenable_test;
+	wire adc_addr_out_test;
 	
 	//single_channel_tb single_channel_tb_inst ();
 	
@@ -210,11 +212,20 @@
 	);
 	
 	//lvds_receiver_tb lvds_receiver_tb_inst();
-	
+	lvds_receiver lvds_rec_inst_test(
+	 					.sysclk(sysclk),
+	 					.FASTCLK(adcfastclk_p),
+							.FRAME(adcframe_p),
+	 					.DATA(adcdata_p[1]),
+							.RESET_n(~rst),
+							.CBDATA(adc_data_out2),
+							.CBADDRESS(adc_addr_out_test),
+							.WENABLE(adc_wenable_test)
+	);
 	// Test: lvdsreceiver.vhd
 	// Trying to read single channel
 	// synthesis read_comments_as_HDL off
-	//      lvdsreceiver lvds_rec_inst(
+	//      lvdsreceiver lvds_rec_inst_test(
 	// 					.sysclk(sysclk),
 	// 					.FASTCLK(adcfastclk_p),
 	//						.FRAME(adcframe_p),
@@ -374,7 +385,8 @@
                                                 .miso(SPI_MISO),
                                                 .sck(SPI_SCLK),
                                                 .done(SPI_done),
-                                                .din(SPI_tx_reg),
+                                                //.din(SPI_tx_reg),
+																.din(adc_data_out[7:0]),
                                                 //.din(hack),
                                                 .dout(SPI_s)
                                                 );
@@ -387,7 +399,8 @@
    // L1: green LED
    assign L0 = (SPI_addr == 4'h0)&(SPI_cmd == `WR); // blue LED
    //assign L1 = ctrl_regs[0][7]; // green LED
-   assign L1 = SPI_tx_reg[7]; // green LED
+   //assign L1 = SPI_tx_reg[7]; // green LED
+	assign L1 = read_request;
 
    // store slave's data
    always @(posedge sysclk) begin
@@ -396,7 +409,37 @@
       end
    end
 
-   
+   // 16 control registers
+   reg [ZSPI_WORDSIZE-1:0]  ctrl_regs [15:0];
+   wire [7:0] 		    FIFO_PK_SZ;
+
+   assign howmany = ctrl_regs[1] ;
+   assign offset = ctrl_regs[2] ;
+   assign FIFO_PK_SZ = ctrl_regs[3];
+	//assign trigger = ctrl_regs[4];
+	//assign read_request = ctrl_regs[5];
+	
+	always @(*) begin
+		trigger = 1'b0;
+		read_request = 1'b0;
+		if (ticks > 32'h1dcd6500) begin
+			trigger = 1'b1;
+			read_request = 1'b1;
+		end
+//		if (ticks > 32'h1dcd7500) begin
+//			trigger = 1'b0;
+//			read_request = 1'b0;
+//		end
+	end
+				
+
+   // preload some registers
+   initial begin
+      ctrl_regs[0] = 8'haa;
+      ctrl_regs[1] = 8'hff;
+      //ctrl_regs[2] = 8'ha5;
+      //ctrl_regs[3] = 8'h5a;
+   end
 
    // state machine outputs
    wire       rd_select, wr_select, fifo_select, latch_cmd, fifo_rd_one;
@@ -439,23 +482,6 @@
               );
    // END SPI INTERFACE
    
-   // 16 control registers
-   reg [ZSPI_WORDSIZE-1:0]  ctrl_regs [15:0];
-   wire [7:0] 		    FIFO_PK_SZ;
-
-   assign howmany = ctrl_regs[1] ;
-   assign offset = ctrl_regs[2] ;
-   assign FIFO_PK_SZ = ctrl_regs[3];
-	assign trigger = ctrl_regs[4];
-	assign read_request = ctrl_regs[5];
-
-   // preload some registers
-   initial begin
-      ctrl_regs[0] = 8'haa;
-      ctrl_regs[1] = 8'h55;
-      ctrl_regs[2] = 8'ha5;
-      ctrl_regs[3] = 8'h5a;
-   end
 
    //--------------------------------------------------
    // self-reset on startup for now. This is a hack.

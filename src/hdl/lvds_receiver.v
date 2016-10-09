@@ -4,7 +4,6 @@
 // vhdl/verilog designs in modelsim-ae for quartus II 13.1
 // wittich 7/16
 module lvds_receiver(
-<<<<<<< HEAD
 		     input wire FASTCLK,
 		     input wire FRAME,
 		     input wire  DATA,
@@ -97,38 +96,43 @@ module lvds_receiver(
       endcase
    end
 
-   // Assign reg'd outputs to state bits
-
-   // sequential always block
-   always @(posedge FASTCLK) begin
-      if (!RESET_n)
-        state <= init;
-      else
-        state <= nextstate;
-   end
-
-   // datapath sequential always block
-   always @(posedge FASTCLK) begin
-      if (!RESET_n) begin
-         WENABLE <= 0;
-         address <= 8'h00;
-         cbdata_r <= 12'h000;
-      end
-      else begin
-         WENABLE <= 0; // default
-         address <= 8'h00; // default
-         cbdata_r <= 12'h000; // default
-         case (nextstate)
-           latchdata : begin
-              WENABLE <= 1;
-           end
-           wait4data : begin
-              address <= address + 8'h01;
-              cbdata_r <= lvds_sr;
-           end
-         endcase
-      end
-  end
+// (AF) Peter's version that I'm modifying
+// to try to get lvds_receiver.v to work
+// (meaning holding Wenable high long enough
+// for the ringbuffer to store it in)
+//
+//   // Assign reg'd outputs to state bits
+//
+//   // sequential always block
+//   always @(posedge FASTCLK) begin
+//      if (!RESET_n)
+//        state <= init;
+//      else
+//        state <= nextstate;
+//   end
+//
+//   // datapath sequential always block
+//   always @(posedge FASTCLK) begin
+//      if (!RESET_n) begin
+//         WENABLE <= 0;
+//         address <= 8'h00;
+//         cbdata_r <= 12'h000;
+//      end
+//      else begin
+//         WENABLE <= 0; // default
+//         address <= 8'h00; // default
+//         cbdata_r <= 12'h000; // default
+//         case (nextstate)
+//           latchdata : begin
+//              WENABLE <= 1;
+//           end
+//           wait4data : begin
+//              address <= address + 8'h01;
+//              cbdata_r <= lvds_sr;
+//           end
+//         endcase
+//      end
+//  end
   
   reg wenable_d;
   reg wenable_q;
@@ -154,7 +158,7 @@ module lvds_receiver(
 		timetowait_q <= 3'b000;
 		wenable_q <= 1'b0;
 	 end else begin
-		if (timetowait_d == 3'b011) begin
+		if (timetowait_d == 3'b000) begin
 			cbdata_r_q <= cbdata_r_d;
 			address_q <= address_d;
 			wenable_q <= wenable_d;
@@ -178,7 +182,7 @@ module lvds_receiver(
 		latchdata: begin
 			cbdata_r_d = lvds_sr;
 			address_d = address_q + 8'h01;
-			timetowait_d = 3'b011;
+			timetowait_d = 3'b000;
 			wenable_d = 1'b1;
 		end
 	 endcase

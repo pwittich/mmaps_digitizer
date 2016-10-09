@@ -54,7 +54,7 @@
 	//assign sc_wr_enable = WR_ENABLE_SM;
    
 
-   lvdsreceiver receiver_inst(
+   lvds_receiver receiver_inst(
 			      .sysclk(clk),
 			      .DATA(adc_data_p),
 			      .FRAME(adc_frame),
