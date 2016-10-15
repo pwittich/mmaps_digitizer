@@ -4,7 +4,8 @@
 `default_nettype none
  
 module ringbuffer #(parameter SIZE=12, WIDTH=14)(
-	input wire clk, 
+	input wire sysclk,
+	input wire fastclk,
 	input wire wr_en, 
 	input wire rd_en, 
 	input wire rst,
@@ -38,20 +39,29 @@ module ringbuffer #(parameter SIZE=12, WIDTH=14)(
 //			else begin
 //				dout_reg_
 	
-	always @(posedge clk) begin
+	always @(posedge sysclk) begin
+		if (rst == 1) begin
+			dout_reg <= {SIZE{1'b0}};
+		end
+		else if (rd_en == 1) begin
+			dout_reg <= data[ain_reg];
+		end
+	end
+	
+	always @(posedge sysclk) begin
 		ain_reg <= ain;
 		if ( rst == 1 ) begin
 			address <= {SIZE{1'b0}};
-			dout_reg <= {SIZE{1'b0}};
+			//dout_reg <= {SIZE{1'b0}};
 		end
 		else begin 
 			if ( wr_en == 1 ) begin
 				address <= address + 1'b1;
 				data[address] <= din;
 			end
-			if ( rd_en == 1) begin
-				dout_reg <= data[ain_reg];
-			end
+//			if ( rd_en == 1) begin
+//				dout_reg <= data[ain_reg];
+//			end
 //			else
 //				//dout_reg <= {SIZE{1'b0}};
 		end

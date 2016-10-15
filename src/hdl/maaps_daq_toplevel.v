@@ -75,12 +75,16 @@
    // output clocks to the two octal ADCs
    assign ADCCLK1_p = sysclk;
    assign ADCCLK2_p = sysclk;
+	
+	reg [ZSPI_WORDSIZE-1:0]  ctrl_regs [15:0];
 
    wire [15:0] 	     dout;
 	
    wire              adc_ready1, adc_ready2; // output
    reg              adc_flag1, adc_flag2;
-   reg [7:0]         adc_mode1, adc_mode2;
+   //reg [7:0]         adc_mode1, adc_mode2;
+	wire [7:0]			adc_mode1_d, adc_mode2_d;
+	reg  [7:0]			adc_mode1_q, adc_mode2_q;
 	
 	reg [31:0] ticks;
 	always @(posedge sysclk) begin
@@ -91,25 +95,40 @@
 		end
 	end
 	
-	always @ (*) begin
-		adc_mode1 = 8'h09;
-		adc_mode2 = 8'h09;
-		adc_flag1 = 1'b0;
-		adc_flag2 = 1'b0;
-		if (ticks > 100000) begin
+	// ADC_mode_config
+	// -------------------------------------------------------------
+	//
+	// Detects if user has changed the ADC mode
+	// and sets each adc flag to signal
+	// to adc_spimaster that a new adc
+	// spi transaction must occur to update
+	// the ADC mode
+	
+	always @(*) begin
+		if (adc_mode1_q != adc_mode1_d) begin
 			adc_flag1 = 1'b1;
+		end else begin
+			adc_flag1 = 1'b0;
+		end
+		if (adc_mode2_q != adc_mode2_d) begin
 			adc_flag2 = 1'b1;
-			if (ticks > 100100) begin
-				adc_flag1 = 1'b0;
-				adc_flag2 = 1'b0;
-			end
+		end else begin
+			adc_flag2 = 1'b0;
 		end
 	end
-
-   // ugh
-
-   // SPI controller to configure the external ADCs
+	
+	always @(posedge sysclk) begin
+		adc_mode1_q <= adc_mode1_d;
+		adc_mode2_q <= adc_mode2_d;
+	end
+	
+	// End ADC_mode_config
+	// -------------------------------------------------------------
+	
+	
+   // ADC_SPI_controller to configure the external ADCs
    // one each for each octal ADC
+	// -------------------------------------------------------------
 
    adc_spimaster adc_spimaster_inst_1(
                                       .sys_clk(sysclk),
@@ -118,9 +137,10 @@
                                       .adc_sdio(ADC_SDIO1),
                                       .adc_cs(ADC_nCS1),
                                       .adc_flag(adc_flag1),
-                                      .adc_mode(adc_mode1),
+                                      .adc_mode(adc_mode1_q),
                                       .adc_ready(adc_ready1)
                                       );
+												  
    adc_spimaster adc_spimaster_inst_2(
                                       .sys_clk(sysclk),
                                       .reset_n(~rst),
@@ -128,37 +148,41 @@
                                       .adc_sdio(ADC_SDIO2),
                                       .adc_cs(ADC_nCS2),
                                       .adc_flag(adc_flag2),
-                                      .adc_mode(adc_mode2),
+                                      .adc_mode(adc_mode2_q),
                                       .adc_ready(adc_ready2)
                                       );
+												  
+	// End ADC_SPI_controller
+	// -------------------------------------------------------------
      
 
    wire              fifo_empty;
    wire [7:0]        offset;
-   wire [7:0]        howmany;
-	reg					trigger;
-	reg					read_request;
+   //wire [7:0]        howmany;
+	reg [11:0]			howmany;
+	wire					trigger;
+	wire					read_request;
 	
    // module to contain the input from the digitizer channels.
    // configurable how many it controls by the CHAN variable.
    // howmany, offset should be made configurable - hardwired for now
    // DAVAIL and TRIGGER should also not be hardwired to their current widths.
-//   digi_many #(.CHAN(8)) digi_many_inst(
-//                                        .RST(rst&adc_ready1&adc_ready2), 
-//                                        .CK50(sysclk), 
-//                                        .adc_clk(adcfastclk_p), 
-//                                        .adc_frame(adcframe_p),
-//                                        .adcdata_p(adcdata_p), 
-//                                        .DOUT(dout), // output to remote
-//                                        .ZYNQ_RD_REQUEST(fifo_rd_one),
-//                                        .GLBL_EMPTY(fifo_empty),
-//                                        .howmany(howmany), // configuration
-//                                        .offset(offset), // configuration
-//                                        .DAVAIL(TDC[7:0]), // FIXME
-//                                        .TRIGGER(TDC[16:8]) // FIXME -- replace with PMT_trigger?
-//                                        );
+	//   digi_many #(.CHAN(8)) digi_many_inst(
+	//                                        .RST(rst&adc_ready1&adc_ready2), 
+	//                                        .CK50(sysclk), 
+	//                                        .adc_clk(adcfastclk_p), 
+	//                                        .adc_frame(adcframe_p),
+	//                                        .adcdata_p(adcdata_p), 
+	//                                        .DOUT(dout), // output to remote
+	//                                        .ZYNQ_RD_REQUEST(fifo_rd_one),
+	//                                        .GLBL_EMPTY(fifo_empty),
+	//                                        .howmany(howmany), // configuration
+	//                                        .offset(offset), // configuration
+	//                                        .DAVAIL(TDC[7:0]), // FIXME
+	//                                        .TRIGGER(TDC[16:8]) // FIXME -- replace with PMT_trigger?
+	//                                        );
 
-/* -----\/----- EXCLUDED -----\/-----
+	/* -----\/----- EXCLUDED -----\/-----
    // counter just to twiddle the LED on the digitzer
    wire [31:0]       dcount;
    bc_counter #(.BITS(32)) counter_inst0(
@@ -168,7 +192,7 @@
                                          );
    assign L0 = dcount[26]; // should be about 1 Hz
    assign L1 = dcount[25]; // should be 2x as fast as L1
- -----/\----- EXCLUDED -----/\----- */
+	-----/\----- EXCLUDED -----/\----- */
  
 
 	wire [11:0] adc_data_out, adc_data_out2;
@@ -176,8 +200,6 @@
 	reg adc_wenable;
 	wire adc_wenable_test;
 	wire adc_addr_out_test;
-	
-	//single_channel_tb single_channel_tb_inst ();
 	
 	wire sc_wr_enable;
 	reg [11:0] adc_data_out_reg_q;
@@ -195,7 +217,44 @@
 		adc_data_out_reg_q = adc_data_out_reg_d;
 	end
 	
-	// Test: single_channel.v
+	reg [11:0] RD_ADDR_d, RD_ADDR_q;
+	
+	always @ (*) begin
+		if (!SPI_SS) begin
+			if (SPI_done) begin
+				RD_ADDR_d = RD_ADDR_q + 12'h001;
+			end else begin
+				RD_ADDR_d = RD_ADDR_q;
+			end
+		end else begin
+			RD_ADDR_d = 12'h000;
+		end
+	end
+	
+	always @ (posedge sysclk) begin
+		if (rst) begin
+			RD_ADDR_q <= 12'h000;
+		end else begin
+			RD_ADDR_q <= RD_ADDR_d;
+		end
+	end
+	
+	// Test_Modules:
+	// -------------------------------------------------------------
+	//
+	// Test single_channel, lvds_receiver.v
+	// and lvdsreceiver.vhd. Which output goes
+	// to the SPI slave to be sent to the zynq
+	// is controlled by ctrl_regs[7]
+	
+	wire [11:0] adc_data_out_verilog;
+	wire [11:0] adc_data_out_vhdl;
+	wire [11:0] adc_data_out_singlechannel;
+	reg [11:0] adc_data_out_test;
+	reg [7:0] adc_data_out_word;
+	
+	localparam channelUnderTest = 10;
+	
 	single_channel single_channel_inst(
 							.clk(sysclk),
 							.reset(rst),
@@ -203,164 +262,74 @@
 							.trigger(trigger),
 							.adc_fast_clk(adcfastclk_p),
 							.adc_frame(adcframe_p),
-							.adc_data_p(adcdata_p[1]),
-							.data_out(adc_data_out),
+							.adc_data_p(adcdata_p[channelUnderTest]),
+							.data_out(adc_data_out_singlechannel),
 							//.sc_wr_enable(sc_wr_enable),
 							.how_many(howmany),
 							.offset(offset),
-							.read_request(read_request)
+							.read_request(read_request),
+							.SPI_done(SPI_done),
+							.read_address(RD_ADDR_q)
 	);
 	
-	//lvds_receiver_tb lvds_receiver_tb_inst();
-	lvds_receiver lvds_rec_inst_test(
+	//	lvds_receiver lvds_rec_inst_test(
+	//	 					.sysclk(sysclk),
+	//	 					.FASTCLK(adcfastclk_p),
+	//							.FRAME(adcframe_p),
+	//	 					.DATA(adcdata_p[channelUnderTest]),
+	//							.RESET_n(~rst),
+	//							.CBDATA(adc_data_out_verilog),
+	//							.CBADDRESS(adc_addr_out_test),
+	//							.WENABLE(adc_wenable_test)
+	//	);
+	
+	lvdsreceiver lvdsrec_inst_test(
 	 					.sysclk(sysclk),
 	 					.FASTCLK(adcfastclk_p),
-							.FRAME(adcframe_p),
-	 					.DATA(adcdata_p[1]),
-							.RESET_n(~rst),
-							.CBDATA(adc_data_out2),
-							.CBADDRESS(adc_addr_out_test),
-							.WENABLE(adc_wenable_test)
+						.FRAME(adcframe_p),
+	 					.DATA(adcdata_p[channelUnderTest]),
+						.RESET_n(~rst),
+						.CBDATA(adc_data_out_vhdl),
+						//.CBADDRESS(adc_addr_out_test),
+						.WENABLE(adc_wenable_test)
 	);
-	// Test: lvdsreceiver.vhd
-	// Trying to read single channel
-	// synthesis read_comments_as_HDL off
-	//      lvdsreceiver lvds_rec_inst_test(
-	// 					.sysclk(sysclk),
-	// 					.FASTCLK(adcfastclk_p),
-	//						.FRAME(adcframe_p),
-	// 					.DATA(adcdata_p[1]),
-	//						.RESET_n(~rst),
-	//						.CBDATA(adc_data_out),
-	//						.CBADDRESS(adc_addr_out),
-	//						.WENABLE(adc_wenable)
-	//		);
-	//	synthesis read_comments_as_HDL off
-
-// (AF) Pseudo-state machine to handle communication from
-// the zynq. This uses a 3-word cycle, where the command
-// and register are sent in the first byte, the value to
-// write is sent in the second byte if command is a write
-// and a dummy byte if command is a read. The third byte
-// is always a dummy and is there to allow time for the
-// slave to respond. This is being replaced by Peter's
-// SPI state machine which has a different structure.
-// Keeping this here commented out just in case.
-//	
-//	
-//   wire 	     SPI_done;
-//	wire [ZSPI_WORDSIZE-1:0] SPI_datatomaster;
-//	wire [ZSPI_WORDSIZE-1:0] SPI_datafrommaster;
-//
-//   spi_slave #(.WORDSIZE(ZSPI_WORDSIZE)) spi_slave_inst(
-//							.clk(sysclk),
-//							.rst(rst),
-//							.ss(SPI_SS), // ACTIVE LOW, input from master
-//							.mosi(SPI_MOSI),
-//							.miso(SPI_MISO),
-//							.sck(SPI_SCLK),
-//							.done(SPI_done),
-//							.din(SPI_datatomaster),
-//							.dout(SPI_datafrommaster)
-//							);
-//							
-//	// (AF) SPI structure for now:
-//	// master request: 3 bytes
-//	// - READ:  CCCCRRRR DDDDDDDD DDDDDDDD
-//	// - WRITE: CCCCRRRR VVVVVVVV DDDDDDDD
-//	// where C = command, R = Register address,
-//	// V = value to write, D = dummy data
-//	// slave response: 3 bytes
-//	// - DDDDDDDD DDDDDDDD VVVVVVVV, V = value to read
-//	
-//	reg [ZSPI_WORDSIZE-1:0] ctrl_regs [15:0];
-//	
-//	reg [3:0] command_d;
-//	reg [3:0] command_q;
-//	reg [3:0] register_d;
-//	reg [3:0] register_q;
-//	reg [7:0] value;
-//	reg SPI_SM_done;
-//	wire SPI_SM_rd_select;
-//	wire SPI_SM_wr_select;
-//	
-//	reg [1:0] byte_ct_q;
-//	reg [1:0] byte_ct_d;
-//	reg [7:0] SPI_datatomaster_q;
-//	reg [7:0] SPI_datatomaster_d;
-//
-//	
-//	//assign SPI_datatomaster = SPI_datatomaster_q;
-//	assign SPI_datatomaster = adc_data_out[11:4];
-//	//assign SPI_datatomaster = adc_data_out_reg_q[11:4];
-//	
-//	reg [7:0] control_regs_d[15:0];
-//	reg [7:0] control_regs_q[15:0];
-//	
-//	integer i;
-//	
-//	always @ (*) begin
-//		
-//		byte_ct_d = byte_ct_q;
-//		SPI_datatomaster_d = SPI_datatomaster_q;
-//		command_d = command_q;
-//		register_d = register_q;
-//		for (i = 0; i < 16; i = i + 1) begin
-//			control_regs_d[i] = control_regs_q[i];
-//		end
-//		
-//		if (SPI_SS) begin
-//			byte_ct_d = 2'b00;
-//			SPI_datatomaster_d = 8'h99;
-//		end
-//		
-//		// Handles the communication protocol
-//		// by checking which byte we are currently
-//		// processing
-//		if (SPI_done) begin
-//			if (byte_ct_q == 2'b00) begin
-//				command_d = SPI_datafrommaster[7:4];
-//				register_d = SPI_datafrommaster[3:0];
-//				if (command_d == 4'b0001) begin // If CMD == RD
-//					SPI_datatomaster_d = control_regs_d[register_d]; // sends value of reg (takes 2 word cycles to show up)
-//				end
-//				byte_ct_d = 2'b01;
-//			end else if (byte_ct_q == 2'b01) begin
-//				if (command_q == 4'b0010) begin // IF CMD == WR
-//					control_regs_d[register_q] = SPI_datafrommaster; // writes to reg value sent from master
-//				end
-//				byte_ct_d = 2'b10;
-//			end else if (byte_ct_q == 2'b10) begin // Need this extra byte to complete communication
-//				SPI_datatomaster_d = 8'haa;
-//				byte_ct_d = 2'b00;
-//			end
-////			end else if (byte_ct_q == 2'b11) begin
-////				SPI_datatomaster_d = 8'h88;
-////				byte_ct_d = 2'b00;
-//		end
-//	end
-//	
-//	always @ (posedge sysclk) begin
-//		if (rst) begin
-//			byte_ct_q <= 2'b00;
-//			SPI_datatomaster_q <= 8'h00;
-//			command_q <= 4'h00;
-//			register_q <= 4'h00;
-//			for (i = 0; i < 16; i = i + 1) begin
-//				control_regs_q[i] <= 8'h00;
-//			end
-//		end else begin
-//			byte_ct_q <= byte_ct_d;
-//			SPI_datatomaster_q <= SPI_datatomaster_d;
-//			command_q <= command_d;
-//			register_q <= register_d;
-//			for (i = 0; i < 16; i = i + 1) begin
-//				control_regs_q[i] = control_regs_d[i];
-//			end
-//		end
-//	end
-
-	// spi slave for ZYNQ communications
+	
+	// Check ctrl_regs[7] for which module to test
+	always @(*) begin
+		adc_data_out_test = 12'hccc;
+		if (ctrl_regs[7] == 8'h00) begin
+			adc_data_out_test = adc_data_out_verilog;
+		end else if (ctrl_regs[7] == 8'h01) begin
+			adc_data_out_test = adc_data_out_vhdl;
+		end else if (ctrl_regs[7] == 8'h02) begin
+			adc_data_out_test = adc_data_out_singlechannel;
+		end else if (ctrl_regs[7] == 8'h03) begin
+			adc_data_out_test = ctrl_regs[1];
+		end
+	end
+	
+	// Check ctrl_regs[8] for which 8 bits to send,
+	// lowest 8 or highest 8
+	always @(*) begin
+		if (ctrl_regs[8] == 8'h00) begin
+			adc_data_out_word = adc_data_out_test[11:4];
+		end else if (ctrl_regs[8] == 8'h01) begin
+			adc_data_out_word = adc_data_out_test[7:0];
+		end else begin
+			adc_data_out_word = 8'hcc;
+		end
+	end
+	
+	// END Test_Modules
+	// -------------------------------------------------------------
+	
+	
+	
+	// SPI_Interface for ZYNQ communications
+	// -------------------------------------------------------------
+	// Receives commands from the zynq and sends
+	// back ADC samples to be stored
+	
    localparam ZSPI_WORDSIZE = 8;
 	
    wire              SPI_done;
@@ -386,7 +355,7 @@
                                                 .sck(SPI_SCLK),
                                                 .done(SPI_done),
                                                 //.din(SPI_tx_reg),
-																.din(adc_data_out[7:0]),
+																.din(adc_data_out_word),
                                                 //.din(hack),
                                                 .dout(SPI_s)
                                                 );
@@ -410,35 +379,49 @@
    end
 
    // 16 control registers
-   reg [ZSPI_WORDSIZE-1:0]  ctrl_regs [15:0];
+
    wire [7:0] 		    FIFO_PK_SZ;
 
-   assign howmany = ctrl_regs[1] ;
+	initial howmany = 12'h400;
+   //assign howmany = (ctrl_regs[1] << 16) | (ctrl_regs[0]);
    assign offset = ctrl_regs[2] ;
    assign FIFO_PK_SZ = ctrl_regs[3];
 	//assign trigger = ctrl_regs[4];
 	//assign read_request = ctrl_regs[5];
+	assign adc_mode1_d  = ctrl_regs[6];
+	assign adc_mode2_d  = ctrl_regs[6];
 	
-	always @(*) begin
-		trigger = 1'b0;
-		read_request = 1'b0;
-		if (ticks > 32'h1dcd6500) begin
-			trigger = 1'b1;
-			read_request = 1'b1;
-		end
-//		if (ticks > 32'h1dcd7500) begin
-//			trigger = 1'b0;
-//			read_request = 1'b0;
+	assign trigger = ~SPI_SS;
+	//assign trigger = ctrl_regs[10][0];
+	assign read_request = ~SPI_SS;
+	//assign read_request = ctrl_regs[11][0];
+	
+//	always @(*) begin
+//		trigger = 1'b0;
+//		//read_request = 1'b0;
+//		if (ticks > 32'h0EE6B280) begin
+//			trigger = 1'b1;
+//			//read_request = 1'b1;
 //		end
-	end
+//		if (ticks > 32'h0EE6B290) begin
+//			trigger = 1'b0;
+//			//read_request = 1'b0;
+//		end
+//	end
 				
 
    // preload some registers
    initial begin
-      ctrl_regs[0] = 8'haa;
-      ctrl_regs[1] = 8'hff;
+      ctrl_regs[0] = 8'h00; // lowest 8 bits of howmany
+      ctrl_regs[1] = 8'h04; // highest 8 bits of howmany
       //ctrl_regs[2] = 8'ha5;
       //ctrl_regs[3] = 8'h5a;
+		ctrl_regs[6] = 8'h09; // ADC mode
+		ctrl_regs[7] = 8'h00; // Which module to test, lvds_rec.v, lvdsrec.vhd, or sc
+		ctrl_regs[8] = 8'h00; // Use highest 8 bits or lowest 8 bits
+		ctrl_regs[9] = 8'h00; // Which channel to test
+		ctrl_regs[10] = 8'h00; // trigger
+		ctrl_regs[11] = 8'h00; // read_request
    end
 
    // state machine outputs
@@ -480,10 +463,14 @@
               .clk(sysclk),
               .rst(rst) 
               );
-   // END SPI INTERFACE
+				  
+				  
+   // END SPI_Interface
+	// ------------------------------------------------------------
    
 
-   //--------------------------------------------------
+	
+   //-------------------------------------------------------------
    // self-reset on startup for now. This is a hack.
    reg [4:0] rst_cnt; 
    initial rst_cnt = 0;
@@ -495,6 +482,7 @@
       else
         rst = 0;
    end
+	
    
 endmodule
 

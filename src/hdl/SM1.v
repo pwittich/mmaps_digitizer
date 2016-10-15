@@ -42,7 +42,8 @@ module SM1 (
         end
       end
       READOUT    : begin
-        if (RODONE_n) begin
+			if (ROREQUEST) begin
+        //if (RODONE_n) begin
           nextstate = READOUT;
         end
         else if (DAVAIL) begin

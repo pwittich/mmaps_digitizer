@@ -10,6 +10,7 @@ vsim -L altera_mf_ver -L altera_mf rtl_work.single_channel
 add wave -noupdate -divider -height 24 Toplevel
 #inputs
 add wave -position end  sim:/single_channel/clk
+add wave -position end  sim:/single_channel/SPIclk
 add wave -position end  sim:/single_channel/reset
 add wave -position end  sim:/single_channel/how_many
 add wave -position end  sim:/single_channel/offset
@@ -66,9 +67,9 @@ add wave -position end  -radix hex sim:/single_channel/receiver_inst/lvds_sr
 add wave -position end  sim:/single_channel/receiver_inst/LATCHFRAME
 add wave -position end  sim:/single_channel/receiver_inst/LATCHFRAME1
 add wave -position end  sim:/single_channel/receiver_inst/lvds_rx
-add wave -position end  sim:/single_channel/receiver_inst/address_q
-add wave -position end  sim:/single_channel/receiver_inst/timetowait_q
-add wave -position end  -radix hex sim:/single_channel/receiver_inst/cbdata_r_q
+#add wave -position end  sim:/single_channel/receiver_inst/address_q
+#add wave -position end  sim:/single_channel/receiver_inst/timetowait_q
+#add wave -position end  -radix hex sim:/single_channel/receiver_inst/cbdata_r_q
 add wave -position end  -radix ascii sim:/single_channel/receiver_inst/statename
 
 
@@ -80,7 +81,8 @@ add wave -position end -radix hex sim:/single_channel/ringbuffer_inst0/din
 add wave -position end  sim:/single_channel/ringbuffer_inst0/wr_en
 add wave -position end  sim:/single_channel/ringbuffer_inst0/rd_en
 add wave -position end  sim:/single_channel/ringbuffer_inst0/rst
-add wave -position end  sim:/single_channel/ringbuffer_inst0/clk
+add wave -position end  sim:/single_channel/ringbuffer_inst0/sysclk
+add wave -position end  sim:/single_channel/ringbuffer_inst0/fastclk
 #outputs
 add wave -position end -radix hex sim:/single_channel/ringbuffer_inst0/dout
 add wave -position end -radix hex sim:/single_channel/ringbuffer_inst0/aout
@@ -97,15 +99,16 @@ add wave -position end -radix hex sim:/single_channel/ch_addrctrl/offset_i
 add wave -position end -radix hex sim:/single_channel/ch_addrctrl/howmany_i
 add wave -position end -radix hex sim:/single_channel/ch_addrctrl/ain
 add wave -position end -radix hex sim:/single_channel/ch_addrctrl/rd_request
-add wave -position end -radix hex sim:/single_channel/ch_addrctrl/clk
+add wave -position end -radix hex sim:/single_channel/ch_addrctrl/sysclk
 add wave -position end -radix hex sim:/single_channel/ch_addrctrl/rst
 #outputs
 add wave -position end -radix hex sim:/single_channel/ch_addrctrl/address
 add wave -position end -radix hex sim:/single_channel/ch_addrctrl/ro_done_n
 #internal states
-add wave -position end -radix hex sim:/single_channel/ch_addrctrl/reg_addr
-add wave -position end -radix hex sim:/single_channel/ch_addrctrl/offset
-add wave -position end -radix hex sim:/single_channel/ch_addrctrl/howmany
+add wave -position end -radix hex sim:/single_channel/ch_addrctrl/howmany_left_q
+#add wave -position end -radix hex sim:/single_channel/ch_addrctrl/reg_addr
+#add wave -position end -radix hex sim:/single_channel/ch_addrctrl/offset
+#add wave -position end -radix hex sim:/single_channel/ch_addrctrl/howmany
 
 
 
@@ -118,6 +121,9 @@ set fastclkperiod [ expr $clkperiod / 6 ]
 # since we send data on each edge, we need the ddrfastclkperiod here
 set ddrfastclkperiod [ expr $fastclkperiod / 2 ]
 
+set spiclkperiod [ expr $clkperiod * 5 ]
+
+force -freeze sim:/single_channel/SPIclk 1 0, 0 [expr $spiclkperiod /2 ] -r $spiclkperiod
 
 #set system clock: 50MHz => Set Period to be 18ns to work with adc_fast_clk
 force -freeze sim:/single_channel/clk 1 0, 0 [ expr $clkperiod / 2 ] -r $clkperiod
@@ -127,7 +133,7 @@ force -drive sim:/single_channel/reset 0 0, 1 10ns, 0 110ns
 
 #set how_many to 15, offset to 0
 #how_many is not consistent with global setting 255
-force -drive sim:/single_channel/how_many 11111111 0
+force -drive sim:/single_channel/how_many 1111111 0
 force -drive sim:/single_channel/offset 00000000 0
 
 #set up adc_frame according to Figure 6 in MAXIM19527 Datasheet
@@ -151,7 +157,7 @@ set ttime 153000
 # this is sysclock * 6 * 2; we send data on each edge of the clock
 set adcperiod 1500
 echo "start here"
-while { $i < 2000 } {
+while { $i < 1000 } {
     # pull out the individual bits
     set a $i
     echo "value of adc is $a\n"
@@ -185,8 +191,8 @@ force -drive sim:/single_channel/trigger 0 0ns
 #drive trigger high at 200ns for 1 clock period
 #force -drive sim:/single_channel/trigger 1 400ns
 #force -drive sim:/single_channel/trigger 0 420ns
-force -drive sim:/single_channel/trigger 1 10000ns
-force -drive sim:/single_channel/trigger 0 10010ns
+force -drive sim:/single_channel/trigger 1 5000ns
+force -drive sim:/single_channel/trigger 0 10100ns
 
 #assume read_request resets to 0 with reset driven high - timing align with reset signal
 force -drive sim:/single_channel/read_request 0 18ns
@@ -195,8 +201,8 @@ force -drive sim:/single_channel/read_request 0 18ns
 #force -drive sim:/single_channel/read_request 0 248ns
 #force -drive sim:/single_channel/read_request 1 700ns
 #force -drive sim:/single_channel/read_request 0 718ns
-force -drive sim:/single_channel/read_request 1 10000ns
-force -drive sim:/single_channel/read_request 0 10010ns
+force -drive sim:/single_channel/read_request 1 5000ns
+force -drive sim:/single_channel/read_request 0 10200ns
 
 
 run 15000ns
