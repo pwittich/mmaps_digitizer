@@ -11,7 +11,9 @@ module addr_cntrl #(parameter SIZE=12) (
 	input wire rst,
 	input wire SPI_done,
 	output wire [SIZE-1:0] address,
-	output wire ro_done_n);
+	output wire ro_done_n,
+	output wire [SIZE-1:0] howmany_left);
+	//output wire debug);
 	
 //	reg [SIZE-1:0] reg_addr;
 //	reg [SIZE-1:0] offset;
@@ -22,18 +24,21 @@ module addr_cntrl #(parameter SIZE=12) (
 	reg [SIZE-1:0] current_reg_address_d, current_reg_address_q;
 	reg old_rd_request_d, old_rd_request_q;
 	
+	//assign debug = rd_request_q;
+	assign howmany_left = howmany_left_q;
+	
 	always @(*) begin
 		if (rd_request_q && !old_rd_request_q) begin // begin of rd_request
-			howmany_left_d = howmany_i - 12'h0001;
+			howmany_left_d = howmany_i - 12'h001;
 			current_reg_address_d = ain - offset_i - 12'h001;
 		end else if (rd_request_q && old_rd_request_q) begin // continuing rd_request
-			if (SPI_done) begin // Only iterate to next register if SPI finished with last word
-				howmany_left_d = howmany_left_q - 12'h0001;
+			//if (SPI_done) begin // Only iterate to next register if SPI finished with last word
+				howmany_left_d = howmany_left_q - 12'h001;
 				current_reg_address_d = current_reg_address_q + 12'h001;
-			end else begin
-				howmany_left_d = howmany_left_q;
-				current_reg_address_d = current_reg_address_q;
-			end
+			//end else begin
+			//	howmany_left_d = howmany_left_q;
+			//	current_reg_address_d = current_reg_address_q;
+			//end
 		end else begin
 			howmany_left_d = 12'hfff;
 			current_reg_address_d = 12'hfff;

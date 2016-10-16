@@ -112,7 +112,8 @@
 		  );
    // Bunch counter - to tag the data for timing and later identification.
    // not clear if this is the right number of bits. Needs to fit into fifo?
-   localparam BC_BITS=12;
+   //localparam BC_BITS=12;
+	localparam BC_BITS=5;
    wire [BC_BITS-1:0] 	    BC;
    bc_counter #(.BITS(BC_BITS)) bc_counter_inst(.CLK(CLK), .RST(RESET), .BC(BC) );
    
@@ -121,7 +122,8 @@
    always @(BCSEL,SEL,BC,DOUT_i) 
      case (BCSEL)
        1'b0: FIFO_DIN = DOUT_i; // width needs to be checked
-       1'b1: FIFO_DIN = {1'b0,SEL, BC};
+       //1'b1: FIFO_DIN = {1'b0,SEL, BC};
+		 1'b1: FIFO_DIN = {SEL, BC};
      endcase
 
 

@@ -167,7 +167,7 @@
    // configurable how many it controls by the CHAN variable.
    // howmany, offset should be made configurable - hardwired for now
    // DAVAIL and TRIGGER should also not be hardwired to their current widths.
-	//   digi_many #(.CHAN(8)) digi_many_inst(
+	//   digi_many #(.CHAN(8),.WIDTH(8)) digi_many_inst(
 	//                                        .RST(rst&adc_ready1&adc_ready2), 
 	//                                        .CK50(sysclk), 
 	//                                        .adc_clk(adcfastclk_p), 
@@ -221,8 +221,10 @@
 	
 	always @ (*) begin
 		if (!SPI_SS) begin
-			if (SPI_done) begin
+			if (SPI_done && RD_ADDR_q < 12'h400) begin
 				RD_ADDR_d = RD_ADDR_q + 12'h001;
+			end else if (SPI_done) begin
+				RD_ADDR_d = 12'h000;
 			end else begin
 				RD_ADDR_d = RD_ADDR_q;
 			end
@@ -253,7 +255,20 @@
 	reg [11:0] adc_data_out_test;
 	reg [7:0] adc_data_out_word;
 	
-	localparam channelUnderTest = 10;
+	localparam channelUnderTest = 0;
+	
+	reg [11:0] staging_register [1023:0];
+	wire [11:0] howmany_left;
+	wire RO_ENABLE_out;
+	wire [11:0] rd_index;
+	
+	assign rd_index = 12'h3ff - howmany_left;
+	
+	always @(posedge sysclk) begin
+		if (RO_ENABLE_out) begin
+			staging_register[rd_index] <= adc_data_out_singlechannel;
+		end
+	end
 	
 	single_channel single_channel_inst(
 							.clk(sysclk),
@@ -269,7 +284,11 @@
 							.offset(offset),
 							.read_request(read_request),
 							.SPI_done(SPI_done),
-							.read_address(RD_ADDR_q)
+							.read_address(RD_ADDR_q),
+							.debug1(L0),
+							.debug2(L1),
+							.howmany_left(howmany_left),
+							.RO_ENABLE_out(RO_ENABLE_out)
 	);
 	
 	//	lvds_receiver lvds_rec_inst_test(
@@ -304,7 +323,7 @@
 		end else if (ctrl_regs[7] == 8'h02) begin
 			adc_data_out_test = adc_data_out_singlechannel;
 		end else if (ctrl_regs[7] == 8'h03) begin
-			adc_data_out_test = ctrl_regs[1];
+			adc_data_out_test = staging_register[RD_ADDR_q];
 		end
 	end
 	
@@ -366,10 +385,11 @@
 
    // L0: blue LED
    // L1: green LED
-   assign L0 = (SPI_addr == 4'h0)&(SPI_cmd == `WR); // blue LED
+   //assign L0 = (SPI_addr == 4'h0)&(SPI_cmd == `WR); // blue LED
+	//assign L0 = trigger;
    //assign L1 = ctrl_regs[0][7]; // green LED
    //assign L1 = SPI_tx_reg[7]; // green LED
-	assign L1 = read_request;
+	//assign L1 = read_request;
 
    // store slave's data
    always @(posedge sysclk) begin
@@ -391,10 +411,10 @@
 	assign adc_mode1_d  = ctrl_regs[6];
 	assign adc_mode2_d  = ctrl_regs[6];
 	
-	assign trigger = ~SPI_SS;
-	//assign trigger = ctrl_regs[10][0];
-	assign read_request = ~SPI_SS;
-	//assign read_request = ctrl_regs[11][0];
+	//assign trigger = ~SPI_SS;
+	assign trigger = ctrl_regs[10][0];
+	//assign read_request = ~SPI_SS;
+	assign read_request = ctrl_regs[11][0];
 	
 //	always @(*) begin
 //		trigger = 1'b0;

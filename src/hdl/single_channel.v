@@ -39,7 +39,11 @@
     input wire 	[SIZE-1:0]  offset,
     input wire    read_request,
 	 input wire		SPI_done,
-	 input wire    [11:0] read_address
+	 input wire    [11:0] read_address,
+	 output wire debug1,
+	 output wire debug2,
+	 output wire [SIZE-1:0] howmany_left,
+	 output wire RO_ENABLE_out
     );
    
    wire 		 				RO_ENABLE;
@@ -50,6 +54,8 @@
    wire 	[SIZE-1:0] 	 	RD_ADDR;
 
    wire 	[WIDTH-1:0] 	cbdata;
+	
+	assign RO_ENABLE_out = RO_ENABLE;
 	
 	//initial cbdata = 12'haaa;
 	
@@ -136,6 +142,8 @@
    defparam    channel_sm.READOUT = 3'b001;
    defparam    channel_sm.TRIGGERED = 3'b100;
    
+	assign debug1 = trigger;
+	assign debug2 = WR_ENABLE_SM;
    
    addr_cntrl    ch_addrctrl(
 			     .rd_request(RO_ENABLE),
@@ -146,7 +154,9 @@
 			     .offset_i(offset),
 				  .SPI_done(SPI_done),
 			     .address(SYNTHESIZED_WIRE_0),
-			     .ro_done_n(RO_DONE_n));
+			     .ro_done_n(RO_DONE_n),
+				  .howmany_left(howmany_left));
+				  //.debug(debug));
    defparam    ch_addrctrl.SIZE = SIZE;
    
    
