@@ -49,7 +49,7 @@
    wire 	[WIDTH-1:0] 	cbdata;
    
 
-   lvds_receiver receiver_inst(
+   lvdsreceiver receiver_inst(
 			      .sysclk(clk),
 			      .DATA(adc_data_p),
 			      .FRAME(adc_frame),

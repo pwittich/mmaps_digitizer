@@ -1,116 +1,100 @@
 `include "spi_defines.v"
 
 
-// Created by fizzim.pl version 5.10 on 2016:09:29 at 22:24:29 (www.fizzim.com)
+// Created by fizzim.pl version 5.10 on 2016:10:06 at 17:47:23 (www.fizzim.com)
 
-module SPI_SM ( // State machine for SPI slave on CycloneIII
+module SPI_SM (
   output reg fifo_select,
+  output reg latch_cmd,
   output reg rd_select,
   output reg wr_select,
-  input wire [3:0] CMD,
-  input wire DONE,
-  input wire [7:0] FIFO_PK_SZ,   // number of words to send
   input wire clk,
-  input wire rst 
+  input wire [3:0] cmd,
+  input wire done,
+  input wire rst ,
+	       output wire led
 );
 
   // state bits
   parameter 
-  IDLE      = 0, 
-  FIFO_SEND = 1, 
-  RD        = 2, 
-  WR        = 3; 
+  IDLE       = 3'b000, 
+  LATCH      = 3'b001, 
+  READ       = 3'b010, 
+  WRITE      = 3'b011, 
+  WRITE_WAIT = 3'b100; 
 
-  reg [3:0] state;
-  reg [3:0] nextstate;
-  reg [7:0] FIFO_CNT;
-  reg [7:0] next_FIFO_CNT;
-
+  reg [2:0] state;
+  reg [2:0] nextstate;
+   assign led = (state == IDLE);
   // comb always block
   always @* begin
-    nextstate = 4'b0000;
-    next_FIFO_CNT[7:0] = FIFO_CNT[7:0];
-    case (1'b1) // synopsys parallel_case full_case
-      state[IDLE]     : begin
-        if (CMD == `RD) begin
-          nextstate[RD] = 1'b1;
-        end
-        else if (CMD == `WR) begin
-          nextstate[WR] = 1'b1;
-        end
-        else if (CMD == `FIFO) begin
-          nextstate[FIFO_SEND] = 1'b1;
-          next_FIFO_CNT[7:0] = FIFO_PK_SZ[7:0];
-        end
-        else begin
-          nextstate[IDLE] = 1'b1;
+    nextstate = state; // default to hold value because implied_loopback is set
+    case (state)
+      IDLE      : begin
+        if (done) begin
+          nextstate = LATCH;
         end
       end
-      state[FIFO_SEND]: begin
-        if (DONE==1 && FIFO_CNT==0) begin
-          nextstate[IDLE] = 1'b1;
+      LATCH     : begin
+        if (cmd==`RD) begin
+          nextstate = READ;
         end
-        else if (DONE==1) begin
-          nextstate[FIFO_SEND] = 1'b1;
-          next_FIFO_CNT[7:0] = FIFO_CNT[7:0] -1;
+        else if (cmd==`WR) begin
+          nextstate = WRITE_WAIT;
         end
         else begin
-          nextstate[FIFO_SEND] = 1'b1;
+          nextstate = IDLE; // return to idle on invalid cmd
         end
       end
-      state[RD]       : begin
-        if (DONE==1) begin
-          nextstate[IDLE] = 1'b1;
-        end
-        else begin
-          nextstate[RD] = 1'b1;
+      READ      : begin
+        if (done) begin
+          nextstate = IDLE;
         end
       end
-      state[WR]       : begin
-        if (DONE==1) begin
-          nextstate[IDLE] = 1'b1;
+      WRITE     : begin
+        begin
+          nextstate = IDLE;
         end
-        else begin
-          nextstate[WR] = 1'b1;
+      end
+      WRITE_WAIT: begin
+        if (done) begin
+          nextstate = WRITE;
         end
       end
     endcase
   end
 
+  // Assign reg'd outputs to state bits
+
   // sequential always block
   always @(posedge clk) begin
-    if (rst) begin
-      state <= 4'b0001 << IDLE;
-      FIFO_CNT[7:0] <= 8'h00;
-      end
-    else begin
+    if (rst)
+      state <= IDLE;
+    else
       state <= nextstate;
-      FIFO_CNT[7:0] <= next_FIFO_CNT[7:0];
-      end
   end
 
   // datapath sequential always block
   always @(posedge clk) begin
     if (rst) begin
       fifo_select <= 0;
+      latch_cmd <= 0;
       rd_select <= 0;
       wr_select <= 0;
     end
     else begin
       fifo_select <= 0; // default
+      latch_cmd <= 0; // default
       rd_select <= 0; // default
       wr_select <= 0; // default
-      case (1'b1) // synopsys parallel_case full_case
-        // nextstate[IDLE]     : begin
-        //   ; // case must be complete for onehot
-        // end
-        nextstate[FIFO_SEND]: begin
-          fifo_select <= 1;
+      case (nextstate)
+        LATCH     : begin
+          latch_cmd <= 1;
         end
-        nextstate[RD]       : begin
+        READ      : begin
           rd_select <= 1;
         end
-        nextstate[WR]       : begin
+        WRITE     : begin
           wr_select <= 1;
         end
       endcase
@@ -119,19 +103,21 @@ module SPI_SM ( // State machine for SPI slave on CycloneIII
 
   // This code allows you to see state names in simulation
   `ifndef SYNTHESIS
-  reg [71:0] statename;
+  reg [79:0] statename;
   always @* begin
-    case (1'b1)
-      state[IDLE]     :
+    case (state)
+      IDLE      :
         statename = "IDLE";
-      state[FIFO_SEND]:
-        statename = "FIFO_SEND";
-      state[RD]       :
-        statename = "RD";
-      state[WR]       :
-        statename = "WR";
-      default  :
-        statename = "XXXXXXXXX";
+      LATCH     :
+        statename = "LATCH";
+      READ      :
+        statename = "READ";
+      WRITE     :
+        statename = "WRITE";
+      WRITE_WAIT:
+        statename = "WRITE_WAIT";
+      default   :
+        statename = "XXXXXXXXXX";
     endcase
   end
   `endif
