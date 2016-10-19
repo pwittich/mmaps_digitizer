@@ -7,7 +7,8 @@ module multi_ch_ro (
   input wire ZYNQ_RD_RQ,
   input wire clk,
   input wire rst_n,
-  input wire trigger
+  input wire trigger,
+  input wire [11:0] howmany_left
 );
 
   // state bits
@@ -41,15 +42,16 @@ module multi_ch_ro (
         end
       end
       ZYNQ_RD: begin
-        if (ZYNQ_RD_RQ == 1) begin
+//        if (ZYNQ_RD_RQ == 1) begin
+		  if (howmany_left > 12'h000) begin
           nextstate = ZYNQ_RD;
         end
-        else if (trigger == 1) begin
-          nextstate = FIFO_RD;
-        end
-        else if (trigger == 0) begin
-          nextstate = IDLE;
-        end
+//        else if (trigger == 1) begin
+//          nextstate = FIFO_RD;
+//        end
+//        else if (trigger == 0) begin
+//          nextstate = IDLE;
+//        end
       end
     endcase
   end

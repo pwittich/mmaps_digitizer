@@ -15,7 +15,8 @@ module ringbuffer #(parameter SIZE=12, WIDTH=14)(
 	output wire [SIZE-1:0] aout);
 
 	reg [SIZE-1:0] address;
-	localparam NUMWORDS=2**SIZE;
+	//localparam NUMWORDS=2**SIZE;
+	localparam NUMWORDS=2**10;
 	reg [WIDTH-1:0] data[0:NUMWORDS-1];
 
 	reg [WIDTH-1:0] dout_reg;

@@ -55,13 +55,13 @@ module fifo (
 	output	  empty;
 	output	  full;
 	output	[15:0]  q;
-	output	[10:0]  usedw;
+	output	[11:0]  usedw;
 
-	wire [10:0] sub_wire0;
+	wire [11:0] sub_wire0;
 	wire  sub_wire1;
 	wire  sub_wire2;
 	wire [15:0] sub_wire3;
-	wire [10:0] usedw = sub_wire0[10:0];
+	wire [11:0] usedw = sub_wire0[11:0];
 	wire  empty = sub_wire1;
 	wire  full = sub_wire2;
 	wire [15:0] q = sub_wire3[15:0];
@@ -82,11 +82,13 @@ module fifo (
 	defparam
 		scfifo_component.add_ram_output_register = "ON",
 		scfifo_component.intended_device_family = "Cyclone III",
-		scfifo_component.lpm_numwords = 2048,
+		//scfifo_component.lpm_numwords = 2048,
+		scfifo_component.lpm_numwords = 4096,
 		scfifo_component.lpm_showahead = "OFF",
 		scfifo_component.lpm_type = "scfifo",
+		//scfifo_component.lpm_width = 16,
 		scfifo_component.lpm_width = 16,
-		scfifo_component.lpm_widthu = 11,
+		scfifo_component.lpm_widthu = 12,
 		scfifo_component.overflow_checking = "ON",
 		scfifo_component.underflow_checking = "ON",
 		scfifo_component.use_eab = "ON";

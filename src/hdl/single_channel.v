@@ -40,10 +40,9 @@
     input wire    read_request,
 	 input wire		SPI_done,
 	 input wire    [11:0] read_address,
-	 output wire debug1,
-	 output wire debug2,
-	 output wire [SIZE-1:0] howmany_left,
-	 output wire RO_ENABLE_out
+	 output wire RO_ENABLE_out,
+	 output wire RODONE_n_out,
+	 output wire debug
     );
    
    wire 		 				RO_ENABLE;
@@ -56,6 +55,7 @@
    wire 	[WIDTH-1:0] 	cbdata;
 	
 	assign RO_ENABLE_out = RO_ENABLE;
+	assign RODONE_n_out = RO_DONE_n;
 	
 	//initial cbdata = 12'haaa;
 	
@@ -111,7 +111,7 @@
 			      );
    
 	wire [WIDTH-1:0] data_out_rb;
-   assign data_out = read_request ? data_out_rb : 12'h000;
+   assign data_out = read_request ? data_out_rb : 12'hccc;
 	
    ringbuffer	ringbuffer_inst0(
 				 .sysclk(clk),
@@ -142,20 +142,24 @@
    defparam    channel_sm.READOUT = 3'b001;
    defparam    channel_sm.TRIGGERED = 3'b100;
    
-	assign debug1 = trigger;
-	assign debug2 = WR_ENABLE_SM;
-   
+	reg [11:0] how_many2;
+	always @ (posedge clk) begin
+		if (reset) begin
+			how_many2 <= 12'h3ff;
+		end
+	end
+	assign debug = how_many2[0];
+	
    addr_cntrl    ch_addrctrl(
 			     .rd_request(RO_ENABLE),
 			     .sysclk(clk),
 			     .rst(reset),
 			     .ain(RD_ADDR),
-			     .howmany_i(how_many),
+			     .howmany_i(how_many2),
 			     .offset_i(offset),
 				  .SPI_done(SPI_done),
 			     .address(SYNTHESIZED_WIRE_0),
-			     .ro_done_n(RO_DONE_n),
-				  .howmany_left(howmany_left));
+			     .ro_done_n(RO_DONE_n));
 				  //.debug(debug));
    defparam    ch_addrctrl.SIZE = SIZE;
    

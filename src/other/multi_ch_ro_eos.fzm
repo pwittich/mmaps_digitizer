@@ -1,4 +1,4 @@
-## File last modified by Fizzim: 1:42:14 PM on 10/16/16
+## File last modified by Fizzim: 2:46:01 PM on 10/16/16
 <version>
    14.02.26
 </version>
@@ -529,7 +529,7 @@
             </status>
          </vis>
          <type>
-         reg
+         regdp
             <status>
             GLOBAL_VAR
             </status>
@@ -585,7 +585,7 @@
             </status>
          </vis>
          <type>
-         reg
+         regdp
             <status>
             GLOBAL_VAR
             </status>

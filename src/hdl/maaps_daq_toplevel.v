@@ -43,57 +43,64 @@
                             L0,
                             );
 
-
-   input wire   CK50;
-   input wire   adcfastclk_p;
-   input wire   adcframe_p;
-   input wire 	SPI_MOSI;
-   input wire 	SPI_SCLK;
-   input wire 	SPI_SS;
-   input wire   PMT_trigger;
-   input wire [15:0] adcdata_p; // 16 serial lines
-   input wire [31:0] TDC; // unused
+	
+	// IO Initialization
+	// -------------------------------------------------------------
+									 
+	// System clock IO
+   input  wire			CK50;
+	
+	// External trigger IO
+	input  wire			PMT_trigger;
+	
+	// ZYNQ SPI IO
+   input  wire			SPI_MOSI;
+   input  wire			SPI_SCLK;
+   input  wire			SPI_SS;
+	output wire			SPI_MISO;
+	
+	// ADC SPI config IO
    output wire       ADC_SCLK1;
    output wire       ADC_nCS1;
-   inout wire        ADC_SDIO1;
+   inout  wire       ADC_SDIO1;
+	
    output wire       ADC_SCLK2;
    output wire       ADC_nCS2;
-   inout wire        ADC_SDIO2;
+   inout  wire       ADC_SDIO2;
+	
+	// ADC data IO
+	input  wire [15:0] adcdata_p; // 16 serial lines
+	input  wire [31:0] TDC; // unused
+	input  wire	 		adcfastclk_p;
+	input  wire			adcframe_p;
    output wire       ADCCLK1_p;
    output wire       ADCCLK2_p;
+	
+	// LED IO
    output wire       L1;
    output wire       L0;
-   output wire 	     SPI_MISO;
    
-   
-   reg               rst;
+   // END IO Initialization
+	// -------------------------------------------------------------
+	
+	
+	// L0: blue LED
+   // L1: green LED
+	
+	assign L0 = ZYNQ_RD_EN;
+	//assign L1 = adc_ready1 & adc_ready2;
+	assign L1 = debug;
+	
 
    // input clock - 50 MHz 
    wire              sysclk;
-   assign       sysclk = CK50;
+   assign       		sysclk = CK50;
 
    // output clocks to the two octal ADCs
    assign ADCCLK1_p = sysclk;
    assign ADCCLK2_p = sysclk;
 	
-	reg [ZSPI_WORDSIZE-1:0]  ctrl_regs [15:0];
-
-   wire [15:0] 	     dout;
 	
-   wire              adc_ready1, adc_ready2; // output
-   reg              adc_flag1, adc_flag2;
-   //reg [7:0]         adc_mode1, adc_mode2;
-	wire [7:0]			adc_mode1_d, adc_mode2_d;
-	reg  [7:0]			adc_mode1_q, adc_mode2_q;
-	
-	reg [31:0] ticks;
-	always @(posedge sysclk) begin
-		if (rst) begin
-			ticks <= 32'h00000000;
-		end else begin
-			ticks <= ticks + 1;
-		end
-	end
 	
 	// ADC_mode_config
 	// -------------------------------------------------------------
@@ -103,6 +110,11 @@
 	// to adc_spimaster that a new adc
 	// spi transaction must occur to update
 	// the ADC mode
+	
+	wire              adc_ready1, adc_ready2; // output
+   reg             	adc_flag1, adc_flag2;
+	wire [7:0]			adc_mode1_d, adc_mode2_d;
+	reg  [7:0]			adc_mode1_q, adc_mode2_q;
 	
 	always @(*) begin
 		if (adc_mode1_q != adc_mode1_d) begin
@@ -155,6 +167,14 @@
 	// End ADC_SPI_controller
 	// -------------------------------------------------------------
      
+	  
+	  
+	  
+	// -------------------------------------------------------------
+	// Digi_many module to read and hold data from all channels,
+	// each with its own ringbuffer. The EOS signal is a trigger
+	// that stops the data collection and waits until all the data
+	// is sent to the ZYNQ before resuming.
 
    wire              fifo_empty;
    wire [7:0]        offset;
@@ -162,26 +182,38 @@
 	reg [11:0]			howmany;
 	wire					trigger;
 	wire					read_request;
+		
+	wire [15:0] adc_data_out_digimany;
+	
+	wire ZYNQ_RD_EN;
+	wire debug;
 	
    // module to contain the input from the digitizer channels.
    // configurable how many it controls by the CHAN variable.
    // howmany, offset should be made configurable - hardwired for now
    // DAVAIL and TRIGGER should also not be hardwired to their current widths.
-	//   digi_many #(.CHAN(8),.WIDTH(8)) digi_many_inst(
-	//                                        .RST(rst&adc_ready1&adc_ready2), 
-	//                                        .CK50(sysclk), 
-	//                                        .adc_clk(adcfastclk_p), 
-	//                                        .adc_frame(adcframe_p),
-	//                                        .adcdata_p(adcdata_p), 
-	//                                        .DOUT(dout), // output to remote
-	//                                        .ZYNQ_RD_REQUEST(fifo_rd_one),
-	//                                        .GLBL_EMPTY(fifo_empty),
-	//                                        .howmany(howmany), // configuration
-	//                                        .offset(offset), // configuration
-	//                                        .DAVAIL(TDC[7:0]), // FIXME
-	//                                        .TRIGGER(TDC[16:8]) // FIXME -- replace with PMT_trigger?
-	//                                        );
+	   digi_many #(.CHAN(8),.WIDTH(16)) digi_many_inst(
+	                                        .RST(rst), 
+	                                        .CK50(sysclk), 
+	                                        .adc_clk(adcfastclk_p), 
+	                                        .adc_frame(adcframe_p),
+	                                        .adcdata_p(adcdata_p[7:0]), 
+	                                        .DOUT(adc_data_out_digimany), // output to remote
+														 .EOS(trigger),
+														 .SPI_done(SPI_done),
+														 .ADC_sample_num(ADC_sample_num),
+	                                        .offset(offset), // configuration
+														 .DAVAIL(adc_ready1),
+														 .ZYNQ_RD_EN_out(ZYNQ_RD_EN),
+														 .debug(debug)
+	                                        );
+														 
+		
+	// End ADC_SPI_controller
+	// -------------------------------------------------------------
 
+	
+	
 	/* -----\/----- EXCLUDED -----\/-----
    // counter just to twiddle the LED on the digitzer
    wire [31:0]       dcount;
@@ -194,34 +226,12 @@
    assign L1 = dcount[25]; // should be 2x as fast as L1
 	-----/\----- EXCLUDED -----/\----- */
  
-
-	wire [11:0] adc_data_out, adc_data_out2;
-	reg [7:0] adc_addr_out;
-	reg adc_wenable;
-	wire adc_wenable_test;
-	wire adc_addr_out_test;
-	
-	wire sc_wr_enable;
-	reg [11:0] adc_data_out_reg_q;
-	reg [11:0] adc_data_out_reg_d;
-	always @(*) begin
-		adc_data_out_reg_d = adc_data_out_reg_q;
-		if (sc_wr_enable) begin
-			adc_data_out_reg_d = adc_data_out;
-		end
-	end
-	always @(negedge sysclk) begin
-		if (rst) begin	
-			adc_data_out_reg_q = 12'hfff;
-		end
-		adc_data_out_reg_q = adc_data_out_reg_d;
-	end
 	
 	reg [11:0] RD_ADDR_d, RD_ADDR_q;
 	
 	always @ (*) begin
 		if (!SPI_SS) begin
-			if (SPI_done && RD_ADDR_q < 12'h400) begin
+			if (SPI_done && (RD_ADDR_q < ZYNQ_word_num)) begin
 				RD_ADDR_d = RD_ADDR_q + 12'h001;
 			end else if (SPI_done) begin
 				RD_ADDR_d = 12'h000;
@@ -241,6 +251,8 @@
 		end
 	end
 	
+	
+	
 	// Test_Modules:
 	// -------------------------------------------------------------
 	//
@@ -252,23 +264,13 @@
 	wire [11:0] adc_data_out_verilog;
 	wire [11:0] adc_data_out_vhdl;
 	wire [11:0] adc_data_out_singlechannel;
+
 	reg [11:0] adc_data_out_test;
 	reg [7:0] adc_data_out_word;
 	
 	localparam channelUnderTest = 0;
 	
-	reg [11:0] staging_register [1023:0];
-	wire [11:0] howmany_left;
 	wire RO_ENABLE_out;
-	wire [11:0] rd_index;
-	
-	assign rd_index = 12'h3ff - howmany_left;
-	
-	always @(posedge sysclk) begin
-		if (RO_ENABLE_out) begin
-			staging_register[rd_index] <= adc_data_out_singlechannel;
-		end
-	end
 	
 	single_channel single_channel_inst(
 							.clk(sysclk),
@@ -285,9 +287,6 @@
 							.read_request(read_request),
 							.SPI_done(SPI_done),
 							.read_address(RD_ADDR_q),
-							.debug1(L0),
-							.debug2(L1),
-							.howmany_left(howmany_left),
 							.RO_ENABLE_out(RO_ENABLE_out)
 	);
 	
@@ -308,23 +307,22 @@
 						.FRAME(adcframe_p),
 	 					.DATA(adcdata_p[channelUnderTest]),
 						.RESET_n(~rst),
-						.CBDATA(adc_data_out_vhdl),
-						//.CBADDRESS(adc_addr_out_test),
-						.WENABLE(adc_wenable_test)
+						.CBDATA(adc_data_out_vhdl)
 	);
 	
 	// Check ctrl_regs[7] for which module to test
 	always @(*) begin
-		adc_data_out_test = 12'hccc;
+		adc_data_out_test = 12'haff;
 		if (ctrl_regs[7] == 8'h00) begin
-			adc_data_out_test = adc_data_out_verilog;
+			adc_data_out_test = adc_data_out_digimany[15:4];
 		end else if (ctrl_regs[7] == 8'h01) begin
 			adc_data_out_test = adc_data_out_vhdl;
 		end else if (ctrl_regs[7] == 8'h02) begin
 			adc_data_out_test = adc_data_out_singlechannel;
-		end else if (ctrl_regs[7] == 8'h03) begin
-			adc_data_out_test = staging_register[RD_ADDR_q];
 		end
+		//		end else if (ctrl_regs[7] == 8'h03) begin
+		//			adc_data_out_test = adc_data_out_verilog;
+		//		end
 	end
 	
 	// Check ctrl_regs[8] for which 8 bits to send,
@@ -344,16 +342,20 @@
 	
 	
 	
+	
 	// SPI_Interface for ZYNQ communications
 	// -------------------------------------------------------------
 	// Receives commands from the zynq and sends
 	// back ADC samples to be stored
 	
+	wire [15:0] 	     dout;
+	
+	
    localparam ZSPI_WORDSIZE = 8;
 	
-   wire              SPI_done;
-
-   // TEST: initialize data to send to master
+	reg [ZSPI_WORDSIZE-1:0]  ctrl_regs [15:0];
+	
+   wire 	SPI_done;
 
    // RX: most recent received message
    // TX: next word to be sent
@@ -399,49 +401,42 @@
    end
 
    // 16 control registers
+	
+	reg [11:0] ADC_sample_num;
+	reg [11:0] ZYNQ_word_num;
+	
+	initial ADC_sample_num = 12'h3ff;
+	initial ZYNQ_word_num = 12'hfff;
 
-   wire [7:0] 		    FIFO_PK_SZ;
-
-	initial howmany = 12'h400;
+	//assign ADC_sample_num = {ctrl_regs[1], ctrl_regs[0]};
+	//assign ZYNQ_word_num = {ctrl_regs[3], ctrl_regs[2]};
+	
+//	initial howmany_many = 12'hfff;
+//	initial howmany = 12'h3ff;
    //assign howmany = (ctrl_regs[1] << 16) | (ctrl_regs[0]);
-   assign offset = ctrl_regs[2] ;
-   assign FIFO_PK_SZ = ctrl_regs[3];
-	//assign trigger = ctrl_regs[4];
-	//assign read_request = ctrl_regs[5];
+   assign offset = ctrl_regs[4] ;
+	
 	assign adc_mode1_d  = ctrl_regs[6];
 	assign adc_mode2_d  = ctrl_regs[6];
 	
-	//assign trigger = ~SPI_SS;
 	assign trigger = ctrl_regs[10][0];
-	//assign read_request = ~SPI_SS;
-	assign read_request = ctrl_regs[11][0];
-	
-//	always @(*) begin
-//		trigger = 1'b0;
-//		//read_request = 1'b0;
-//		if (ticks > 32'h0EE6B280) begin
-//			trigger = 1'b1;
-//			//read_request = 1'b1;
-//		end
-//		if (ticks > 32'h0EE6B290) begin
-//			trigger = 1'b0;
-//			//read_request = 1'b0;
-//		end
-//	end
+	assign read_request = ctrl_regs[11][0]; // to be used for single_channel test only
 				
 
    // preload some registers
    initial begin
-      ctrl_regs[0] = 8'h00; // lowest 8 bits of howmany
-      ctrl_regs[1] = 8'h04; // highest 8 bits of howmany
-      //ctrl_regs[2] = 8'ha5;
-      //ctrl_regs[3] = 8'h5a;
-		ctrl_regs[6] = 8'h09; // ADC mode
+      ctrl_regs[0] = 8'hff; // bottom 8 bits of ADC_sample_num
+      ctrl_regs[1] = 8'h03; // top 8 bits of ADC_sample_num
+		ctrl_regs[2] = 8'hff; // bottom 8 bits of ZYNQ_word_num
+		ctrl_regs[3] = 8'h0f; // top 8 bits of ZYNQ_word_num
+		
+		ctrl_regs[4] = 8'h00; // readout offset, where in ringbuffer to start reading
+		ctrl_regs[6] = 8'h09; // ADC mode (free-running or test pattern)
 		ctrl_regs[7] = 8'h00; // Which module to test, lvds_rec.v, lvdsrec.vhd, or sc
-		ctrl_regs[8] = 8'h00; // Use highest 8 bits or lowest 8 bits
-		ctrl_regs[9] = 8'h00; // Which channel to test
+		ctrl_regs[8] = 8'h00; // Use top 8 bits or bototm 8 bits of data out
+		
 		ctrl_regs[10] = 8'h00; // trigger
-		ctrl_regs[11] = 8'h00; // read_request
+		ctrl_regs[11] = 8'h00; // read_request (for single_channel test only)
    end
 
    // state machine outputs
@@ -490,8 +485,11 @@
    
 
 	
+	
    //-------------------------------------------------------------
    // self-reset on startup for now. This is a hack.
+	
+	reg  rst;
    reg [4:0] rst_cnt; 
    initial rst_cnt = 0;
    always @(posedge sysclk ) begin
