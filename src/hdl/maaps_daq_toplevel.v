@@ -30,7 +30,7 @@
                             SPI_SS,
                             PMT_trigger, // external trigger - how to input? not in the SDC file now
                             adcdata_p,
-                            TDC,
+                            //TDC,
                             ADC_SCLK1,
                             ADC_nCS1,
                             ADC_SDIO1,
@@ -70,7 +70,7 @@
 	
 	// ADC data IO
 	input  wire [15:0] adcdata_p; // 16 serial lines
-	input  wire [31:0] TDC; // unused
+	//input  wire [31:0] TDC; // unused
 	input  wire	 		adcfastclk_p;
 	input  wire			adcframe_p;
    output wire       ADCCLK1_p;
@@ -89,7 +89,7 @@
 	
 	assign L0 = ZYNQ_RD_EN;
 	//assign L1 = adc_ready1 & adc_ready2;
-	assign L1 = debug;
+	assign L1 = ctrl_regs[6][0];
 	
 
    // input clock - 50 MHz 
@@ -186,7 +186,6 @@
 	wire [15:0] adc_data_out_digimany;
 	
 	wire ZYNQ_RD_EN;
-	wire debug;
 	
    // module to contain the input from the digitizer channels.
    // configurable how many it controls by the CHAN variable.
@@ -204,8 +203,7 @@
 														 .ADC_sample_num(ADC_sample_num),
 	                                        .offset(offset), // configuration
 														 .DAVAIL(adc_ready1),
-														 .ZYNQ_RD_EN_out(ZYNQ_RD_EN),
-														 .debug(debug)
+														 .ZYNQ_RD_EN_out(ZYNQ_RD_EN)
 	                                        );
 														 
 		

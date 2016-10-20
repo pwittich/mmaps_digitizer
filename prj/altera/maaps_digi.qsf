@@ -264,35 +264,19 @@ set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_global_assignment -name ENABLE_INIT_DONE_OUTPUT OFF
 set_global_assignment -name RESERVE_DATA0_AFTER_CONFIGURATION "AS OUTPUT DRIVING GROUND"
 set_global_assignment -name VERILOG_FILE ../../src/hdl/multi_chn_readout_sm.v
-set_global_assignment -name VERILOG_FILE ../../src/hdl/multi_ch_ro_eos_sm.v
-set_global_assignment -name VERILOG_FILE ../../src/hdl/spi_master.v
 set_global_assignment -name VERILOG_FILE ../../src/hdl/spi_slave.v
 set_global_assignment -name VHDL_FILE ../../src/hdl/lvdsreceiver.vhd
-set_global_assignment -name QIP_FILE fifo.qip
-set_global_assignment -name VERILOG_FILE fifo.v
-set_global_assignment -name VERILOG_FILE lvds_tx.v
-set_global_assignment -name QIP_FILE lvds_tx.qip
 set_global_assignment -name VERILOG_FILE ../../src/hdl/maaps_daq_toplevel.v
 set_global_assignment -name VERILOG_FILE ../../src/hdl/digi_many.v
 set_global_assignment -name VHDL_FILE ../../src/hdl/adc_spimaster.vhd
 set_global_assignment -name VHDL_FILE ../../src/hdl/spi_3_wire_master.vhd
-set_global_assignment -name VERILOG_FILE ../../src/hdl/lvds_receiver.v
-set_global_assignment -name VERILOG_FILE ../../src/hdl/SM_chro.v
 set_global_assignment -name VERILOG_FILE ../../src/hdl/single_channel.v
 set_global_assignment -name VERILOG_FILE ../../src/hdl/ringbuffer.v
-set_global_assignment -name VERILOG_FILE ../../src/hdl/memory.v
 set_global_assignment -name VERILOG_FILE ../../src/hdl/enc.v
 set_global_assignment -name VERILOG_FILE ../../src/hdl/demux.v
 set_global_assignment -name VERILOG_FILE ../../src/hdl/bc_counter.v
 set_global_assignment -name VERILOG_FILE ../../src/hdl/addr_cntrl.v
 set_global_assignment -name VERILOG_FILE ../../src/hdl/SM1.v
-set_global_assignment -name VERILOG_FILE ../../src/hdl/lvds_transmitter.v
-set_global_assignment -name VERILOG_TEST_BENCH_FILE simulation/modelsim/maaps_daq_toplevel.vt
-set_global_assignment -name VERILOG_FILE simulation/modelsim/maaps_daq_toplevel_vlg_tst.v
-set_global_assignment -name QIP_FILE local_altddio_in.qip
-set_global_assignment -name VERILOG_FILE ../../src/hdl/single_channel_tb.v
-set_global_assignment -name VERILOG_FILE ../../src/hdl/lvds_receiver_tb.v
-set_global_assignment -name SYSTEMVERILOG_FILE ../../src/hdl/spi_demo_sm.sv
 set_global_assignment -name VERILOG_FILE ../../src/hdl/spi_defines.v
 set_global_assignment -name VERILOG_FILE ../../src/hdl/spi_sm.v
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

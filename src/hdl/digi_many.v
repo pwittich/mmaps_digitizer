@@ -19,8 +19,7 @@
     input wire [SIZE-1:0]  offset,
     output wire [WIDTH-1:0] DOUT,
 	 input wire SPI_done,
-	 output wire ZYNQ_RD_EN_out,
-	 output wire debug
+	 output wire ZYNQ_RD_EN_out
     );
 	 
 	 
@@ -65,12 +64,11 @@
 	wire ZYNQ_RD_EN;
 	
 	wire [CHAN-1:0] debugs;
-	assign debug = debugs[0];
-	
+
 	assign SPI_complete = ~(|TRIGGER);
    
    // generate channels for output
-   wire [12*CHAN-1:0] DOUT_F; // output from each channel
+   reg [12*CHAN-1:0] DOUT_F; // output from each channel
    wire [CHAN-1:0] 	 RD_REQUEST; // readout  request to each channel
    // channels
    genvar 		 i;
@@ -88,24 +86,23 @@
 			     .offset(offset),
 			     .read_request(RD_REQUEST[i]),
 			     .trigger(TRIGGER[i]),
-			     .data_out(DOUT_F[(i*12+(12-1)):i*12]),
+			     //.data_out(DOUT_F[(i*12+(12-1)):i*12]),
 				  .RODONE_n_out(RODONE_n[i]),
-				  .SPI_done(SPI_done),
-				  .debug(debugs[i])
+				  .SPI_done(SPI_done)
 			     );
         end // for (i=0;i<CHAN;i=i+1)
    endgenerate
 	
-// 	always @ (posedge CLK) begin
-//		DOUT_F[11:0] <= 12'h111;
-//		DOUT_F[23:12] <= 12'h222;
-//		DOUT_F[35:24] <= 12'h333;
-//		DOUT_F[47:36] <= 12'h444;
-//		DOUT_F[59:48] <= 12'h555;
-//		DOUT_F[71:60] <= 12'h666;
-//		DOUT_F[83:72] <= 12'h777;
-//		DOUT_F[95:84] <= 12'h888;
-//	end
+ 	always @ (posedge CLK) begin
+		DOUT_F[11:0] <= 12'h111;
+		DOUT_F[23:12] <= 12'h222;
+		DOUT_F[35:24] <= 12'h333;
+		DOUT_F[47:36] <= 12'h444;
+		DOUT_F[59:48] <= 12'h555;
+		DOUT_F[71:60] <= 12'h666;
+		DOUT_F[83:72] <= 12'h777;
+		DOUT_F[95:84] <= 12'h888;
+	end
 
    reg [15:0] DOUT_i;
    wire [2:0] SEL;

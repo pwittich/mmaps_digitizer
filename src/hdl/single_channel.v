@@ -41,8 +41,7 @@
 	 input wire		SPI_done,
 	 input wire    [11:0] read_address,
 	 output wire RO_ENABLE_out,
-	 output wire RODONE_n_out,
-	 output wire debug
+	 output wire RODONE_n_out
     );
    
    wire 		 				RO_ENABLE;
@@ -145,10 +144,9 @@
 	reg [11:0] how_many2;
 	always @ (posedge clk) begin
 		if (reset) begin
-			how_many2 <= 12'h3ff;
+			how_many2 <= 12'h400;
 		end
 	end
-	assign debug = how_many2[0];
 	
    addr_cntrl    ch_addrctrl(
 			     .rd_request(RO_ENABLE),
