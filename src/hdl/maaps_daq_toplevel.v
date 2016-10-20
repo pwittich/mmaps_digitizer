@@ -40,7 +40,7 @@
                             ADCCLK1_p,
                             ADCCLK2_p,
                             L1,
-                            L0,
+                            L0
                             );
 
 	
@@ -176,7 +176,6 @@
 	// that stops the data collection and waits until all the data
 	// is sent to the ZYNQ before resuming.
 
-   wire              fifo_empty;
    wire [7:0]        offset;
    //wire [7:0]        howmany;
 	reg [11:0]			howmany;
@@ -191,12 +190,12 @@
    // configurable how many it controls by the CHAN variable.
    // howmany, offset should be made configurable - hardwired for now
    // DAVAIL and TRIGGER should also not be hardwired to their current widths.
-	   digi_many #(.CHAN(8),.WIDTH(16)) digi_many_inst(
+	   digi_many #(.CHAN(16),.WIDTH(16)) digi_many_inst(
 	                                        .RST(rst), 
 	                                        .CK50(sysclk), 
 	                                        .adc_clk(adcfastclk_p), 
 	                                        .adc_frame(adcframe_p),
-	                                        .adcdata_p(adcdata_p[7:0]), 
+	                                        .adcdata_p(adcdata_p[15:0]), 
 	                                        .DOUT(adc_data_out_digimany), // output to remote
 														 .EOS(trigger),
 														 .SPI_done(SPI_done),
@@ -346,9 +345,6 @@
 	// Receives commands from the zynq and sends
 	// back ADC samples to be stored
 	
-	wire [15:0] 	     dout;
-	
-	
    localparam ZSPI_WORDSIZE = 8;
 	
 	reg [ZSPI_WORDSIZE-1:0]  ctrl_regs [15:0];
@@ -373,23 +369,10 @@
                                                 .miso(SPI_MISO),
                                                 .sck(SPI_SCLK),
                                                 .done(SPI_done),
-                                                //.din(SPI_tx_reg),
-																.din(adc_data_out_word),
-                                                //.din(hack),
+                                                .din(SPI_tx_reg),
                                                 .dout(SPI_s)
                                                 );
-   wire       led_hack;
 
-   //wire [7:0] hack;
-   //assign hack = SPI_rx_reg;
-
-   // L0: blue LED
-   // L1: green LED
-   //assign L0 = (SPI_addr == 4'h0)&(SPI_cmd == `WR); // blue LED
-	//assign L0 = trigger;
-   //assign L1 = ctrl_regs[0][7]; // green LED
-   //assign L1 = SPI_tx_reg[7]; // green LED
-	//assign L1 = read_request;
 
    // store slave's data
    always @(posedge sysclk) begin
@@ -400,18 +383,12 @@
 
    // 16 control registers
 	
-	reg [11:0] ADC_sample_num;
-	reg [11:0] ZYNQ_word_num;
-	
-	initial ADC_sample_num = 12'h3ff;
-	initial ZYNQ_word_num = 12'hfff;
+	wire [11:0] ADC_sample_num;
+	wire [15:0] ZYNQ_word_num;
 
-	//assign ADC_sample_num = {ctrl_regs[1], ctrl_regs[0]};
-	//assign ZYNQ_word_num = {ctrl_regs[3], ctrl_regs[2]};
+	assign ADC_sample_num = {ctrl_regs[1], ctrl_regs[0]};
+	assign ZYNQ_word_num = {ctrl_regs[3], ctrl_regs[2]};
 	
-//	initial howmany_many = 12'hfff;
-//	initial howmany = 12'h3ff;
-   //assign howmany = (ctrl_regs[1] << 16) | (ctrl_regs[0]);
    assign offset = ctrl_regs[4] ;
 	
 	assign adc_mode1_d  = ctrl_regs[6];
@@ -419,40 +396,37 @@
 	
 	assign trigger = ctrl_regs[10][0];
 	assign read_request = ctrl_regs[11][0]; // to be used for single_channel test only
-				
-
-   // preload some registers
-   initial begin
-      ctrl_regs[0] = 8'hff; // bottom 8 bits of ADC_sample_num
-      ctrl_regs[1] = 8'h03; // top 8 bits of ADC_sample_num
-		ctrl_regs[2] = 8'hff; // bottom 8 bits of ZYNQ_word_num
-		ctrl_regs[3] = 8'h0f; // top 8 bits of ZYNQ_word_num
-		
-		ctrl_regs[4] = 8'h00; // readout offset, where in ringbuffer to start reading
-		ctrl_regs[6] = 8'h09; // ADC mode (free-running or test pattern)
-		ctrl_regs[7] = 8'h00; // Which module to test, lvds_rec.v, lvdsrec.vhd, or sc
-		ctrl_regs[8] = 8'h00; // Use top 8 bits or bototm 8 bits of data out
-		
-		ctrl_regs[10] = 8'h00; // trigger
-		ctrl_regs[11] = 8'h00; // read_request (for single_channel test only)
-   end
 
    // state machine outputs
-   wire       rd_select, wr_select, fifo_select, latch_cmd, fifo_rd_one;
+   wire       rd_select, wr_select, latch_cmd;
 
    // handle the read and write 
    always @(posedge sysclk ) begin
-      if ( rd_select) begin
+		// preload some registers
+		if (rst) begin
+			ctrl_regs[0] <= 8'h00; // bottom 8 bits of ADC_sample_num
+			ctrl_regs[1] <= 8'h04; // top 8 bits of ADC_sample_num
+			ctrl_regs[2] <= 8'h00; // bottom 8 bits of ZYNQ_word_num
+			ctrl_regs[3] <= 8'h10; // top 8 bits of ZYNQ_word_num
+			
+			ctrl_regs[4] <= 8'h00; // readout offset, where in ringbuffer to start reading
+			ctrl_regs[6] <= 8'h09; // ADC mode (free-running or test pattern)
+			ctrl_regs[7] <= 8'h00; // Which module to test, lvds_rec.v, lvdsrec.vhd, or sc
+			ctrl_regs[8] <= 8'h00; // Use top 8 bits or bototm 8 bits of data out
+			
+			ctrl_regs[10] <= 8'h00; // trigger
+			ctrl_regs[11] <= 8'h00; // read_request (for single_channel test only)
+		end
+		
+      else if ( rd_select) begin
          SPI_tx_reg <= ctrl_regs[SPI_addr];
       end 
       else if ( wr_select ) begin
          ctrl_regs[SPI_addr] <= SPI_rx_reg;
       end
-      else if ( SPI_done & fifo_select & fifo_rd_one ) begin
-	 // needs to set ZYNQ_RD_REQUEST for one clock cycle
-	 // BROKEN. Update SPI state machine to handle this.
-	 SPI_tx_reg <= dout[7:0];
-      end
+		else begin
+			SPI_tx_reg <= adc_data_out_word;
+		end
    end
 
    // store the command and associated address data
@@ -466,13 +440,9 @@
    SPI_SM sm( // State machine for SPI slave on CycloneIII
               .rd_select(rd_select),
               .wr_select(wr_select),
-	      .led(led_hack),
-              .fifo_select(fifo_select),
               .latch_cmd(latch_cmd),
-	      //.fifo_rd_enable(fifo_rd_one),
               .cmd(SPI_rx_reg[3:0]), // before they are latched
               .done(SPI_done),
-              //.FIFO_PK_SZ(FIFO_PK_SZ),   // number of words to send
               .clk(sysclk),
               .rst(rst) 
               );

@@ -4,15 +4,13 @@
 // Created by fizzim.pl version 5.10 on 2016:10:06 at 17:47:23 (www.fizzim.com)
 
 module SPI_SM (
-  output reg fifo_select,
   output reg latch_cmd,
   output reg rd_select,
   output reg wr_select,
   input wire clk,
   input wire [3:0] cmd,
   input wire done,
-  input wire rst ,
-	       output wire led
+  input wire rst
 );
 
   // state bits
@@ -25,7 +23,6 @@ module SPI_SM (
 
   reg [2:0] state;
   reg [2:0] nextstate;
-   assign led = (state == IDLE);
   // comb always block
   always @* begin
     nextstate = state; // default to hold value because implied_loopback is set
@@ -77,13 +74,11 @@ module SPI_SM (
   // datapath sequential always block
   always @(posedge clk) begin
     if (rst) begin
-      fifo_select <= 0;
       latch_cmd <= 0;
       rd_select <= 0;
       wr_select <= 0;
     end
     else begin
-      fifo_select <= 0; // default
       latch_cmd <= 0; // default
       rd_select <= 0; // default
       wr_select <= 0; // default

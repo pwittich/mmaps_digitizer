@@ -22,6 +22,7 @@
 	 output wire ZYNQ_RD_EN_out
     );
 	 
+	localparam ADC_WIDTH = 12;
 	 
    wire 	CLK;
    wire 	RESET; 
@@ -33,11 +34,9 @@
 	assign DOUT = DOUT_i;
 	assign ZYNQ_RD_EN_out = ZYNQ_RD_EN;
 	
-	
 	wire [CHAN-1:0] RODONE_n;
 	reg [CHAN-1:0] TRIGGER;
 	reg EOS_ALLOWED;
-	
 		
 	always @ (posedge CLK) begin
 		if (RST) begin
@@ -62,13 +61,11 @@
 	
 	wire SPI_complete;
 	wire ZYNQ_RD_EN;
-	
-	wire [CHAN-1:0] debugs;
 
 	assign SPI_complete = ~(|TRIGGER);
    
    // generate channels for output
-   reg [12*CHAN-1:0] DOUT_F; // output from each channel
+   wire [ADC_WIDTH*CHAN-1:0] DOUT_F; // output from each channel
    wire [CHAN-1:0] 	 RD_REQUEST; // readout  request to each channel
    // channels
    genvar 		 i;
@@ -86,45 +83,51 @@
 			     .offset(offset),
 			     .read_request(RD_REQUEST[i]),
 			     .trigger(TRIGGER[i]),
-			     //.data_out(DOUT_F[(i*12+(12-1)):i*12]),
+			     .data_out(DOUT_F[(i+1)*ADC_WIDTH-1 -: ADC_WIDTH]),
 				  .RODONE_n_out(RODONE_n[i]),
 				  .SPI_done(SPI_done)
 			     );
         end // for (i=0;i<CHAN;i=i+1)
    endgenerate
-	
- 	always @ (posedge CLK) begin
-		DOUT_F[11:0] <= 12'h111;
-		DOUT_F[23:12] <= 12'h222;
-		DOUT_F[35:24] <= 12'h333;
-		DOUT_F[47:36] <= 12'h444;
-		DOUT_F[59:48] <= 12'h555;
-		DOUT_F[71:60] <= 12'h666;
-		DOUT_F[83:72] <= 12'h777;
-		DOUT_F[95:84] <= 12'h888;
-	end
 
-   reg [15:0] DOUT_i;
-   wire [2:0] SEL;
+	// Make fake data to test multiple channels, instead
+	// of using real data from single_channel. To use uncomment
+	// below and comment out output .data_out from single_channel;
+	// also change type of DOUT_F from wire to reg.
+	//
+	//	integer k;
+	//	always @ (posedge CLK) begin
+	//		for (k = 0; k < CHAN; k = k + 1)
+	//			DOUT_F[(k+1)*ADC_WIDTH-1 -: ADC_WIDTH] <= {(ADC_WIDTH/4){k[3:0]}};
+	//	end
+
+	function integer clog2 (input integer n); 
+   integer j; 
+   begin 
+	 n = n - 1;
+	 for (j = 0; n > 0; j = j + 1)        
+           n = n >> 1;
+	 clog2 = j;
+   end
+   endfunction
+
+   reg [WIDTH-1:0] DOUT_i;
+   wire [clog2(CHAN)-1:0] SEL;
 	
    // priority encoder. Select numerically highest channel that fired.
-   enc enc1(.in(TRIGGER), .out(SEL));
+   enc #(.SIZE(clog2(CHAN))) enc1(.in(TRIGGER), .out(SEL));
 	
    // multiplexer for the data from the channels
-   // HARDWIRED TO EIGHT HERE - SHOULD BE CHAN instead
-   always @(SEL, DOUT_F)
-     case (SEL)
-       3'b000: DOUT_i = {DOUT_F[11:0], 4'h0};
-       3'b001: DOUT_i = {DOUT_F[23:12], 4'h0};
-       3'b010: DOUT_i = {DOUT_F[35:24], 4'h0};
-       3'b011: DOUT_i = {DOUT_F[47:36], 4'h0};
-       3'b100: DOUT_i = {DOUT_F[59:48], 4'h0};
-       3'b101: DOUT_i = {DOUT_F[71:60], 4'h0};
-       3'b110: DOUT_i = {DOUT_F[83:72], 4'h0};
-       3'b111: DOUT_i = {DOUT_F[95:84], 4'h0};
-     endcase
+	// Last 4 bits are up for grabs (maybe channel id?)
+	integer j;
+	always @ (*) begin
+		for (j = 0; j < CHAN; j = j + 1)
+			if (SEL == j)
+				DOUT_i = {DOUT_F[(j+1)*ADC_WIDTH-1 -: ADC_WIDTH], 4'h0};
+	end
 	
-	demux #(.N(8)) dm1(.in(ZYNQ_RD_EN), .sel(SEL), .out(RD_REQUEST));
+	// Demux to choose rd_request line for active channel (SEL)
+	demux #(.N(CHAN)) dm1(.in(ZYNQ_RD_EN), .sel(SEL), .out(RD_REQUEST));
 	
 	// Simple state machine to handle overall zynq readout
 	multi_chn_readout multi_chn_rd_inst (
@@ -139,19 +142,19 @@
    // Bunch counter - to tag the data for timing and later identification.
    // not clear if this is the right number of bits. Needs to fit into fifo?
    //localparam BC_BITS=12;
-//	localparam BC_BITS=5;
-//   wire [BC_BITS-1:0] 	    BC;
-//   bc_counter #(.BITS(BC_BITS)) bc_counter_inst(.CLK(CLK), .RST(RESET), .BC(BC) );
+	//	localparam BC_BITS=5;
+	//   wire [BC_BITS-1:0] 	    BC;
+	//   bc_counter #(.BITS(BC_BITS)) bc_counter_inst(.CLK(CLK), .RST(RESET), .BC(BC) );
    
 	
-//   wire 	    BCSEL; 
-//   assign BCSEL = WR_EN & ~SEL_ONE; 
-//   always @(BCSEL,SEL,BC,DOUT_i) 
-//     case (BCSEL)
-//       1'b0: FIFO_DIN = DOUT_i; // width needs to be checked
-//       //1'b1: FIFO_DIN = {1'b0,SEL, BC};
-//		 1'b1: FIFO_DIN = {SEL, BC};
-//     endcase
+	//   wire 	    BCSEL; 
+	//   assign BCSEL = WR_EN & ~SEL_ONE; 
+	//   always @(BCSEL,SEL,BC,DOUT_i) 
+	//     case (BCSEL)
+	//       1'b0: FIFO_DIN = DOUT_i; // width needs to be checked
+	//       //1'b1: FIFO_DIN = {1'b0,SEL, BC};
+	//		 1'b1: FIFO_DIN = {SEL, BC};
+	//     endcase
    
 
 endmodule

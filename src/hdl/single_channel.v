@@ -153,7 +153,7 @@
 			     .sysclk(clk),
 			     .rst(reset),
 			     .ain(RD_ADDR),
-			     .howmany_i(how_many2),
+			     .howmany_i(how_many),
 			     .offset_i(offset),
 				  .SPI_done(SPI_done),
 			     .address(SYNTHESIZED_WIRE_0),
