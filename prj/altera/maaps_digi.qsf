@@ -228,7 +228,7 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[23]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[29]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[30]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[31]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PMT_trigger
+set_instance_assignment -name IO_STANDARD LVDS -to PMT_trigger
 set_instance_assignment -name IO_STANDARD LVDS -to adcdata_p[8]
 set_instance_assignment -name IO_STANDARD LVDS -to adcdata_p[9]
 set_instance_assignment -name IO_STANDARD LVDS -to adcdata_p[10]
@@ -279,4 +279,6 @@ set_global_assignment -name VERILOG_FILE ../../src/hdl/addr_cntrl.v
 set_global_assignment -name VERILOG_FILE ../../src/hdl/SM1.v
 set_global_assignment -name VERILOG_FILE ../../src/hdl/spi_defines.v
 set_global_assignment -name VERILOG_FILE ../../src/hdl/spi_sm.v
+set_location_assignment PIN_T17 -to PMT_trigger
+set_location_assignment PIN_T18 -to "PMT_trigger(n)"
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

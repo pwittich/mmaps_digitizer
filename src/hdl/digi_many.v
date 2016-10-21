@@ -10,16 +10,16 @@
    (
     input wire  RST,
     input wire  CK50,
-	 input wire DAVAIL,
-	 input wire EOS,
+    input wire DAVAIL,
+    input wire EOS,
     input wire [CHAN-1:0] adcdata_p, // serial data - one per channel
     input wire adc_clk,
     input wire adc_frame,
-	 input wire	[11:0] ADC_sample_num,
+    input wire	[11:0] ADC_sample_num,
     input wire [SIZE-1:0]  offset,
     output wire [WIDTH-1:0] DOUT,
-	 input wire SPI_done,
-	 output wire ZYNQ_RD_EN_out
+    input wire SPI_done,
+    output wire ZYNQ_RD_EN_out
     );
 	 
 	localparam ADC_WIDTH = 12;
@@ -111,7 +111,7 @@
    end
    endfunction
 
-   reg [WIDTH-1:0] DOUT_i;
+   wire [WIDTH-1:0] DOUT_i;
    wire [clog2(CHAN)-1:0] SEL;
 	
    // priority encoder. Select numerically highest channel that fired.
@@ -119,12 +119,16 @@
 	
    // multiplexer for the data from the channels
 	// Last 4 bits are up for grabs (maybe channel id?)
-	integer j;
-	always @ (*) begin
-		for (j = 0; j < CHAN; j = j + 1)
-			if (SEL == j)
-				DOUT_i = {DOUT_F[(j+1)*ADC_WIDTH-1 -: ADC_WIDTH], 4'h0};
-	end
+	
+	//	integer j;
+	//	always @ (*) begin
+	//		for (j = 0; j < CHAN; j = j + 1)
+	//			if (SEL == j)
+	//				DOUT_i = {DOUT_F[(j+1)*ADC_WIDTH-1 -: ADC_WIDTH], 4'h0};
+	//	end
+	
+	// more concise version of multiplexer
+	assign DOUT_i = {DOUT_F[(SEL+1)*ADC_WIDTH-1 -: ADC_WIDTH], 4'h0};
 	
 	// Demux to choose rd_request line for active channel (SEL)
 	demux #(.N(CHAN)) dm1(.in(ZYNQ_RD_EN), .sel(SEL), .out(RD_REQUEST));

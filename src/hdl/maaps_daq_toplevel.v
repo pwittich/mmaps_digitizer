@@ -89,7 +89,8 @@
 	
 	assign L0 = ZYNQ_RD_EN;
 	//assign L1 = adc_ready1 & adc_ready2;
-	assign L1 = ctrl_regs[6][0];
+	//assign L1 = ctrl_regs[6][0];
+	assign L1 = PMT_trigger;
 	
 
    // input clock - 50 MHz 
@@ -386,7 +387,7 @@
 	wire [11:0] ADC_sample_num;
 	wire [15:0] ZYNQ_word_num;
 
-	assign ADC_sample_num = {ctrl_regs[1], ctrl_regs[0]};
+	assign ADC_sample_num = {ctrl_regs[1][3:0], ctrl_regs[0]};
 	assign ZYNQ_word_num = {ctrl_regs[3], ctrl_regs[2]};
 	
    assign offset = ctrl_regs[4] ;
