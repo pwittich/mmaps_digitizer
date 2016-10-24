@@ -141,6 +141,7 @@
    defparam    channel_sm.READOUT = 3'b001;
    defparam    channel_sm.TRIGGERED = 3'b100;
 	
+	reg [11:0] offset_temp = 12'h000;
 	
    addr_cntrl    ch_addrctrl(
 			     .rd_request(RO_ENABLE),
@@ -148,7 +149,7 @@
 			     .rst(reset),
 			     .ain(RD_ADDR),
 			     .howmany_i(how_many),
-			     .offset_i(offset),
+			     .offset_i(offset_temp),
 				  .SPI_done(SPI_done),
 			     .address(SYNTHESIZED_WIRE_0),
 			     .ro_done_n(RO_DONE_n));

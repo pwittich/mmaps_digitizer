@@ -395,7 +395,8 @@
 	assign adc_mode1_d  = ctrl_regs[6];
 	assign adc_mode2_d  = ctrl_regs[6];
 	
-	assign trigger = ctrl_regs[10][0];
+	//assign trigger = ctrl_regs[10][0];
+	assign trigger = PMT_trigger;
 	assign read_request = ctrl_regs[11][0]; // to be used for single_channel test only
 
    // state machine outputs

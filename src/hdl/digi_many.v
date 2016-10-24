@@ -38,15 +38,28 @@
 	reg [CHAN-1:0] TRIGGER;
 	reg EOS_ALLOWED;
 		
+	reg [7:0] offset_counter;
+	
 	always @ (posedge CLK) begin
 		if (RST) begin
 			EOS_ALLOWED <= 1'b1;
 			TRIGGER <= {CHAN{1'b0}};
+			offset_counter <= offset;
 		end
 		else if (ZYNQ_RD_EN) begin
-			if (EOS && EOS_ALLOWED) begin
-				EOS_ALLOWED <= 1'b0;
-				TRIGGER <= {CHAN{1'b1}};
+			//if (EOS && EOS_ALLOWED) begin
+			if (EOS_ALLOWED) begin
+				if (offset == 8'h00) begin
+					EOS_ALLOWED <= 1'b0;
+					TRIGGER <= {CHAN{1'b1}};
+				end else if (offset_counter == 8'h01) begin
+					EOS_ALLOWED <= 1'b0;
+					TRIGGER <= {CHAN{1'b1}};
+					//offset_counter <= offset;
+					offset_counter <= offset_counter - 1;
+				end else begin
+					offset_counter <= offset_counter - 1;
+				end
 			end
 			else begin
 				if (!RODONE_n[SEL]) begin
@@ -56,14 +69,16 @@
 		end
 		else begin
 			EOS_ALLOWED <= 1'b1;
+			offset_counter <= offset;
 		end
 	end
 	
 	wire SPI_complete;
 	wire ZYNQ_RD_EN;
 
-	assign SPI_complete = ~(|TRIGGER);
-   
+	assign SPI_complete = ~(|TRIGGER) & ~(|offset_counter);
+   //assign SPI_complete = ~(|TRIGGER);
+	
    // generate channels for output
    wire [ADC_WIDTH*CHAN-1:0] DOUT_F; // output from each channel
    wire [CHAN-1:0] 	 RD_REQUEST; // readout  request to each channel
