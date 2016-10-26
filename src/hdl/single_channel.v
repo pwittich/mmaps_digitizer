@@ -36,7 +36,6 @@
     output wire 	[WIDTH-1:0] data_out,
 	 //output wire	sc_wr_enable,
     input wire		[SIZE-1:0]  how_many,
-    input wire 	[SIZE-1:0]  offset,
     input wire    read_request,
 	 input wire		SPI_done,
 	 input wire    [11:0] read_address,

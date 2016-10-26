@@ -16,7 +16,7 @@
     input wire adc_clk,
     input wire adc_frame,
     input wire	[11:0] ADC_sample_num,
-    input wire [SIZE-1:0]  offset,
+    input wire [15:0]  offset,
     output wire [WIDTH-1:0] DOUT,
     input wire SPI_done,
     output wire ZYNQ_RD_EN_out
@@ -38,7 +38,7 @@
 	reg [CHAN-1:0] TRIGGER;
 	reg EOS_ALLOWED;
 		
-	reg [7:0] offset_counter;
+	reg [15:0] offset_counter;
 	
 	always @ (posedge CLK) begin
 		if (RST) begin
@@ -49,10 +49,10 @@
 		else if (ZYNQ_RD_EN) begin
 			//if (EOS && EOS_ALLOWED) begin
 			if (EOS_ALLOWED) begin
-				if (offset == 8'h00) begin
+				if (offset == 16'h0000) begin
 					EOS_ALLOWED <= 1'b0;
 					TRIGGER <= {CHAN{1'b1}};
-				end else if (offset_counter == 8'h01) begin
+				end else if (offset_counter == 16'h0001) begin
 					EOS_ALLOWED <= 1'b0;
 					TRIGGER <= {CHAN{1'b1}};
 					//offset_counter <= offset;
@@ -95,7 +95,6 @@
 			     .adc_fast_clk(adc_clk),
 			     .adc_frame(adc_frame),
 			     .how_many(ADC_sample_num),
-			     .offset(offset),
 			     .read_request(RD_REQUEST[i]),
 			     .trigger(TRIGGER[i]),
 			     .data_out(DOUT_F[(i+1)*ADC_WIDTH-1 -: ADC_WIDTH]),

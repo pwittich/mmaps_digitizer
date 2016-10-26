@@ -90,7 +90,8 @@
 	assign L0 = ZYNQ_RD_EN;
 	//assign L1 = adc_ready1 & adc_ready2;
 	//assign L1 = ctrl_regs[6][0];
-	assign L1 = PMT_trigger;
+	//assign L1 = PMT_trigger;
+	assign L1 = trigger_out;
 	
 
    // input clock - 50 MHz 
@@ -117,22 +118,42 @@
 	wire [7:0]			adc_mode1_d, adc_mode2_d;
 	reg  [7:0]			adc_mode1_q, adc_mode2_q;
 	
-	always @(*) begin
-		if (adc_mode1_q != adc_mode1_d) begin
-			adc_flag1 = 1'b1;
-		end else begin
-			adc_flag1 = 1'b0;
-		end
-		if (adc_mode2_q != adc_mode2_d) begin
-			adc_flag2 = 1'b1;
-		end else begin
-			adc_flag2 = 1'b0;
-		end
+	always @ (posedge sysclk) begin
+		if (adc_flag1 == 1'b1)
+			adc_flag1 <= 1'b0;
+		else
+			if (adc_mode1_q != adc_mode1_d)
+				adc_flag1 <= 1'b1;
+				
+		if (adc_flag2 == 1'b1)
+			adc_flag2 <= 1'b0;
+		else
+			if (adc_mode2_q != adc_mode2_d)
+				adc_flag2 <= 1'b1;
 	end
+		
+	
+//	always @(*) begin
+//		if (adc_mode1_q != adc_mode1_d) begin
+//			adc_flag1 = 1'b1;
+//		end else begin
+//			adc_flag1 = 1'b0;
+//		end
+//		if (adc_mode2_q != adc_mode2_d) begin
+//			adc_flag2 = 1'b1;
+//		end else begin
+//			adc_flag2 = 1'b0;
+//		end
+//	end
 	
 	always @(posedge sysclk) begin
-		adc_mode1_q <= adc_mode1_d;
-		adc_mode2_q <= adc_mode2_d;
+		if (rst) begin
+			adc_mode1_q <= 8'h39;
+			adc_mode2_q <= 8'h39;
+		end else begin
+			adc_mode1_q <= adc_mode1_d;
+			adc_mode2_q <= adc_mode2_d;
+		end
 	end
 	
 	// End ADC_mode_config
@@ -177,10 +198,10 @@
 	// that stops the data collection and waits until all the data
 	// is sent to the ZYNQ before resuming.
 
-   wire [7:0]        offset;
+   wire [15:0]        offset;
    //wire [7:0]        howmany;
 	reg [11:0]			howmany;
-	wire					trigger;
+	wire					trigger_in;
 	wire					read_request;
 		
 	wire [15:0] adc_data_out_digimany;
@@ -191,21 +212,20 @@
    // configurable how many it controls by the CHAN variable.
    // howmany, offset should be made configurable - hardwired for now
    // DAVAIL and TRIGGER should also not be hardwired to their current widths.
-	   digi_many #(.CHAN(16),.WIDTH(16)) digi_many_inst(
-	                                        .RST(rst), 
-	                                        .CK50(sysclk), 
-	                                        .adc_clk(adcfastclk_p), 
-	                                        .adc_frame(adcframe_p),
-	                                        .adcdata_p(adcdata_p[15:0]), 
-	                                        .DOUT(adc_data_out_digimany), // output to remote
-														 .EOS(trigger),
-														 .SPI_done(SPI_done),
-														 .ADC_sample_num(ADC_sample_num),
-	                                        .offset(offset), // configuration
-														 .DAVAIL(adc_ready1),
-														 .ZYNQ_RD_EN_out(ZYNQ_RD_EN)
-	                                        );
-														 
+	digi_many #(.CHAN(16),.WIDTH(16)) digi_many_inst(
+													 .RST(rst), 
+													 .CK50(sysclk), 
+													 .adc_clk(adcfastclk_p), 
+													 .adc_frame(adcframe_p),
+													 .adcdata_p(adcdata_p[15:0]), 
+													 .DOUT(adc_data_out_digimany), // output to remote
+													 .EOS(trigger_out),
+													 .SPI_done(SPI_done),
+													 .ADC_sample_num(ADC_sample_num),
+													 .offset(offset), // configuration
+													 .DAVAIL(adc_ready1),
+													 .ZYNQ_RD_EN_out(ZYNQ_RD_EN)
+													 );
 		
 	// End ADC_SPI_controller
 	// -------------------------------------------------------------
@@ -274,14 +294,13 @@
 							.clk(sysclk),
 							.reset(rst),
 							.adc_data_ready(adc_ready1),
-							.trigger(trigger),
+							.trigger(trigger_out),
 							.adc_fast_clk(adcfastclk_p),
 							.adc_frame(adcframe_p),
 							.adc_data_p(adcdata_p[channelUnderTest]),
 							.data_out(adc_data_out_singlechannel),
 							//.sc_wr_enable(sc_wr_enable),
 							.how_many(howmany),
-							.offset(offset),
 							.read_request(read_request),
 							.SPI_done(SPI_done),
 							.read_address(RD_ADDR_q),
@@ -390,14 +409,34 @@
 	assign ADC_sample_num = {ctrl_regs[1][3:0], ctrl_regs[0]};
 	assign ZYNQ_word_num = {ctrl_regs[3], ctrl_regs[2]};
 	
-   assign offset = ctrl_regs[4] ;
+   assign offset = {ctrl_regs[5], ctrl_regs[4]};
 	
 	assign adc_mode1_d  = ctrl_regs[6];
 	assign adc_mode2_d  = ctrl_regs[6];
 	
 	//assign trigger = ctrl_regs[10][0];
-	assign trigger = PMT_trigger | ctrl_regs[10][0];
+	assign trigger_in = PMT_trigger | ctrl_regs[10][0];
+	wire trigger_out;
+	wire trigger_temp;
+	
+	dff_sync_reset ff1 (
+		.data(trigger_in),
+		.clk(sysclk),
+		.reset(rst),
+		.q(trigger_temp)
+	);
+	
+	dff_sync_reset ff2 (
+		.data(trigger_temp),
+		.clk(sysclk),
+		.reset(rst),
+		.q(trigger_out)
+	);
+	
 	assign read_request = ctrl_regs[11][0]; // to be used for single_channel test only
+	
+	wire rst;
+	assign rst = reset | ctrl_regs[12][0];
 
    // state machine outputs
    wire       rd_select, wr_select, latch_cmd;
@@ -411,13 +450,19 @@
 			ctrl_regs[2] <= 8'h00; // bottom 8 bits of ZYNQ_word_num
 			ctrl_regs[3] <= 8'h10; // top 8 bits of ZYNQ_word_num
 			
-			ctrl_regs[4] <= 8'h00; // readout offset, where in ringbuffer to start reading
+			ctrl_regs[4] <= 8'h00; // bottom 8 bits of trigger delay offset
+			ctrl_regs[5] <= 8'h00; // top 8 bits of trigger delay offset
+			
 			ctrl_regs[6] <= 8'h09; // ADC mode (free-running or test pattern)
 			ctrl_regs[7] <= 8'h00; // Which module to test, lvds_rec.v, lvdsrec.vhd, or sc
 			ctrl_regs[8] <= 8'h00; // Use top 8 bits or bototm 8 bits of data out
 			
+			ctrl_regs[9] <= 8'h00; // Use trigger as BOS or EOS and offset as increment
+										  // or decrement (default EOS)
+			
 			ctrl_regs[10] <= 8'h00; // trigger
 			ctrl_regs[11] <= 8'h00; // read_request (for single_channel test only)
+			ctrl_regs[12] <= 8'h00; // Reset by zynq
 		end
 		
       else if ( rd_select) begin
@@ -459,16 +504,16 @@
    //-------------------------------------------------------------
    // self-reset on startup for now. This is a hack.
 	
-	reg  rst;
+	reg  reset;
    reg [4:0] rst_cnt; 
    initial rst_cnt = 0;
    always @(posedge sysclk ) begin
       if ( rst_cnt < 5'd31 )
         rst_cnt <= rst_cnt + 5'b1;
       if ( rst_cnt < 5'd25) 
-        rst = 1;
+        reset <= 1;
       else
-        rst = 0;
+        reset <= 0;
    end
 	
    

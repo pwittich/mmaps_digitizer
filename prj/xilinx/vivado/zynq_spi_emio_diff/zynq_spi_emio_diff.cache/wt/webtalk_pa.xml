@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<document>
+<!--The data in this file is primarily intended for consumption by Xilinx tools.
+The structure and the elements are likely to change over the next few releases.
+This means code written to parse this file will need to be revisited each subsequent release.-->
+<application name="pa" timeStamp="Fri Oct 21 17:30:37 2016">
+<section name="Project Information" visible="false">
+<property name="ProjectID" value="6d51f6cb31a84269a5b940ef502da204" type="ProjectID"/>
+<property name="ProjectIteration" value="24" type="ProjectIteration"/>
+</section>
+<section name="PlanAhead Usage" visible="true">
+<item name="Project Data">
+<property name="SrcSetCount" value="1" type="SrcSetCount"/>
+<property name="ConstraintSetCount" value="1" type="ConstraintSetCount"/>
+<property name="DesignMode" value="RTL" type="DesignMode"/>
+<property name="SynthesisStrategy" value="Vivado Synthesis Defaults" type="SynthesisStrategy"/>
+<property name="ImplStrategy" value="Vivado Implementation Defaults" type="ImplStrategy"/>
+</item>
+<item name="Java Command Handlers">
+<property name="AutoConnectPort" value="29" type="JavaHandler"/>
+<property name="AutoConnectTarget" value="3" type="JavaHandler"/>
+<property name="CloseProject" value="2" type="JavaHandler"/>
+<property name="CreateBlockDesign" value="2" type="JavaHandler"/>
+<property name="CreateTopHDL" value="1" type="JavaHandler"/>
+<property name="CustomizeRSBBlock" value="24" type="JavaHandler"/>
+<property name="EditCopy" value="3" type="JavaHandler"/>
+<property name="EditDelete" value="25" type="JavaHandler"/>
+<property name="EditPaste" value="7" type="JavaHandler"/>
+<property name="EditProperties" value="9" type="JavaHandler"/>
+<property name="EditUndo" value="12" type="JavaHandler"/>
+<property name="LaunchOpenTarget" value="1" type="JavaHandler"/>
+<property name="LaunchProgramFpga" value="1" type="JavaHandler"/>
+<property name="ManageCompositeTargets" value="1" type="JavaHandler"/>
+<property name="NewExportHardware" value="8" type="JavaHandler"/>
+<property name="NewProject" value="2" type="JavaHandler"/>
+<property name="OpenBlockDesign" value="23" type="JavaHandler"/>
+<property name="OpenHardwareManager" value="2" type="JavaHandler"/>
+<property name="ProgramDevice" value="1" type="JavaHandler"/>
+<property name="ProjectSettingsCmdHandler" value="3" type="JavaHandler"/>
+<property name="ProjectSummary" value="1" type="JavaHandler"/>
+<property name="RunBitgen" value="13" type="JavaHandler"/>
+<property name="RunImplementation" value="10" type="JavaHandler"/>
+<property name="RunSynthesis" value="2" type="JavaHandler"/>
+<property name="SaveDesign" value="2" type="JavaHandler"/>
+<property name="SaveFileProxyHandler" value="1" type="JavaHandler"/>
+<property name="SaveProjectAs" value="1" type="JavaHandler"/>
+<property name="SaveRSBDesign" value="2" type="JavaHandler"/>
+<property name="ShowView" value="14" type="JavaHandler"/>
+<property name="ValidateRSBDesign" value="4" type="JavaHandler"/>
+<property name="ViewLayoutCmd" value="4" type="JavaHandler"/>
+<property name="ViewTaskImplementation" value="21" type="JavaHandler"/>
+<property name="ViewTaskProjectManager" value="1" type="JavaHandler"/>
+<property name="ViewTaskRTLAnalysis" value="1" type="JavaHandler"/>
+<property name="ZoomIn" value="21" type="JavaHandler"/>
+<property name="ZoomOut" value="25" type="JavaHandler"/>
+</item>
+<item name="Gui Resources Info">
+<property name="CANCEL, Cancel" value="1" type="GuiResourceData"/>
+<property name="PAResourceCommand.PACommandNames_AUTO_CONNECT_TARGET, Auto Connect" value="2" type="GuiResourceData"/>
+<property name="PAResourceCommand.PACommandNames_EXPORT_HARDWARE, Export Hardware..." value="1" type="GuiResourceData"/>
+<property name="PAResourceCommand.PACommandNames_OPEN_TARGET_WIZARD, Open New Target..." value="1" type="GuiResourceData"/>
+<property name="PAResourceEtoH.ExpReportTreePanel_EXP_REPORT_TREE_TABLE, Timing Summary Report ;  ;  ; , 8, (String" value="3" type="GuiResourceData"/>
+<property name="PAResourceEtoH.FlowNavigatorTreePanel_FLOW_NAVIGATOR_TREE, [, Program and Debug, Open Hardware Manager], 35, true" value="1" type="GuiResourceData"/>
+<property name="PAResourceItoN.MainMenuMgr_EXPORT, Export" value="2" type="GuiResourceData"/>
+<property name="PAResourceItoN.MainMenuMgr_FILE, File" value="2" type="GuiResourceData"/>
+<property name="PAResourceItoN.MainMenuMgr_OPEN_RECENT_PROJECT, Open Recent Project" value="1" type="GuiResourceData"/>
+<property name="PAResourceOtoP.ProgramDebugTab_OPEN_TARGET, Open target" value="3" type="GuiResourceData"/>
+<property name="RDIResource.BaseDialog_OK, OK" value="2" type="GuiResourceData"/>
+</item>
+<item name="Other">
+<property name="GuiMode" value="14" type="GuiMode"/>
+<property name="BatchMode" value="0" type="BatchMode"/>
+<property name="TclMode" value="11" type="TclMode"/>
+</item>
+</section>
+</application>
+</document>
