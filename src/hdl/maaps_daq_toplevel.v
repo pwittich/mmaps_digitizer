@@ -220,7 +220,8 @@
 													 .adcdata_p(adcdata_p[15:0]), 
 													 .DOUT(adc_data_out_digimany), // output to remote
 													 .EOS(trigger_out),
-													 .SPI_done(SPI_done),
+													 //.SPI_done(SPI_done),
+													 .SPI_done(word_done),
 													 .ADC_sample_num(ADC_sample_num),
 													 .offset(offset), // configuration
 													 .DAVAIL(adc_ready1),
@@ -342,17 +343,49 @@
 		//		end
 	end
 	
-	// Check ctrl_regs[8] for which 8 bits to send,
-	// lowest 8 or highest 8
-	always @(*) begin
-		if (ctrl_regs[8] == 8'h00) begin
-			adc_data_out_word = adc_data_out_test[11:4];
-		end else if (ctrl_regs[8] == 8'h01) begin
-			adc_data_out_word = adc_data_out_test[7:0];
+	reg word_done;
+	reg MSB;
+	
+	always @ (posedge sysclk) begin
+		if (rst) begin
+			word_done <= 1'b0;
+			MSB <= 1'b1;
+			adc_data_out_word <= 8'hcc;
+		end else if (SPI_done) begin
+			if (ctrl_regs[8] == 8'h02) begin
+				if (MSB) begin
+					MSB <= 1'b0;
+					adc_data_out_word <= adc_data_out_test[11:8];
+					word_done <= 1'b1;
+				end else begin
+					MSB <= 1'b1;
+					adc_data_out_word <= adc_data_out_test[7:0];
+					word_done <= 1'b0;
+				end
+			end else if (ctrl_regs[8] == 8'h01) begin
+				adc_data_out_word <= adc_data_out_test[7:0];
+				word_done <= 1'b1;
+			end else if (ctrl_regs[8] == 8'h00) begin
+				adc_data_out_word <= adc_data_out_test[11:4];
+				word_done <= 1'b1;
+			end
 		end else begin
-			adc_data_out_word = 8'hcc;
+			word_done <= 1'b0;
 		end
 	end
+	
+	
+//	// Check ctrl_regs[8] for which 8 bits to send,
+//	// lowest 8 or highest 8
+//	always @(*) begin
+//		if (ctrl_regs[8] == 8'h00) begin
+//			adc_data_out_word = adc_data_out_test[11:4];
+//		end else if (ctrl_regs[8] == 8'h01) begin
+//			adc_data_out_word = adc_data_out_test[7:0];
+//		end else begin
+//			adc_data_out_word = 8'hcc;
+//		end
+//	end
 	
 	// END Test_Modules
 	// -------------------------------------------------------------
@@ -455,10 +488,10 @@
 			
 			ctrl_regs[6] <= 8'h09; // ADC mode (free-running or test pattern)
 			ctrl_regs[7] <= 8'h00; // Which module to test, lvds_rec.v, lvdsrec.vhd, or sc
-			ctrl_regs[8] <= 8'h00; // Use top 8 bits or bototm 8 bits of data out
+			ctrl_regs[8] <= 8'h00; // Send out top 8 bits, bototm 8 bits of data out, or both
 			
-			ctrl_regs[9] <= 8'h00; // Use trigger as BOS or EOS and offset as increment
-										  // or decrement (default EOS)
+//			ctrl_regs[9] <= 8'h00; // Use trigger as BOS or EOS and offset as increment
+//										  // or decrement (default EOS)
 			
 			ctrl_regs[10] <= 8'h00; // trigger
 			ctrl_regs[11] <= 8'h00; // read_request (for single_channel test only)
