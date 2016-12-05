@@ -28,6 +28,6 @@ module enc #(parameter SIZE = 3)
   always @* begin
     out = 0; // default value if 'in' is all 0's
     for (i=2**SIZE-1; i>=0; i=i-1)
-        if (in[i]) out = i;
+        if (in[i]) out = i[SIZE-1:0];
   end
 endmodule

@@ -41,7 +41,7 @@ ENTITY lvdsreceiver IS
       RESET_n : IN STD_LOGIC;
       sysclk : in std_logic;
       CBDATA : OUT STD_LOGIC_VECTOR(11 downto 0);
-      CBADDRESS : out std_logic_vector(7 downto 0);
+--      CBADDRESS : out std_logic_vector(7 downto 0);
       WENABLE : out std_logic
       );
 END lvdsreceiver;
@@ -129,7 +129,7 @@ BEGIN
   END PROCESS;
 
 
-  cbaddress<=address;
+--  cbaddress<=address;
 
 
 
