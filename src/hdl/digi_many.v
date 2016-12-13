@@ -56,9 +56,9 @@
 					EOS_ALLOWED <= 1'b0;
 					TRIGGER <= {CHAN{1'b1}};
 					//offset_counter <= offset;
-					offset_counter <= offset_counter - 1;
+					offset_counter <= offset_counter - 1'b1;
 				end else begin
-					offset_counter <= offset_counter - 1;
+					offset_counter <= offset_counter - 1'b1;
 				end
 			end
 			else begin

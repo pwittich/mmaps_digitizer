@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<pin_planner>
+	<pin_info>
+		<pin name="ADCCLK1_n" direction="Output" source="Hierarchy Database" diff_pair_node="ADCCLK1_p" >
+		</pin>
+		<pin name="ADCCLK1_p" direction="Output" source="Hierarchy Database" diff_pair_node="ADCCLK1_n" >
+		</pin>
+		<pin name="ADCCLK2_n" direction="Output" source="Hierarchy Database" diff_pair_node="ADCCLK2_p" >
+		</pin>
+		<pin name="ADCCLK2_p" direction="Output" source="Hierarchy Database" diff_pair_node="ADCCLK2_n" >
+		</pin>
+		<pin name="PMT_trigger_n" direction="Input" source="Hierarchy Database" diff_pair_node="PMT_trigger_p" >
+		</pin>
+		<pin name="PMT_trigger_p" direction="Input" source="Hierarchy Database" diff_pair_node="PMT_trigger_n" >
+		</pin>
+		<pin name="SPI_MISO_n" direction="Output" source="Hierarchy Database" diff_pair_node="SPI_MISO_p" >
+		</pin>
+		<pin name="SPI_MISO_p" direction="Output" source="Hierarchy Database" diff_pair_node="SPI_MISO_n" >
+		</pin>
+		<pin name="SPI_MOSI_n" direction="Input" source="Hierarchy Database" diff_pair_node="SPI_MOSI_p" >
+		</pin>
+		<pin name="SPI_MOSI_p" direction="Input" source="Hierarchy Database" diff_pair_node="SPI_MOSI_n" >
+		</pin>
+		<pin name="SPI_SCLK_n" direction="Input" source="Hierarchy Database" diff_pair_node="SPI_SCLK_p" >
+		</pin>
+		<pin name="SPI_SCLK_p" direction="Input" source="Hierarchy Database" diff_pair_node="SPI_SCLK_n" >
+		</pin>
+		<pin name="SPI_SS_n" direction="Input" source="Hierarchy Database" diff_pair_node="SPI_SS_p" >
+		</pin>
+		<pin name="SPI_SS_p" direction="Input" source="Hierarchy Database" diff_pair_node="SPI_SS_n" >
+		</pin>
+		<pin name="adcdata_n[15]" direction="Input" source="Hierarchy Database" diff_pair_node="adcdata_p[15]" >
+		</pin>
+		<pin name="adcdata_n[14]" direction="Input" source="Hierarchy Database" diff_pair_node="adcdata_p[14]" >
+		</pin>
+		<pin name="adcdata_n[13]" direction="Input" source="Hierarchy Database" diff_pair_node="adcdata_p[13]" >
+		</pin>
+		<pin name="adcdata_n[12]" direction="Input" source="Hierarchy Database" diff_pair_node="adcdata_p[12]" >
+		</pin>
+		<pin name="adcdata_n[11]" direction="Input" source="Hierarchy Database" diff_pair_node="adcdata_p[11]" >
+		</pin>
+		<pin name="adcdata_n[10]" direction="Input" source="Hierarchy Database" diff_pair_node="adcdata_p[10]" >
+		</pin>
+		<pin name="adcdata_n[9]" direction="Input" source="Hierarchy Database" diff_pair_node="adcdata_p[9]" >
+		</pin>
+		<pin name="adcdata_n[8]" direction="Input" source="Hierarchy Database" diff_pair_node="adcdata_p[8]" >
+		</pin>
+		<pin name="adcdata_n[7]" direction="Input" source="Hierarchy Database" diff_pair_node="adcdata_p[7]" >
+		</pin>
+		<pin name="adcdata_n[6]" direction="Input" source="Hierarchy Database" diff_pair_node="adcdata_p[6]" >
+		</pin>
+		<pin name="adcdata_n[5]" direction="Input" source="Hierarchy Database" diff_pair_node="adcdata_p[5]" >
+		</pin>
+		<pin name="adcdata_n[4]" direction="Input" source="Hierarchy Database" diff_pair_node="adcdata_p[4]" >
+		</pin>
+		<pin name="adcdata_n[3]" direction="Input" source="Hierarchy Database" diff_pair_node="adcdata_p[3]" >
+		</pin>
+		<pin name="adcdata_n[2]" direction="Input" source="Hierarchy Database" diff_pair_node="adcdata_p[2]" >
+		</pin>
+		<pin name="adcdata_n[1]" direction="Input" source="Hierarchy Database" diff_pair_node="adcdata_p[1]" >
+		</pin>
+		<pin name="adcdata_n[0]" direction="Input" source="Hierarchy Database" diff_pair_node="adcdata_p[0]" >
+		</pin>
+		<pin name="adcdata_p[15]" direction="Input" source="Hierarchy Database" diff_pair_node="adcdata_n[15]" >
+		</pin>
+		<pin name="adcdata_p[14]" direction="Input" source="Hierarchy Database" diff_pair_node="adcdata_n[14]" >
+		</pin>
+		<pin name="adcdata_p[13]" direction="Input" source="Hierarchy Database" diff_pair_node="adcdata_n[13]" >
+		</pin>
+		<pin name="adcdata_p[12]" direction="Input" source="Hierarchy Database" diff_pair_node="adcdata_n[12]" >
+		</pin>
+		<pin name="adcdata_p[11]" direction="Input" source="Hierarchy Database" diff_pair_node="adcdata_n[11]" >
+		</pin>
+		<pin name="adcdata_p[10]" direction="Input" source="Hierarchy Database" diff_pair_node="adcdata_n[10]" >
+		</pin>
+		<pin name="adcdata_p[9]" direction="Input" source="Hierarchy Database" diff_pair_node="adcdata_n[9]" >
+		</pin>
+		<pin name="adcdata_p[8]" direction="Input" source="Hierarchy Database" diff_pair_node="adcdata_n[8]" >
+		</pin>
+		<pin name="adcdata_p[7]" direction="Input" source="Hierarchy Database" diff_pair_node="adcdata_n[7]" >
+		</pin>
+		<pin name="adcdata_p[6]" direction="Input" source="Hierarchy Database" diff_pair_node="adcdata_n[6]" >
+		</pin>
+		<pin name="adcdata_p[5]" direction="Input" source="Hierarchy Database" diff_pair_node="adcdata_n[5]" >
+		</pin>
+		<pin name="adcdata_p[4]" direction="Input" source="Hierarchy Database" diff_pair_node="adcdata_n[4]" >
+		</pin>
+		<pin name="adcdata_p[3]" direction="Input" source="Hierarchy Database" diff_pair_node="adcdata_n[3]" >
+		</pin>
+		<pin name="adcdata_p[2]" direction="Input" source="Hierarchy Database" diff_pair_node="adcdata_n[2]" >
+		</pin>
+		<pin name="adcdata_p[1]" direction="Input" source="Hierarchy Database" diff_pair_node="adcdata_n[1]" >
+		</pin>
+		<pin name="adcdata_p[0]" direction="Input" source="Hierarchy Database" diff_pair_node="adcdata_n[0]" >
+		</pin>
+		<pin name="adcfastclk_n" direction="Input" source="Hierarchy Database" diff_pair_node="adcfastclk_p" >
+		</pin>
+		<pin name="adcfastclk_p" direction="Input" source="Hierarchy Database" diff_pair_node="adcfastclk_n" >
+		</pin>
+		<pin name="adcframe_n" direction="Input" source="Hierarchy Database" diff_pair_node="adcframe_p" >
+		</pin>
+		<pin name="adcframe_p" direction="Input" source="Hierarchy Database" diff_pair_node="adcframe_n" >
+		</pin>
+	</pin_info>
+	<buses>
+	</buses>
+	<group_file_association>
+	</group_file_association>
+	<pin_planner_file_specifies>
+	</pin_planner_file_specifies>
+</pin_planner>

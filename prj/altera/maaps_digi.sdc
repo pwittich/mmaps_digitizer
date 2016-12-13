@@ -37,7 +37,7 @@ create_clock -name {adcclk1} -period 20.000 [get_ports {ADCCLK1_p}]
 create_clock -name {adcclk2} -period 20.000 [get_ports {ADCCLK2_p}]
 create_clock -name {adcfastclk} -period 300MHz  [get_ports {adcfastclk_p}]
 create_clock -name {adcframe} -period 20.000 [get_ports {adcframe_p}]
-create_clock -name {spi_clk} -period 10MHz  [get_ports {SPI_SCLK}]
+create_clock -name {spi_clk} -period 10MHz  [get_ports {SPI_SCLK_p}]
 create_clock -name {adc_sclk1} -period 20.000 [get_ports {ADC_SCLK1}]
 create_clock -name {adc_sclk2} -period 20.000 [get_ports {ADC_SCLK2}]
 
@@ -110,12 +110,12 @@ set_input_delay -clock adcfastclk_ext -min 0.0 [get_ports {adcdata_p[*]}]
 set_input_delay -clock adcfastclk_ext -max 0.0 -clock_fall [get_ports {adcdata_p[*]}] -add_delay
 set_input_delay -clock adcfastclk_ext -min 0.0 -clock_fall [get_ports {adcdata_p[*]}] -add_delay
 
-set_input_delay -clock spi_clk_ext -max 0.0 [get_ports {SPI_MOSI}]
-set_input_delay -clock spi_clk_ext -min 0.0 [get_ports {SPI_MOSI}]
-set_input_delay -clock spi_clk_ext -max 0.0 [get_ports {SPI_SS}]
-set_input_delay -clock spi_clk_ext -min 0.0 [get_ports {SPI_SS}]
-set_output_delay -clock spi_clk_ext -max 0.0 [get_ports {SPI_MISO}]
-set_output_delay -clock spi_clk_ext -min 0.0 [get_ports {SPI_MISO}]
+set_input_delay -clock spi_clk_ext -max 0.0 [get_ports {SPI_MOSI_p}]
+set_input_delay -clock spi_clk_ext -min 0.0 [get_ports {SPI_MOSI_p}]
+set_input_delay -clock spi_clk_ext -max 0.0 [get_ports {SPI_SS_p}]
+set_input_delay -clock spi_clk_ext -min 0.0 [get_ports {SPI_SS_p}]
+set_output_delay -clock spi_clk_ext -max 0.0 [get_ports {SPI_MISO_p}]
+set_output_delay -clock spi_clk_ext -min 0.0 [get_ports {SPI_MISO_p}]
 
 set_output_delay -clock adc_sclk1 -max 0.0 [get_ports {ADC_SDIO1}]
 set_output_delay -clock adc_sclk1 -min 0.0 [get_ports {ADC_SDIO1}]
