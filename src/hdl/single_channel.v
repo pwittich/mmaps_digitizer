@@ -39,7 +39,6 @@
     input wire    read_request,
 	 input wire		SPI_done,
 	 input wire    [11:0] read_address,
-	 output wire RO_ENABLE_out,
 	 output wire RODONE_n_out
     );
    
@@ -52,7 +51,6 @@
 
    wire 	[WIDTH-1:0] 	cbdata;
 	
-	assign RO_ENABLE_out = RO_ENABLE;
 	assign RODONE_n_out = RO_DONE_n;
 	
 	//initial cbdata = 12'haaa;
