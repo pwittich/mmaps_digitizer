@@ -1,6 +1,3 @@
-`include "spi_defines.v"
-
-
 // Created by fizzim.pl version 5.10 on 2016:10:06 at 17:47:23 (www.fizzim.com)
 
 module SPI_SM (

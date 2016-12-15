@@ -1,6 +1,6 @@
 // Created by fizzim.pl version 5.20 on 2016:10:18 at 13:05:16 (www.fizzim.com)
 
-module multi_chn_readout (
+module multi_chn_readout_SM (
   output reg ZYNQ_RD_EN,
   input wire EOS,
   input wire SPI_complete,

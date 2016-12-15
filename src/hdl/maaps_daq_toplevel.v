@@ -18,7 +18,7 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-`include "spi_defines.v"
+`include "all_defines.v"
 
 // Top level HDL module
 module maaps_daq_toplevel(
@@ -134,7 +134,7 @@ assign L1 = trigger_out;
 
 // DIFF_IO_CONVERT
 // -------------------------------------------------------------
-// Converts each differential input/output into one logical signal.
+// Converts each differential input/output into one logical signal
 
 handle_diff_io handle_diff_io_inst(
 
@@ -186,9 +186,11 @@ reg adc_flag1, adc_flag2;
 reg  [7:0] adc_mode1_q, adc_mode2_q;
 	
 always @ (posedge sysclk) begin
+	// Flag lasts only one sysclk cycle
 	if (adc_flag1 == 1'b1)
 		adc_flag1 <= 1'b0;
 	else
+		// Enable flag if mode was changed
 		if (adc_mode1_q != adc_mode1_d)
 			adc_flag1 <= 1'b1;
 			
@@ -201,8 +203,8 @@ end
 
 always @(posedge sysclk) begin
 	if (rst) begin
-		adc_mode1_q <= 8'h39;
-		adc_mode2_q <= 8'h39;
+		adc_mode1_q <= `ADCMODE_CONSTWORD;
+		adc_mode2_q <= `ADCMODE_CONSTWORD;
 	end else begin
 		adc_mode1_q <= adc_mode1_d;
 		adc_mode2_q <= adc_mode2_d;
@@ -268,19 +270,19 @@ wire ZYNQ_RD_EN;
 	
 // Module to contain the input from the digitizer channels.
 // configurable how many it controls by the CHAN variable.
-digi_many #(.CHAN(16),.WIDTH(16)) digi_many_inst(
+digi_many #(.CHAN(16),.DATA_WIDTH(16)) digi_many_inst(
 	.RST(rst), 
-	.CK50(sysclk), 
+	.SYSCLK(sysclk), 
 	.adc_clk(adcfastclk), 
 	.adc_frame(adcframe),
-	.adcdata_p(adcdata[15:0]), 
+	.adcdata(adcdata[15:0]), 
 	.DOUT(adc_data_out_digimany), // output to remote
 	.EOS(trigger_out),
 	.SPI_done(word_done),
 	.ADC_sample_num(ADC_sample_num),
-	.offset(offset), // configuration
+	.trigger_delay(offset), // configuration
 	.DAVAIL(adc_ready1),
-	.ZYNQ_RD_EN_out(ZYNQ_RD_EN)
+	.ZYNQ_RD_EN(ZYNQ_RD_EN)
 );
 
 
@@ -295,9 +297,11 @@ always @ (posedge sysclk) begin
 	if (rst) begin
 		word_done <= 1'b0;
 		MSB <= 1'b1;
-		adc_data_out_word <= 8'hcc;
+		adc_data_out_word <= `DEFAULT_WORD_8BITS;
 	end else if (SPI_done) begin
-		if (which_bits_out == 8'h02) begin
+		if (which_bits_out == `ALL12BITS) begin
+			// Alternate between sending top 8 bits
+			// and bottom 4 bits (MSB vs LSB)
 			if (MSB) begin
 				MSB <= 1'b0;
 				adc_data_out_word <= adc_data_out_test[11:8];
@@ -307,10 +311,10 @@ always @ (posedge sysclk) begin
 				adc_data_out_word <= adc_data_out_test[7:0];
 				word_done <= 1'b0;
 			end
-		end else if (which_bits_out == 8'h01) begin
+		end else if (which_bits_out == `BOTTOM8BITS) begin
 			adc_data_out_word <= adc_data_out_test[7:0];
 			word_done <= 1'b1;
-		end else if (which_bits_out == 8'h00) begin
+		end else if (which_bits_out == `TOP8BITS) begin
 			adc_data_out_word <= adc_data_out_test[11:4];
 			word_done <= 1'b1;
 		end
@@ -328,7 +332,7 @@ end
 // SPI_ZYNQ
 // -------------------------------------------------------------
 // SPI interface for ZYNQ communication. Receives commands from 
-// the zynq and sends back ADC samples to be stored and processed
+// the zynq and sends back ADC samples to be stored and processes
 
 localparam ZSPI_WORDSIZE = 8;
 
@@ -351,6 +355,9 @@ handle_spi #(.ZSPI_WORDSIZE(ZSPI_WORDSIZE)) handle_spi_inst(
 	.adc_data_out_word(adc_data_out_word)
 );
 
+// Modules in Verilog can't pass arrays, so need
+// this block to convert a long register into several
+// shorter array elements
 integer i;
 always @ (*) begin
 	for (i = 0; i < 16; i = i +1)
@@ -377,6 +384,7 @@ wire [15:0] offset;
 wire [7:0] adc_mode1_d, adc_mode2_d;
 wire [7:0] which_module_to_test;
 wire [7:0] which_bits_out;
+wire artificial_trigger;
 wire read_request;
 wire rst;
 
@@ -387,13 +395,19 @@ assign adc_mode1_d  = ctrl_regs[6];
 assign adc_mode2_d  = ctrl_regs[6];
 assign which_module_to_test = ctrl_regs[7];
 assign which_bits_out = ctrl_regs[8];
-assign read_request = ctrl_regs[11][0]; // to be used for single_channel test only
-assign rst = reset | ctrl_regs[12][0];
+assign artificial_trigger = ctrl_regs[10][0];
+assign read_request = ctrl_regs[11][0]; // used for single_channel test only
+assign rst = reset | ctrl_regs[12][0]; // reset can be issued by zynq
 
 
-assign trigger_in = PMT_trigger | ctrl_regs[10][0];
+// Assigning the trigger is a bit more complex:
+// we pass the input trigger (either via the PMT_trigger
+// external pin or via the control register) through
+// two FF's in sequence to make sure there are no spurious
+// effects that would cause the trigger to behave erratically
 
-wire trigger_out;
+assign trigger_in = PMT_trigger | artificial_trigger;
+
 wire trigger_temp;
 
 dff_sync_reset ff1 (
@@ -402,6 +416,8 @@ dff_sync_reset ff1 (
 .reset(rst),
 .q(trigger_temp)
 );
+
+wire trigger_out;
 
 dff_sync_reset ff2 (
 .data(trigger_temp),
@@ -418,10 +434,10 @@ dff_sync_reset ff2 (
 
 // TEST_MODULES
 // -------------------------------------------------------------
-// Test single_channel, lvds_receiver.v
-// and lvdsreceiver.vhd. Which output goes
-// to the SPI slave to be sent to the zynq
-// is controlled by ctrl_regs[7]
+// Test single_channel, lvds_receiver.v and lvdsreceiver.vhd.
+// Which output goes to the SPI slave to be sent out to the
+// zynq is controlled by ctrl_regs[7]. This is to be used for
+// debugging purposes only, and bypasses the digi_many module
 
 wire [11:0] adc_data_out_verilog;
 wire [11:0] adc_data_out_vhdl;
@@ -448,14 +464,14 @@ reg [11:0] adc_data_out_test;
 reg [7:0] adc_data_out_word;
 
 // Check for which module, if any, to test.
-// Directs output to corresponding module
+// Directs output from corresponding module
 always @(*) begin
-	adc_data_out_test = 12'haff;
-	if (which_module_to_test == 8'h00) begin
+	adc_data_out_test = `DEFAULT_WORD_12BITS;
+	if (which_module_to_test == `DIGIMANY_NOTEST) begin
 		adc_data_out_test = adc_data_out_digimany[15:4];
-	end else if (which_module_to_test == 8'h01) begin
+	end else if (which_module_to_test == `VHDL_TEST) begin
 		adc_data_out_test = adc_data_out_vhdl;
-	end else if (which_module_to_test == 8'h02) begin
+	end else if (which_module_to_test == `SINGLECHANNEL_TEST) begin
 		adc_data_out_test = adc_data_out_singlechannel;
 	end
 	//		end else if (ctrl_regs[7] == 8'h03) begin
