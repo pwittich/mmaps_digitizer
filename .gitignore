@@ -42,3 +42,14 @@ project_1
 
 # incremental build directories
 incremental_db
+
+# output files
+prj/altera/output_files
+prj/altera/db
+prj/altera/incremental_db
+
+# output sim files
+prj/altera/simulation/modelsim/maaps_digi*
+
+# build files from petalinux
+prj/xilinx/petalinux/build

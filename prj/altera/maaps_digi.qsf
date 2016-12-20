@@ -66,10 +66,6 @@ set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -
 set_global_assignment -name GENERATE_RBF_FILE OFF
 set_location_assignment PIN_H1 -to L0
 set_location_assignment PIN_H2 -to L1
-set_location_assignment PIN_B7 -to TDC[3]
-set_location_assignment PIN_A7 -to TDC[2]
-set_location_assignment PIN_B8 -to TDC[1]
-set_location_assignment PIN_A8 -to TDC[0]
 set_location_assignment PIN_P2 -to ADC_nCS1
 set_location_assignment PIN_R1 -to ADC_SCLK1
 set_location_assignment PIN_P1 -to ADC_SDIO1
@@ -79,77 +75,29 @@ set_location_assignment PIN_R2 -to ADC_SDIO2
 set_global_assignment -name EDA_SIMULATION_TOOL "ModelSim-Altera (Verilog)"
 set_global_assignment -name EDA_OUTPUT_DATA_FORMAT "VERILOG HDL" -section_id eda_simulation
 set_location_assignment PIN_K2 -to ADCCLK1_p
-set_location_assignment PIN_K1 -to "ADCCLK1_p(n)"
 set_location_assignment PIN_D10 -to adcframe_p
-set_location_assignment PIN_C10 -to "adcframe_p(n)"
 set_location_assignment PIN_B10 -to adcfastclk_p
 set_location_assignment PIN_D16 -to adcdata_p[0]
-set_location_assignment PIN_C16 -to "adcdata_p[0](n)"
-set_location_assignment PIN_A10 -to "adcfastclk_p(n)"
 set_location_assignment PIN_A17 -to adcdata_p[1]
-set_location_assignment PIN_A18 -to "adcdata_p[1](n)"
 set_location_assignment PIN_B16 -to adcdata_p[2]
-set_location_assignment PIN_A16 -to "adcdata_p[2](n)"
 set_location_assignment PIN_B15 -to adcdata_p[3]
-set_location_assignment PIN_A15 -to "adcdata_p[3](n)"
 set_location_assignment PIN_B14 -to adcdata_p[4]
-set_location_assignment PIN_A14 -to "adcdata_p[4](n)"
 set_location_assignment PIN_B13 -to adcdata_p[5]
-set_location_assignment PIN_A13 -to "adcdata_p[5](n)"
 set_location_assignment PIN_B12 -to adcdata_p[6]
-set_location_assignment PIN_A12 -to "adcdata_p[6](n)"
 set_location_assignment PIN_B11 -to adcdata_p[7]
-set_location_assignment PIN_A11 -to "adcdata_p[7](n)"
 # second bank of ADC data
 set_location_assignment PIN_P10 -to adcdata_p[8]
-set_location_assignment PIN_P11 -to "adcdata_p[8](n)"
 set_location_assignment PIN_U11 -to adcdata_p[9]
-set_location_assignment PIN_V11 -to "adcdata_p[9](n)"
 set_location_assignment PIN_U12 -to adcdata_p[10]
-set_location_assignment PIN_V12 -to "adcdata_p[10](n)"
 set_location_assignment PIN_U13 -to adcdata_p[11]
-set_location_assignment PIN_V13 -to "adcdata_p[11](n)"
 set_location_assignment PIN_U14 -to adcdata_p[12]
-set_location_assignment PIN_V14 -to "adcdata_p[12](n)"
 set_location_assignment PIN_U15 -to adcdata_p[13]
-set_location_assignment PIN_V15 -to "adcdata_p[13](n)"
 set_location_assignment PIN_U16 -to adcdata_p[14]
-set_location_assignment PIN_V16 -to "adcdata_p[14](n)"
 set_location_assignment PIN_U17 -to adcdata_p[15]
-set_location_assignment PIN_V17 -to "adcdata_p[15](n)"
 
 set_location_assignment PIN_L2 -to ADCCLK2_p
-set_location_assignment PIN_L1 -to "ADCCLK2_p(n)"
 set_global_assignment -name VHDL_INPUT_VERSION VHDL_2008
 set_global_assignment -name VHDL_SHOW_LMF_MAPPING_MESSAGES OFF
-set_location_assignment PIN_C7 -to TDC[4]
-set_location_assignment PIN_D7 -to TDC[5]
-set_location_assignment PIN_A6 -to TDC[6]
-set_location_assignment PIN_B6 -to TDC[7]
-set_location_assignment PIN_A5 -to TDC[8]
-set_location_assignment PIN_B5 -to TDC[9]
-set_location_assignment PIN_A4 -to TDC[10]
-set_location_assignment PIN_B4 -to TDC[11]
-set_location_assignment PIN_A3 -to TDC[12]
-set_location_assignment PIN_B3 -to TDC[13]
-set_location_assignment PIN_C5 -to TDC[14]
-set_location_assignment PIN_D5 -to TDC[15]
-set_location_assignment PIN_U1 -to TDC[16]
-set_location_assignment PIN_V1 -to TDC[17]
-set_location_assignment PIN_U3 -to TDC[18]
-set_location_assignment PIN_V3 -to TDC[19]
-set_location_assignment PIN_U4 -to TDC[20]
-set_location_assignment PIN_V4 -to TDC[21]
-set_location_assignment PIN_U5 -to TDC[22]
-set_location_assignment PIN_V5 -to TDC[23]
-set_location_assignment PIN_U6 -to TDC[24]
-set_location_assignment PIN_V6 -to TDC[25]
-set_location_assignment PIN_U7 -to TDC[26]
-set_location_assignment PIN_V7 -to TDC[27]
-set_location_assignment PIN_R8 -to TDC[28]
-set_location_assignment PIN_T8 -to TDC[29]
-set_location_assignment PIN_U8 -to TDC[30]
-set_location_assignment PIN_V8 -to TDC[31]
 #set_location_assignment PIN_T17 -to PMT_trigger
 set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_DUPLICATION ON
 set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC ON
@@ -165,7 +113,7 @@ set_global_assignment -name ENABLE_NCE_PIN OFF
 set_global_assignment -name ENABLE_BOOT_SEL_PIN OFF
 set_global_assignment -name CYCLONEII_RESERVE_NCEO_AFTER_CONFIGURATION "USE AS REGULAR IO"
 set_global_assignment -name EDA_MAP_ILLEGAL_CHARACTERS ON -section_id eda_simulation
-set_global_assignment -name EDA_TIME_SCALE "1 ns" -section_id eda_simulation
+set_global_assignment -name EDA_TIME_SCALE "1 ps" -section_id eda_simulation
 set_global_assignment -name EDA_USER_COMPILED_SIMULATION_LIBRARY_DIRECTORY /home/wittich/maaps_daq/v2/mmaps_digitizer/prj/altera/simulation/modelsim/rtl_work -section_id eda_simulation
 set_global_assignment -name EDA_ENABLE_GLITCH_FILTERING ON -section_id eda_simulation
 set_global_assignment -name EDA_WRITE_NODES_FOR_POWER_ESTIMATION ALL_NODES -section_id eda_simulation
@@ -177,10 +125,6 @@ set_global_assignment -name EDA_DESIGN_INSTANCE_NAME maaps_daq_toplevel -section
 set_global_assignment -name EDA_TEST_BENCH_RUN_SIM_FOR "2000 ns" -section_id digi_testbench
 set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME maaps_daq_toplevel_vlg_tst -section_id digi_testbench
 set_global_assignment -name EDA_TEST_BENCH_FILE simulation/modelsim/maaps_daq_toplevel.vt -section_id digi_testbench
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[3]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[2]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[1]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[0]
 set_instance_assignment -name IO_STANDARD "2.5 V" -to ADC_nCS1
 set_instance_assignment -name IO_STANDARD "2.5 V" -to ADC_SCLK1
 set_instance_assignment -name IO_STANDARD "2.5 V" -to ADC_SDIO1
@@ -200,35 +144,6 @@ set_instance_assignment -name IO_STANDARD LVDS -to adcdata_p[7]
 set_instance_assignment -name IO_STANDARD LVDS -to adcdata_p[6]
 set_instance_assignment -name IO_STANDARD LVDS -to adcdata_p[3]
 set_instance_assignment -name IO_STANDARD LVDS -to ADCCLK2_p
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[4]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[5]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[6]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[8]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[9]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[11]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[14]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[18]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[17]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[7]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[21]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[24]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[25]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[27]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[28]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[10]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[12]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[13]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[15]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[16]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[20]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[26]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[19]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[22]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[23]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[29]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[30]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TDC[31]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to PMT_trigger
 set_instance_assignment -name IO_STANDARD LVDS -to adcdata_p[8]
 set_instance_assignment -name IO_STANDARD LVDS -to adcdata_p[9]
 set_instance_assignment -name IO_STANDARD LVDS -to adcdata_p[10]
@@ -243,50 +158,92 @@ set_global_assignment -name PHYSICAL_SYNTHESIS_EFFORT EXTRA
 set_global_assignment -name CYCLONEII_OPTIMIZATION_TECHNIQUE SPEED
 set_global_assignment -name OPTIMIZE_HOLD_TIMING "ALL PATHS"
 set_global_assignment -name OPTIMIZE_MULTI_CORNER_TIMING ON
-set_instance_assignment -name IO_STANDARD LVDS -to SPI_MISO
 set_instance_assignment -name IO_STANDARD "2.5 V" -to L0
 set_instance_assignment -name IO_STANDARD "2.5 V" -to CK50
 set_instance_assignment -name IO_STANDARD "2.5 V" -to L1
-set_instance_assignment -name IO_STANDARD LVDS -to SPI_MOSI
-set_instance_assignment -name IO_STANDARD LVDS -to SPI_SCLK
-set_instance_assignment -name IO_STANDARD LVDS -to SPI_SS
-set_location_assignment PIN_E17 -to SPI_MISO
-set_location_assignment PIN_E18 -to "SPI_MISO(n)"
-set_location_assignment PIN_D17 -to SPI_MOSI
-set_location_assignment PIN_D18 -to "SPI_MOSI(n)"
-set_location_assignment PIN_G17 -to SPI_SCLK
-set_location_assignment PIN_G18 -to "SPI_SCLK(n)"
-set_location_assignment PIN_H17 -to SPI_SS
-set_location_assignment PIN_H18 -to "SPI_SS(n)"
-set_global_assignment -name VERILOG_FILE ../../src/hdl/spi_master.v
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_global_assignment -name ENABLE_INIT_DONE_OUTPUT OFF
+set_global_assignment -name RESERVE_DATA0_AFTER_CONFIGURATION "AS OUTPUT DRIVING GROUND"
+set_location_assignment PIN_K1 -to ADCCLK1_n
+set_instance_assignment -name IO_STANDARD LVDS -to ADCCLK1_n
+set_instance_assignment -name IO_STANDARD LVDS -to ADCCLK2_n
+set_location_assignment PIN_L1 -to ADCCLK2_n
+set_instance_assignment -name IO_STANDARD LVDS -to SPI_MISO_p
+set_instance_assignment -name IO_STANDARD LVDS -to SPI_MISO_n
+set_instance_assignment -name IO_STANDARD LVDS -to SPI_MOSI_p
+set_instance_assignment -name IO_STANDARD LVDS -to SPI_MOSI_n
+set_instance_assignment -name IO_STANDARD LVDS -to SPI_SCLK_p
+set_instance_assignment -name IO_STANDARD LVDS -to SPI_SCLK_n
+set_instance_assignment -name IO_STANDARD LVDS -to SPI_SS_p
+set_instance_assignment -name IO_STANDARD LVDS -to SPI_SS_n
+set_location_assignment PIN_E17 -to SPI_MISO_p
+set_location_assignment PIN_E18 -to SPI_MISO_n
+set_location_assignment PIN_D17 -to SPI_MOSI_p
+set_location_assignment PIN_D18 -to SPI_MOSI_n
+set_location_assignment PIN_G17 -to SPI_SCLK_p
+set_location_assignment PIN_G18 -to SPI_SCLK_n
+set_location_assignment PIN_H17 -to SPI_SS_p
+set_location_assignment PIN_H18 -to SPI_SS_n
+set_instance_assignment -name IO_STANDARD LVDS -to adcfastclk_n
+set_location_assignment PIN_A10 -to adcfastclk_n
+set_instance_assignment -name IO_STANDARD LVDS -to adcframe_n
+set_location_assignment PIN_C10 -to adcframe_n
+set_location_assignment PIN_C16 -to adcdata_n[0]
+set_location_assignment PIN_A18 -to adcdata_n[1]
+set_location_assignment PIN_A16 -to adcdata_n[2]
+set_location_assignment PIN_A11 -to adcdata_n[7]
+set_location_assignment PIN_A15 -to adcdata_n[3]
+set_location_assignment PIN_A14 -to adcdata_n[4]
+set_location_assignment PIN_A13 -to adcdata_n[5]
+set_location_assignment PIN_A12 -to adcdata_n[6]
+set_location_assignment PIN_P11 -to adcdata_n[8]
+set_location_assignment PIN_V13 -to adcdata_n[11]
+set_location_assignment PIN_V11 -to adcdata_n[9]
+set_location_assignment PIN_V12 -to adcdata_n[10]
+set_location_assignment PIN_V14 -to adcdata_n[12]
+set_location_assignment PIN_V15 -to adcdata_n[13]
+set_location_assignment PIN_V16 -to adcdata_n[14]
+set_location_assignment PIN_V17 -to adcdata_n[15]
+set_location_assignment PIN_T17 -to PMT_trigger_p
+set_instance_assignment -name IO_STANDARD LVDS -to PMT_trigger_p
+set_instance_assignment -name IO_STANDARD LVDS -to PMT_trigger_n
+set_location_assignment PIN_T18 -to PMT_trigger_n
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to ADC_SCLK1
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to ADC_SCLK2
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to ADC_SDIO1
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to ADC_SDIO2
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to ADC_nCS1
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to ADC_nCS2
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to L0
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to L1
+set_instance_assignment -name SLEW_RATE 2 -to L1
+set_instance_assignment -name SLEW_RATE 2 -to L0
+set_instance_assignment -name SLEW_RATE 2 -to ADC_nCS2
+set_instance_assignment -name SLEW_RATE 2 -to ADC_nCS1
+set_instance_assignment -name SLEW_RATE 2 -to ADC_SDIO2
+set_instance_assignment -name SLEW_RATE 2 -to ADC_SDIO1
+set_instance_assignment -name SLEW_RATE 2 -to ADC_SCLK2
+set_instance_assignment -name SLEW_RATE 2 -to ADC_SCLK1
+set_global_assignment -name VERILOG_FILE ../../src/hdl/all_defines.v
+set_global_assignment -name VERILOG_FILE ../../src/hdl/handle_spi.v
+set_global_assignment -name VERILOG_FILE ../../src/hdl/test_submodules.v
+set_global_assignment -name VERILOG_FILE ../../src/hdl/handle_diff_io.v
+set_global_assignment -name VERILOG_FILE ../../src/hdl/dff_sync_reset.v
+set_global_assignment -name VERILOG_FILE ../../src/hdl/multi_chn_readout_sm.v
 set_global_assignment -name VERILOG_FILE ../../src/hdl/spi_slave.v
 set_global_assignment -name VHDL_FILE ../../src/hdl/lvdsreceiver.vhd
-set_global_assignment -name QIP_FILE fifo.qip
-set_global_assignment -name VERILOG_FILE fifo.v
-set_global_assignment -name VERILOG_FILE lvds_tx.v
-set_global_assignment -name QIP_FILE lvds_tx.qip
 set_global_assignment -name VERILOG_FILE ../../src/hdl/maaps_daq_toplevel.v
 set_global_assignment -name VERILOG_FILE ../../src/hdl/digi_many.v
 set_global_assignment -name VHDL_FILE ../../src/hdl/adc_spimaster.vhd
 set_global_assignment -name VHDL_FILE ../../src/hdl/spi_3_wire_master.vhd
-set_global_assignment -name VERILOG_FILE ../../src/hdl/lvds_receiver.v
-set_global_assignment -name VERILOG_FILE ../../src/hdl/SM_chro.v
 set_global_assignment -name VERILOG_FILE ../../src/hdl/single_channel.v
 set_global_assignment -name VERILOG_FILE ../../src/hdl/ringbuffer.v
-set_global_assignment -name VERILOG_FILE ../../src/hdl/memory.v
 set_global_assignment -name VERILOG_FILE ../../src/hdl/enc.v
 set_global_assignment -name VERILOG_FILE ../../src/hdl/demux.v
 set_global_assignment -name VERILOG_FILE ../../src/hdl/bc_counter.v
 set_global_assignment -name VERILOG_FILE ../../src/hdl/addr_cntrl.v
 set_global_assignment -name VERILOG_FILE ../../src/hdl/SM1.v
-set_global_assignment -name VERILOG_FILE ../../src/hdl/lvds_transmitter.v
-set_global_assignment -name VERILOG_TEST_BENCH_FILE simulation/modelsim/maaps_daq_toplevel.vt
-set_global_assignment -name VERILOG_FILE simulation/modelsim/maaps_daq_toplevel_vlg_tst.v
-set_global_assignment -name QIP_FILE local_altddio_in.qip
-set_global_assignment -name SYSTEMVERILOG_FILE ../../src/hdl/spi_demo_sm.sv
-set_global_assignment -name VERILOG_FILE ../../src/hdl/spi_defines.v
 set_global_assignment -name VERILOG_FILE ../../src/hdl/spi_sm.v
-set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
-set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
-set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
