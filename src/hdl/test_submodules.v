@@ -73,7 +73,7 @@ single_channel single_channel_inst(
 	.trigger(trigger_out),
 	.adc_fast_clk(adcfastclk),
 	.adc_frame(adcframe),
-	.adc_data_p(adcdata[channelUnderTest]),
+	.adc_data(adcdata[channelUnderTest]),
 	.data_out(adc_data_out_singlechannel),
 	//.sc_wr_enable(sc_wr_enable),
 	.how_many(howmany),

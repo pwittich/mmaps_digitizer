@@ -226,6 +226,7 @@ set_instance_assignment -name SLEW_RATE 2 -to ADC_SDIO2
 set_instance_assignment -name SLEW_RATE 2 -to ADC_SDIO1
 set_instance_assignment -name SLEW_RATE 2 -to ADC_SCLK2
 set_instance_assignment -name SLEW_RATE 2 -to ADC_SCLK1
+set_global_assignment -name VERILOG_FILE ../../src/hdl/single_channel_SM.v
 set_global_assignment -name VERILOG_FILE ../../src/hdl/all_defines.v
 set_global_assignment -name VERILOG_FILE ../../src/hdl/handle_spi.v
 set_global_assignment -name VERILOG_FILE ../../src/hdl/test_submodules.v
@@ -244,6 +245,5 @@ set_global_assignment -name VERILOG_FILE ../../src/hdl/enc.v
 set_global_assignment -name VERILOG_FILE ../../src/hdl/demux.v
 set_global_assignment -name VERILOG_FILE ../../src/hdl/bc_counter.v
 set_global_assignment -name VERILOG_FILE ../../src/hdl/addr_cntrl.v
-set_global_assignment -name VERILOG_FILE ../../src/hdl/SM1.v
 set_global_assignment -name VERILOG_FILE ../../src/hdl/spi_sm.v
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

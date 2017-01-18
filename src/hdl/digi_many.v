@@ -86,7 +86,7 @@ generate
 			.clk(SYSCLK),
 			.reset(RST),
 			.adc_data_ready(DAVAIL),
-			.adc_data_p(adcdata[i]),
+			.adc_data(adcdata[i]),
 			.adc_fast_clk(adc_clk),
 			.adc_frame(adc_frame),
 			.how_many(ADC_sample_num),

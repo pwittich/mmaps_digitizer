@@ -3,7 +3,13 @@
 `timescale 1ns / 1ps
 `default_nettype none
  
-module ringbuffer #(parameter SIZE=12, WIDTH=14)(
+// Module to contain the ADC data. It stores the data
+// sequentially, outputting the last address that has been
+// filled via aout, to addr_ctrl. It wraps around if it fills
+// up. When it's readout time it gets the address of the data
+// to read out via ain from addr_ctrl, and outputs the word in
+// that register.
+module ringbuffer #(parameter SIZE=12, WIDTH=14) (
 	input wire sysclk,
 	input wire fastclk,
 	input wire wr_en, 
@@ -12,63 +18,38 @@ module ringbuffer #(parameter SIZE=12, WIDTH=14)(
 	input wire [SIZE-1:0] ain,
 	input wire [WIDTH-1:0] din, 
 	output wire [WIDTH-1:0] dout,
-	output wire [SIZE-1:0] aout);
+	output wire [SIZE-1:0] aout
+);
 
-	reg [SIZE-1:0] address;
-	//localparam NUMWORDS=2**SIZE;
-	localparam NUMWORDS=2**10;
-	reg [WIDTH-1:0] data[0:NUMWORDS-1];
+reg [SIZE-1:0] address;
+//localparam NUMWORDS=2**SIZE;
+localparam NUMWORDS=2**10;
+reg [WIDTH-1:0] data[0:NUMWORDS-1];
 
-	reg [WIDTH-1:0] dout_reg;
-	// Quartus likes the input address to be latched
-	reg [SIZE-1:0] ain_reg; 
-	
-	initial address <= {SIZE{1'b0}};
-	
-//	always @(*) begin
-//		if (rst) begin
-//			dout_reg_d = {SIZE{1'b0}};
-//		end
-//		else begin
-//			if (wr_en) begin
-//				data[address] = din;
-//				address = address + 1'b1;
-//			end
-//			if (rd_en) begin
-//				dout_reg_d = data[ain_reg];
-//			end
-//			else begin
-//				dout_reg_
-	
-	always @(posedge sysclk) begin
-		if (rst == 1) begin
-			dout_reg <= {SIZE{1'b0}};
+reg [WIDTH-1:0] dout_reg;
+// Quartus likes the input address to be latched
+reg [SIZE-1:0] ain_reg; 
+
+initial address <= {SIZE{1'b0}};
+
+always @(posedge sysclk) begin
+	ain_reg <= ain;
+	if ( rst == 1 ) begin
+		address <= {SIZE{1'b0}};
+		dout_reg <= {WIDTH{1'b0}};
+	end
+	else begin 
+		if ( wr_en == 1 ) begin
+			address <= address + 1'b1;
+			data[address] <= din;
 		end
-		else if (rd_en == 1) begin
+		if ( rd_en == 1) begin
 			dout_reg <= data[ain_reg];
 		end
 	end
+end
+
+assign aout = address;
+assign dout = dout_reg;
 	
-	always @(posedge sysclk) begin
-		ain_reg <= ain;
-		if ( rst == 1 ) begin
-			address <= {SIZE{1'b0}};
-			//dout_reg <= {SIZE{1'b0}};
-		end
-		else begin 
-			if ( wr_en == 1 ) begin
-				address <= address + 1'b1;
-				data[address] <= din;
-			end
-//			if ( rd_en == 1) begin
-//				dout_reg <= data[ain_reg];
-//			end
-//			else
-//				//dout_reg <= {SIZE{1'b0}};
-		end
-	end
-	
-	assign aout = address;
-	assign dout = dout_reg;
-	
-	endmodule
+endmodule
