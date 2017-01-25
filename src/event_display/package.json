@@ -1,0 +1,12 @@
+{
+	"name": "mmaps-event-display-server",
+	"version": "0.0.1",
+	"description": "Simple event display for mmaps DAQ test beam",
+	"author": "Andre Frankenthal",
+	"scripts": {
+		"start": "node server.js"
+	},
+	"dependencies": {
+		"express": "^4.14.0"
+	}
+}

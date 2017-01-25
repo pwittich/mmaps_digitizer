@@ -53,3 +53,6 @@ prj/altera/simulation/modelsim/maaps_digi*
 
 # build files from petalinux
 prj/xilinx/petalinux/build
+
+# NodeJS
+src/event_display/node_modules

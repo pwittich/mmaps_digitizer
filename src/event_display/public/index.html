@@ -1,0 +1,30 @@
+<!doctype html>
+
+<html lan="en">
+
+<head>
+
+	<meta charset="utf-8">
+
+	<title>MMAPS Event Display</title>
+
+	<meta name="description" content="MMAPS EVENT DISPLAY">
+	<meta name="author" content="Andre Frankenthal">
+
+</head>
+
+
+<body>
+
+	<img src="plot.png" id="plot" width="1200" height="900"/>
+
+	<script>
+		setInterval(function() {
+			var myImageElement = document.getElementById('plot');
+			myImageElement.src = 'plot.png?rand=' + Math.random();
+		}, 1000);
+	</script>
+
+</body>
+
+</html
