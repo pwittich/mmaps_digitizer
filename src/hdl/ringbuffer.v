@@ -9,7 +9,7 @@
 // up. When it's readout time it gets the address of the data
 // to read out via ain from addr_ctrl, and outputs the word in
 // that register.
-module ringbuffer #(parameter SIZE=12, WIDTH=14) (
+module ringbuffer #(parameter SIZE=10, WIDTH=14) (
 	input wire sysclk,
 	input wire fastclk,
 	input wire wr_en, 
@@ -22,8 +22,8 @@ module ringbuffer #(parameter SIZE=12, WIDTH=14) (
 );
 
 reg [SIZE-1:0] address;
-//localparam NUMWORDS=2**SIZE;
-localparam NUMWORDS=2**10;
+localparam NUMWORDS=2**SIZE;
+//localparam NUMWORDS=2**10;
 reg [WIDTH-1:0] data[0:NUMWORDS-1];
 
 reg [WIDTH-1:0] dout_reg;

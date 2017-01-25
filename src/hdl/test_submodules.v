@@ -7,27 +7,33 @@ module test_submodules(
 	input wire adcframe,
 	input wire [15:0] adcdata,
 	input wire rst,
-	output wire [15:0] adc_data_out_vhdl,
+	output wire [11:0] adc_data_out_vhdl,
 	input wire adc_ready1,
 	input wire trigger_out,
-	output wire [15:0] adc_data_out_singlechannel,
-	input wire howmany,
+	output wire [11:0] adc_data_out_singlechannel,
+	input wire [11:0] howmany,
 	input wire read_request,
 	input wire SPI_done,
 	input wire SPI_SS,
 	input wire [15:0] ZYNQ_word_num
 );
 
+
+// Test of the receivers is not enabled right now.
+// Uncomment lines below to enable (this will probably
+// require other modifications in the rest of the code
+// as well)
+
 wire [11:0] adc_data_out_verilog;
 
-lvdsreceiver lvdsrec_inst_test(
-	.sysclk(sysclk),
-	.FASTCLK(adcfastclk),
-	.FRAME(adcframe),
-	.DATA(adcdata[channelUnderTest]),
-	.RESET_n(~rst),
-	.CBDATA(adc_data_out_vhdl)
-);
+// lvdsreceiver lvdsrec_inst_test(
+// 	.sysclk(sysclk),
+// 	.FASTCLK(adcfastclk),
+// 	.FRAME(adcframe),
+// 	.DATA(adcdata[channelUnderTest]),
+// 	.RESET_n(~rst),
+// 	.CBDATA(adc_data_out_vhdl)
+// );
 
 //	lvds_receiver lvds_rec_inst_test(
 //	 					.sysclk(sysclk),
@@ -39,6 +45,12 @@ lvdsreceiver lvdsrec_inst_test(
 //							.CBADDRESS(adc_addr_out_test),
 //							.WENABLE(adc_wenable_test)
 //	);
+
+
+// This block is used for a test readout of a single
+// channel. It iterates over the readout register 
+// address and iterates every time an SPI word is
+// transferred to the zynq.
 
 reg [11:0] RD_ADDR_d, RD_ADDR_q;
 
@@ -76,10 +88,10 @@ single_channel single_channel_inst(
 	.adc_data(adcdata[channelUnderTest]),
 	.data_out(adc_data_out_singlechannel),
 	//.sc_wr_enable(sc_wr_enable),
-	.how_many(howmany),
+	.how_many(howmany[9:0]),
 	.read_request(read_request),
 	.SPI_done(SPI_done),
-	.read_address(RD_ADDR_q)
+	.read_address(RD_ADDR_q[9:0])
 );
 
 endmodule

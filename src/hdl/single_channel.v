@@ -30,7 +30,7 @@
 // and read out upon demand, and an address_control module to
 // manage the ring_buffer memory and tell it which address to 
 // store in next, and which address to start readout from.
-module single_channel #(parameter SIZE=12, WIDTH=12) (
+module single_channel #(parameter RB_SIZE=10, WIDTH=12) (
 	input wire 	clk,
 	input wire 	reset,
 	input wire 	adc_data_ready,
@@ -38,10 +38,10 @@ module single_channel #(parameter SIZE=12, WIDTH=12) (
 	input wire 	adc_fast_clk,
 	input wire 	adc_frame,
 	input wire 	adc_data, // single channel serial input
-	input wire	[SIZE-1:0]  how_many,
+	input wire	[RB_SIZE-1:0]  how_many,
 	input wire 	read_request,
 	input wire	SPI_done,
-	input wire  [11:0] read_address,
+	input wire  [RB_SIZE-1:0] read_address,
 	output wire RODONE_n_out,
 	output wire [WIDTH-1:0] data_out
 );
@@ -49,8 +49,8 @@ module single_channel #(parameter SIZE=12, WIDTH=12) (
 wire 		 			RO_ENABLE;
 wire 		 			WR_ENABLE_LVDS;
 wire 		 			WR_ENABLE_SM;
-wire 	[SIZE-1:0] 	 	rb_addr_in;
-wire 	[SIZE-1:0] 	 	RD_ADDR;
+wire 	[RB_SIZE-1:0] 	 	rb_addr_in;
+wire 	[RB_SIZE-1:0] 	 	RD_ADDR;
 
 wire 	[WIDTH-1:0] 	cbdata;
 	
@@ -122,7 +122,7 @@ ringbuffer		ringbuffer_inst0(
 	.aout(RD_ADDR),
 	.dout(rb_data_out)
 );
-defparam    ringbuffer_inst0.SIZE = SIZE; // 2^SIZE ringbuffer size
+defparam    ringbuffer_inst0.SIZE = RB_SIZE; // 2^SIZE ringbuffer size
 defparam    ringbuffer_inst0.WIDTH = WIDTH;
    
 wire 		 RO_DONE_n;
@@ -150,7 +150,7 @@ defparam    channel_sm.IDLE = 3'b000;
 defparam    channel_sm.READOUT = 3'b001;
 defparam    channel_sm.TRIGGERED = 3'b100;
 	
-reg [11:0] rb_addr_offset = 12'h000; // no address offset
+reg [RB_SIZE-1:0] rb_addr_offset = {RB_SIZE{1'b0}}; // no address offset
 	
 // Address control module to keep track of which index in
 // the buffer we are currently working at. An offset can
@@ -168,7 +168,7 @@ addr_cntrl    ch_addrctrl(
 	.address(rb_addr_in),
 	.ro_done_n(RO_DONE_n)
 );
-defparam    ch_addrctrl.SIZE = SIZE;
+defparam    ch_addrctrl.SIZE = RB_SIZE;
    
    
 endmodule

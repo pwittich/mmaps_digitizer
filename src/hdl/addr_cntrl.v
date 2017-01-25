@@ -10,7 +10,7 @@
 // should read out next. It also receives how many words
 // are to be read out via howmany_i, and when all requested
 // words have been read it flags completion via ro_done_n.
-module addr_cntrl #(parameter SIZE=12) (
+module addr_cntrl #(parameter SIZE=10) (
 	input wire [SIZE-1:0] offset_in,
 	input wire [SIZE-1:0] howmany_in,
 	input wire [SIZE-1:0] ain,
@@ -24,7 +24,7 @@ module addr_cntrl #(parameter SIZE=12) (
 	
 reg [SIZE-1:0] reg_addr;
 reg [SIZE-1:0] offset;
-reg [12-1:0] howmany;
+reg [SIZE-1:0] howmany;
 	
 // where to start readout. only updated if 
 // not during a ro cycle.

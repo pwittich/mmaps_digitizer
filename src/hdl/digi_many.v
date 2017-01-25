@@ -76,6 +76,8 @@ assign SPI_complete = ~(|TRIGGER) & ~(|delay_counter);
 wire [ADC_WIDTH*CHAN-1:0] DOUT_F; // output from each channel
 wire [CHAN-1:0] 	 RD_REQUEST; // readout request to each channel
 
+//localparam RINGBUF_LEN = 10;
+
 // Generates instances of all singlechannels. Each outputs its data
 // via the DOUT_F variable.
 genvar 		 i;
