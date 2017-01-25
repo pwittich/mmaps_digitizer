@@ -16,7 +16,9 @@ Directory structure:
 ```
 
 Quartus II project is in prj/altera/maaps_digi.qpf.
+
 Vivado Zynq project is in prj/xilinx/vivado/zynq_spi_emio_diff/.
+
 Petalinux Zynq project is in prj/xilinx/petalinux/darkphoton_zynq/.
 
 ## Register Map
