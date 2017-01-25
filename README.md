@@ -12,6 +12,7 @@ Directory structure:
    |---other
    |---sim
    |---zynq_spi
+   |---event_display
 ```
 
 Quartus II project is in prj/altera/maaps_digi.qpf.
